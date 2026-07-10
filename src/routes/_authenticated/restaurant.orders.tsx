@@ -7,7 +7,7 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/restaurant/orders")({ component: RestaurantOrders });
 
-const ACTIVE_STATUSES = ["awaiting_restaurant_acceptance", "accepted_by_restaurant", "preparing", "ready_for_pickup"];
+const ACTIVE_STATUSES = ["awaiting_restaurant_acceptance", "accepted_by_restaurant", "preparing", "ready_for_pickup"] as const;
 
 function RestaurantOrders() {
   const { restaurantId } = Route.useRouteContext();
@@ -36,7 +36,7 @@ function RestaurantOrders() {
   }, [restaurantId, qc]);
 
   async function updateStatus(id: string, status: string) {
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    const { error } = await supabase.from("orders").update({ status: status as any }).eq("id", id);
     if (error) toast.error(error.message); else toast.success("Updated");
     qc.invalidateQueries({ queryKey: ["restaurant-orders", restaurantId] });
   }
