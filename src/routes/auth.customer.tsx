@@ -9,8 +9,7 @@ export const Route = createFileRoute("/auth/customer")({ component: CustomerAuth
 
 function CustomerAuth() {
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
@@ -21,24 +20,36 @@ function CustomerAuth() {
     return "+234" + trimmed;
   }
 
-  async function sendOtp(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     const p = normalize(phone);
-    const { error } = await supabase.auth.signInWithOtp({ phone: p });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Code sent to " + p);
-    setStep("otp");
-  }
+    const digits = p.replace(/\D/g, "");
+    const email = `${digits}@mealbae.local`;
+    const password = `mb_${digits}_pw`;
 
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    const p = normalize(phone);
-    const { error } = await supabase.auth.verifyOtp({ phone: p, token: otp, type: "sms" });
+    // Try sign-in first; if user doesn't exist, sign them up.
+    let { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      const { error: signUpErr } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name || null, phone: p, role: "customer" } },
+      });
+      if (signUpErr) {
+        setLoading(false);
+        toast.error(signUpErr.message);
+        return;
+      }
+      // Ensure session exists (auto-confirm should be on in dev).
+      const retry = await supabase.auth.signInWithPassword({ email, password });
+      if (retry.error) {
+        setLoading(false);
+        toast.error(retry.error.message);
+        return;
+      }
+    }
     setLoading(false);
-    if (error) { toast.error(error.message); return; }
     toast.success("Signed in");
     nav({ to: "/home" });
   }
@@ -46,40 +57,29 @@ function CustomerAuth() {
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">
       <Link to="/" className="mb-8 text-xl"><Logo /></Link>
-      <h1 className="font-display text-3xl font-bold">Sign in with your phone</h1>
-      <p className="mt-1 text-sm text-muted-foreground">We'll text you a one-time code.</p>
+      <h1 className="font-display text-3xl font-bold">Continue with your phone</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Testing mode — no OTP required.</p>
 
-      {step === "phone" ? (
-        <form onSubmit={sendOtp} className="mt-6 space-y-3">
-          <div className="relative">
-            <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              inputMode="tel" required autoFocus value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="080 123 4567"
-              className="w-full rounded-2xl border border-input bg-surface pl-10 pr-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-          <button disabled={loading} className="w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-60">
-            {loading ? "Sending…" : "Send code"}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={verify} className="mt-6 space-y-3">
+      <form onSubmit={submit} className="mt-6 space-y-3">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your name (optional)"
+          className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <div className="relative">
+          <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
-            inputMode="numeric" required autoFocus value={otp} maxLength={6}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="6-digit code"
-            className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-ring"
+            inputMode="tel" required autoFocus value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="080 123 4567"
+            className="w-full rounded-2xl border border-input bg-surface pl-10 pr-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          <button disabled={loading} className="w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-60">
-            {loading ? "Verifying…" : "Verify & continue"}
-          </button>
-          <button type="button" onClick={() => setStep("phone")} className="w-full text-sm text-muted-foreground">
-            Use a different number
-          </button>
-        </form>
-      )}
+        </div>
+        <button disabled={loading} className="w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-60">
+          {loading ? "Signing in…" : "Continue"}
+        </button>
+      </form>
 
       <p className="mt-8 text-xs text-muted-foreground">
         Restaurant or admin?{" "}
