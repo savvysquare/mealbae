@@ -9,38 +9,283 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
+import { Route as AuthStaffRouteImport } from './routes/auth.staff'
+import { Route as AuthCustomerRouteImport } from './routes/auth.customer'
+import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
+import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
+import { Route as AuthenticatedCartRouteImport } from './routes/_authenticated/cart'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedRestaurantOrdersRouteImport } from './routes/_authenticated/restaurant.orders'
+import { Route as AuthenticatedRestaurantMenuRouteImport } from './routes/_authenticated/restaurant.menu'
+import { Route as AuthenticatedRestaurantHistoryRouteImport } from './routes/_authenticated/restaurant.history'
+import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
+import { Route as AuthenticatedAdminRestaurantsRouteImport } from './routes/_authenticated/admin.restaurants'
+import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
+import { Route as AuthenticatedAdminOverviewRouteImport } from './routes/_authenticated/admin.overview'
+import { Route as AuthenticatedAdminMealsRouteImport } from './routes/_authenticated/admin.meals'
+import { Route as AuthenticatedAdminDispatchRouteImport } from './routes/_authenticated/admin.dispatch'
 
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RRestaurantIdRoute = RRestaurantIdRouteImport.update({
+  id: '/r/$restaurantId',
+  path: '/r/$restaurantId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthStaffRoute = AuthStaffRouteImport.update({
+  id: '/auth/staff',
+  path: '/auth/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCustomerRoute = AuthCustomerRouteImport.update({
+  id: '/auth/customer',
+  path: '/auth/customer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRestaurantRoute = AuthenticatedRestaurantRouteImport.update({
+  id: '/restaurant',
+  path: '/restaurant',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCartRoute = AuthenticatedCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRestaurantOrdersRoute =
+  AuthenticatedRestaurantOrdersRouteImport.update({
+    id: '/orders',
+    path: '/orders',
+    getParentRoute: () => AuthenticatedRestaurantRoute,
+  } as any)
+const AuthenticatedRestaurantMenuRoute =
+  AuthenticatedRestaurantMenuRouteImport.update({
+    id: '/menu',
+    path: '/menu',
+    getParentRoute: () => AuthenticatedRestaurantRoute,
+  } as any)
+const AuthenticatedRestaurantHistoryRoute =
+  AuthenticatedRestaurantHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AuthenticatedRestaurantRoute,
+  } as any)
+const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedOrdersRoute,
+} as any)
+const AuthenticatedAdminRestaurantsRoute =
+  AuthenticatedAdminRestaurantsRouteImport.update({
+    id: '/restaurants',
+    path: '/restaurants',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPaymentsRoute =
+  AuthenticatedAdminPaymentsRouteImport.update({
+    id: '/payments',
+    path: '/payments',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminOverviewRoute =
+  AuthenticatedAdminOverviewRouteImport.update({
+    id: '/overview',
+    path: '/overview',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMealsRoute = AuthenticatedAdminMealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminDispatchRoute =
+  AuthenticatedAdminDispatchRouteImport.update({
+    id: '/dispatch',
+    path: '/dispatch',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/cart': typeof AuthenticatedCartRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
+  '/auth/customer': typeof AuthCustomerRoute
+  '/auth/staff': typeof AuthStaffRoute
+  '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/admin/meals': typeof AuthenticatedAdminMealsRoute
+  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
+  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
+  '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
+  '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/cart': typeof AuthenticatedCartRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
+  '/auth/customer': typeof AuthCustomerRoute
+  '/auth/staff': typeof AuthStaffRoute
+  '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/admin/meals': typeof AuthenticatedAdminMealsRoute
+  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
+  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
+  '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
+  '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/cart': typeof AuthenticatedCartRoute
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
+  '/auth/customer': typeof AuthCustomerRoute
+  '/auth/staff': typeof AuthStaffRoute
+  '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/_authenticated/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/_authenticated/admin/meals': typeof AuthenticatedAdminMealsRoute
+  '/_authenticated/admin/overview': typeof AuthenticatedAdminOverviewRoute
+  '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
+  '/_authenticated/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/_authenticated/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
+  '/_authenticated/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
+  '/_authenticated/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/cart'
+    | '/checkout'
+    | '/home'
+    | '/orders'
+    | '/restaurant'
+    | '/auth/customer'
+    | '/auth/staff'
+    | '/r/$restaurantId'
+    | '/admin/dispatch'
+    | '/admin/meals'
+    | '/admin/overview'
+    | '/admin/payments'
+    | '/admin/restaurants'
+    | '/orders/$id'
+    | '/restaurant/history'
+    | '/restaurant/menu'
+    | '/restaurant/orders'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/cart'
+    | '/checkout'
+    | '/home'
+    | '/orders'
+    | '/restaurant'
+    | '/auth/customer'
+    | '/auth/staff'
+    | '/r/$restaurantId'
+    | '/admin/dispatch'
+    | '/admin/meals'
+    | '/admin/overview'
+    | '/admin/payments'
+    | '/admin/restaurants'
+    | '/orders/$id'
+    | '/restaurant/history'
+    | '/restaurant/menu'
+    | '/restaurant/orders'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_authenticated/admin'
+    | '/_authenticated/cart'
+    | '/_authenticated/checkout'
+    | '/_authenticated/home'
+    | '/_authenticated/orders'
+    | '/_authenticated/restaurant'
+    | '/auth/customer'
+    | '/auth/staff'
+    | '/r/$restaurantId'
+    | '/_authenticated/admin/dispatch'
+    | '/_authenticated/admin/meals'
+    | '/_authenticated/admin/overview'
+    | '/_authenticated/admin/payments'
+    | '/_authenticated/admin/restaurants'
+    | '/_authenticated/orders/$id'
+    | '/_authenticated/restaurant/history'
+    | '/_authenticated/restaurant/menu'
+    | '/_authenticated/restaurant/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthCustomerRoute: typeof AuthCustomerRoute
+  AuthStaffRoute: typeof AuthStaffRoute
+  RRestaurantIdRoute: typeof RRestaurantIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +293,211 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/$restaurantId': {
+      id: '/r/$restaurantId'
+      path: '/r/$restaurantId'
+      fullPath: '/r/$restaurantId'
+      preLoaderRoute: typeof RRestaurantIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/staff': {
+      id: '/auth/staff'
+      path: '/auth/staff'
+      fullPath: '/auth/staff'
+      preLoaderRoute: typeof AuthStaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/customer': {
+      id: '/auth/customer'
+      path: '/auth/customer'
+      fullPath: '/auth/customer'
+      preLoaderRoute: typeof AuthCustomerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/restaurant': {
+      id: '/_authenticated/restaurant'
+      path: '/restaurant'
+      fullPath: '/restaurant'
+      preLoaderRoute: typeof AuthenticatedRestaurantRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orders': {
+      id: '/_authenticated/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/checkout': {
+      id: '/_authenticated/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cart': {
+      id: '/_authenticated/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof AuthenticatedCartRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/restaurant/orders': {
+      id: '/_authenticated/restaurant/orders'
+      path: '/orders'
+      fullPath: '/restaurant/orders'
+      preLoaderRoute: typeof AuthenticatedRestaurantOrdersRouteImport
+      parentRoute: typeof AuthenticatedRestaurantRoute
+    }
+    '/_authenticated/restaurant/menu': {
+      id: '/_authenticated/restaurant/menu'
+      path: '/menu'
+      fullPath: '/restaurant/menu'
+      preLoaderRoute: typeof AuthenticatedRestaurantMenuRouteImport
+      parentRoute: typeof AuthenticatedRestaurantRoute
+    }
+    '/_authenticated/restaurant/history': {
+      id: '/_authenticated/restaurant/history'
+      path: '/history'
+      fullPath: '/restaurant/history'
+      preLoaderRoute: typeof AuthenticatedRestaurantHistoryRouteImport
+      parentRoute: typeof AuthenticatedRestaurantRoute
+    }
+    '/_authenticated/orders/$id': {
+      id: '/_authenticated/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof AuthenticatedOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedOrdersRoute
+    }
+    '/_authenticated/admin/restaurants': {
+      id: '/_authenticated/admin/restaurants'
+      path: '/restaurants'
+      fullPath: '/admin/restaurants'
+      preLoaderRoute: typeof AuthenticatedAdminRestaurantsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/payments': {
+      id: '/_authenticated/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/overview': {
+      id: '/_authenticated/admin/overview'
+      path: '/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AuthenticatedAdminOverviewRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/meals': {
+      id: '/_authenticated/admin/meals'
+      path: '/meals'
+      fullPath: '/admin/meals'
+      preLoaderRoute: typeof AuthenticatedAdminMealsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dispatch': {
+      id: '/_authenticated/admin/dispatch'
+      path: '/dispatch'
+      fullPath: '/admin/dispatch'
+      preLoaderRoute: typeof AuthenticatedAdminDispatchRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminDispatchRoute: typeof AuthenticatedAdminDispatchRoute
+  AuthenticatedAdminMealsRoute: typeof AuthenticatedAdminMealsRoute
+  AuthenticatedAdminOverviewRoute: typeof AuthenticatedAdminOverviewRoute
+  AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
+  AuthenticatedAdminRestaurantsRoute: typeof AuthenticatedAdminRestaurantsRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminDispatchRoute: AuthenticatedAdminDispatchRoute,
+  AuthenticatedAdminMealsRoute: AuthenticatedAdminMealsRoute,
+  AuthenticatedAdminOverviewRoute: AuthenticatedAdminOverviewRoute,
+  AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
+  AuthenticatedAdminRestaurantsRoute: AuthenticatedAdminRestaurantsRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedOrdersRouteChildren {
+  AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
+}
+
+const AuthenticatedOrdersRouteChildren: AuthenticatedOrdersRouteChildren = {
+  AuthenticatedOrdersIdRoute: AuthenticatedOrdersIdRoute,
+}
+
+const AuthenticatedOrdersRouteWithChildren =
+  AuthenticatedOrdersRoute._addFileChildren(AuthenticatedOrdersRouteChildren)
+
+interface AuthenticatedRestaurantRouteChildren {
+  AuthenticatedRestaurantHistoryRoute: typeof AuthenticatedRestaurantHistoryRoute
+  AuthenticatedRestaurantMenuRoute: typeof AuthenticatedRestaurantMenuRoute
+  AuthenticatedRestaurantOrdersRoute: typeof AuthenticatedRestaurantOrdersRoute
+}
+
+const AuthenticatedRestaurantRouteChildren: AuthenticatedRestaurantRouteChildren =
+  {
+    AuthenticatedRestaurantHistoryRoute: AuthenticatedRestaurantHistoryRoute,
+    AuthenticatedRestaurantMenuRoute: AuthenticatedRestaurantMenuRoute,
+    AuthenticatedRestaurantOrdersRoute: AuthenticatedRestaurantOrdersRoute,
+  }
+
+const AuthenticatedRestaurantRouteWithChildren =
+  AuthenticatedRestaurantRoute._addFileChildren(
+    AuthenticatedRestaurantRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedCartRoute: typeof AuthenticatedCartRoute
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
+  AuthenticatedRestaurantRoute: typeof AuthenticatedRestaurantRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedCartRoute: AuthenticatedCartRoute,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
+  AuthenticatedRestaurantRoute: AuthenticatedRestaurantRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthCustomerRoute: AuthCustomerRoute,
+  AuthStaffRoute: AuthStaffRoute,
+  RRestaurantIdRoute: RRestaurantIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
