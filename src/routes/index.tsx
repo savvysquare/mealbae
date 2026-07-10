@@ -96,21 +96,21 @@ function Landing() {
           </div>
 
           {/* Hero visual — self-contained, no overflow leaks */}
-          <div className="relative isolate mx-auto flex aspect-square w-full max-w-[560px] items-center justify-center overflow-hidden">
+          <div className="relative isolate mx-auto flex aspect-square w-full max-w-[520px] items-center justify-center">
             {/* Dark blob */}
             <div
               aria-hidden
-              className="absolute left-1/2 top-1/2 h-[85%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[oklch(0.22_0.02_260)]"
+              className="absolute left-1/2 top-1/2 h-[82%] w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[oklch(0.22_0.02_260)]"
             />
             {/* Orange outline echo */}
             <div
               aria-hidden
-              className="absolute left-1/2 top-1/2 h-[92%] w-[92%] -translate-x-[46%] -translate-y-[52%] rotate-[-8deg] rounded-full border-2 border-primary/70"
+              className="absolute left-1/2 top-1/2 h-[90%] w-[90%] -translate-x-[47%] -translate-y-[51%] rotate-[-6deg] rounded-full border-2 border-primary/70"
             />
             <img
               src={heroDish}
               alt="Nigerian jollof rice with grilled chicken"
-              className="relative z-10 h-[92%] w-[92%] object-contain drop-shadow-2xl"
+              className="relative z-10 h-[86%] w-[86%] object-contain drop-shadow-[0_20px_30px_oklch(0_0_0/0.35)]"
               width={1200}
               height={1200}
             />
