@@ -6,17 +6,17 @@ import { LogOut } from "lucide-react";
 
 export function AppShell({ children, right, title }: { children: ReactNode; right?: ReactNode; title?: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+    <div className="min-h-screen bg-background px-3 py-3 md:px-6 md:py-6">
+      <div className="mx-auto max-w-6xl overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_-30px_oklch(0_0_0/0.25)] md:rounded-[40px]">
+        <header className="sticky top-3 z-30 flex items-center justify-between border-b border-border/60 bg-white/85 px-5 py-4 backdrop-blur md:px-10">
           <Link to="/" className="text-lg"><Logo /></Link>
-          {title ? <div className="text-sm font-medium text-muted-foreground">{title}</div> : null}
+          {title ? <div className="hidden text-sm font-medium text-muted-foreground sm:block">{title}</div> : null}
           <div className="flex items-center gap-2">
             {right}
           </div>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 pb-32 pt-6">{children}</main>
+        </header>
+        <main className="px-5 pb-16 pt-6 md:px-10 md:pb-24">{children}</main>
+      </div>
     </div>
   );
 }
