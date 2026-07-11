@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Logo } from "@/components/Logo";
 import { Clock, ArrowRight, Star, ChevronRight } from "lucide-react";
-import { PaymentAccountCard } from "@/components/PaymentAccountCard";
+
 import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
