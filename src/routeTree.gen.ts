@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -18,7 +19,6 @@ import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AuthStaffRouteImport } from './routes/auth.staff'
 import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
-import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
 import { Route as AuthenticatedRestaurantOrdersRouteImport } from './routes/_authenticated/restaurant.orders'
@@ -34,6 +34,11 @@ import { Route as AuthenticatedAdminDispatchRouteImport } from './routes/_authen
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -73,11 +78,6 @@ const AuthenticatedRestaurantRoute = AuthenticatedRestaurantRouteImport.update({
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
-  id: '/home',
-  path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -148,9 +148,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/home': typeof HomeRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/home': typeof AuthenticatedHomeRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
@@ -170,9 +170,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/home': typeof HomeRoute
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/home': typeof AuthenticatedHomeRoute
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
@@ -193,9 +193,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/home': typeof HomeRoute
   '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
@@ -217,9 +217,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/home'
     | '/track'
     | '/admin'
-    | '/home'
     | '/orders'
     | '/restaurant'
     | '/auth/staff'
@@ -239,9 +239,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cart'
     | '/checkout'
+    | '/home'
     | '/track'
     | '/admin'
-    | '/home'
     | '/restaurant'
     | '/auth/staff'
     | '/r/$restaurantId'
@@ -261,9 +261,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/cart'
     | '/checkout'
+    | '/home'
     | '/track'
     | '/_authenticated/admin'
-    | '/_authenticated/home'
     | '/_authenticated/orders'
     | '/_authenticated/restaurant'
     | '/auth/staff'
@@ -285,6 +285,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  HomeRoute: typeof HomeRoute
   TrackRoute: typeof TrackRoute
   AuthStaffRoute: typeof AuthStaffRoute
   RRestaurantIdRoute: typeof RRestaurantIdRoute
@@ -297,6 +298,13 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -353,13 +361,6 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof AuthenticatedOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/home': {
-      id: '/_authenticated/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
@@ -494,14 +495,12 @@ const AuthenticatedRestaurantRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
-  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
   AuthenticatedRestaurantRoute: typeof AuthenticatedRestaurantRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
-  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
   AuthenticatedRestaurantRoute: AuthenticatedRestaurantRouteWithChildren,
 }
@@ -514,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  HomeRoute: HomeRoute,
   TrackRoute: TrackRoute,
   AuthStaffRoute: AuthStaffRoute,
   RRestaurantIdRoute: RRestaurantIdRoute,
@@ -521,13 +521,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

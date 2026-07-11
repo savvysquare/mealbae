@@ -8,7 +8,7 @@ import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Search, ShoppingBag, Clock, Store, Star, SlidersHorizontal } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
-export const Route = createFileRoute("/_authenticated/home")({ component: Home });
+export const Route = createFileRoute("/home")({ component: Home });
 
 interface RestaurantRow {
   id: string;
