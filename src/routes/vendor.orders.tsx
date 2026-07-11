@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
 import { toast } from "sonner";
 import { VendorShell } from "@/components/PanelShells";
-import { ChevronDown, ChevronUp, MapPin, Phone, User, ClipboardList, Navigation } from "lucide-react";
+import { ChevronDown, ChevronUp, MapPin, Phone, User, ClipboardList, Navigation, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/vendor/orders")({ component: VendorOrders });
 
@@ -15,6 +15,9 @@ function VendorOrders() {
   const { restaurantId } = Route.useRouteContext() as { restaurantId: string };
   const qc = useQueryClient();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  // Rejection reason modal state
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   const { data: orders } = useQuery({
     queryKey: ["vendor-orders", restaurantId],
@@ -43,6 +46,15 @@ function VendorOrders() {
     const { error } = await supabase.from("orders").update({ status: nextStatus as any }).eq("id", id);
     if (error) toast.error(error.message); else toast.success("Order status updated");
     qc.invalidateQueries({ queryKey: ["vendor-orders", restaurantId] });
+  }
+
+  async function rejectWithReason(id: string) {
+    const reason = rejectionReason.trim() || "No reason provided";
+    const { error } = await supabase.from("orders").update({ status: "rejected" as any, rejection_reason: reason }).eq("id", id);
+    if (error) toast.error(error.message); else toast.success("Order rejected");
+    qc.invalidateQueries({ queryKey: ["vendor-orders", restaurantId] });
+    setRejectingId(null);
+    setRejectionReason("");
   }
 
   const toggleExpand = (id: string) => {
@@ -76,13 +88,32 @@ function VendorOrders() {
                   </ul>
                   <div className="mt-2 text-xs text-muted-foreground flex items-start gap-1">
                     <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                    <span>To: {o.delivery_address} — {o.delivery_phone}</span>
+                    <span>To: {o.delivery_address} — <a href={`tel:${o.delivery_phone}`} className="text-primary font-medium hover:underline">{o.delivery_phone}</a></span>
                   </div>
                   {o.notes && <div className="mt-1 text-xs italic bg-secondary/30 p-2 rounded-lg text-muted-foreground">"{o.notes}"</div>}
                   <div className="mt-4 flex gap-2">
                     <button onClick={() => updateStatus(o.id, "accepted_by_restaurant")} className="flex-1 rounded-2xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition whitespace-nowrap">Accept</button>
-                    <button onClick={() => updateStatus(o.id, "rejected")} className="flex-1 rounded-2xl border border-destructive py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/5 transition whitespace-nowrap">Reject</button>
+                    <button onClick={() => { setRejectingId(o.id); setRejectionReason(""); }} className="flex-1 rounded-2xl border border-destructive py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/5 transition whitespace-nowrap">Reject</button>
                   </div>
+
+                  {/* Inline rejection reason form */}
+                  {rejectingId === o.id && (
+                    <div className="mt-3 rounded-2xl border border-destructive/40 bg-destructive/5 p-3 space-y-2">
+                      <div className="text-xs font-semibold text-destructive uppercase tracking-wide">Rejection reason (optional)</div>
+                      <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        placeholder="e.g. Item unavailable, restaurant closed..."
+                        rows={2}
+                        autoFocus
+                        className="w-full rounded-xl border border-input bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50 resize-none"
+                      />
+                      <div className="flex gap-2">
+                        <button onClick={() => rejectWithReason(o.id)} className="flex-1 rounded-xl bg-destructive px-3 py-2 text-xs font-bold text-white hover:opacity-90 transition whitespace-nowrap">Confirm Rejection</button>
+                        <button onClick={() => { setRejectingId(null); setRejectionReason(""); }} className="rounded-xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:bg-secondary transition whitespace-nowrap">Cancel</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -192,7 +223,7 @@ function VendorOrders() {
                         <div className="bg-white p-3 rounded-xl border border-border/80">
                           <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-2">Force Status Override</h4>
                           <div className="flex flex-wrap gap-1">
-                            {["accepted_by_restaurant", "preparing", "ready_for_pickup", "rejected"].map((st) => (
+                            {["accepted_by_restaurant", "preparing", "ready_for_pickup"].map((st) => (
                               <button
                                 key={st}
                                 onClick={() => updateStatus(o.id, st)}
@@ -205,6 +236,30 @@ function VendorOrders() {
                                 {STATUS_LABELS[st] ?? st}
                               </button>
                             ))}
+                            {/* Reject with reason */}
+                            {rejectingId === o.id ? (
+                              <div className="w-full mt-2 rounded-xl border border-destructive/40 bg-destructive/5 p-2 space-y-2">
+                                <textarea
+                                  value={rejectionReason}
+                                  onChange={(e) => setRejectionReason(e.target.value)}
+                                  placeholder="Rejection reason..."
+                                  rows={2}
+                                  autoFocus
+                                  className="w-full rounded-lg border border-input bg-white px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-destructive/50 resize-none"
+                                />
+                                <div className="flex gap-1.5">
+                                  <button onClick={() => rejectWithReason(o.id)} className="flex-1 rounded-lg bg-destructive px-2 py-1 text-[11px] font-bold text-white whitespace-nowrap">Confirm</button>
+                                  <button onClick={() => { setRejectingId(null); setRejectionReason(""); }} className="rounded-lg border border-border px-2 py-1 text-[11px] text-muted-foreground whitespace-nowrap">Cancel</button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => { setRejectingId(o.id); setRejectionReason(""); }}
+                                className="px-2.5 py-1 rounded-full text-xs font-semibold transition whitespace-nowrap bg-destructive/10 text-destructive hover:bg-destructive/20"
+                              >
+                                <XCircle className="h-3 w-3 inline mr-1" />Reject
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>

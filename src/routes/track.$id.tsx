@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
-import { Copy, CheckCircle2, MessageCircle, PartyPopper } from "lucide-react";
+import { Copy, CheckCircle2, MessageCircle, PartyPopper, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/track/$id")({
@@ -118,10 +118,21 @@ function TrackDetail() {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
             <div className="md:col-span-3">
-              <section className="card-soft p-5">
+              <section className={`card-soft p-5 ${["rejected", "cancelled"].includes(data.order.status) ? "border-l-4 border-destructive bg-destructive/5" : ""}`}>
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Order #{data.order.short_code}</div>
-                <div className="mt-1 font-display text-2xl font-bold">{STATUS_LABELS[data.order.status]}</div>
+                <div className={`mt-1 font-display text-2xl font-bold ${["rejected", "cancelled"].includes(data.order.status) ? "text-destructive" : ""}`}>
+                  {data.order.status === "rejected" ? (
+                    <span className="flex items-center gap-2"><XCircle className="h-6 w-6" /> {STATUS_LABELS[data.order.status]}</span>
+                  ) : STATUS_LABELS[data.order.status]}
+                </div>
                 <p className="mt-1 text-sm text-muted-foreground">{data.order.restaurant_name}</p>
+                {/* Rejection reason banner */}
+                {data.order.status === "rejected" && (
+                  <div className="mt-3 rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm">
+                    <span className="font-semibold text-destructive">Reason: </span>
+                    <span className="text-destructive/80">{(data.order as any).rejection_reason ?? "No reason provided"}</span>
+                  </div>
+                )}
                 <div className="mt-6"><StatusTimeline current={data.order.status} events={data.events} /></div>
               </section>
             </div>
@@ -189,8 +200,8 @@ function TrackDetail() {
               <section className="card-soft p-5 text-sm">
                 <div className="font-medium">Delivering to</div>
                 <div className="mt-1 text-muted-foreground">{data.order.delivery_address}</div>
-                <div className="text-muted-foreground">{data.order.delivery_phone}</div>
-                {data.order.rider_name && <div className="mt-3 border-t border-border pt-3">Rider: <span className="font-medium">{data.order.rider_name}</span> {data.order.rider_phone}</div>}
+                <a href={`tel:${data.order.delivery_phone}`} className="text-primary font-medium hover:underline">{data.order.delivery_phone}</a>
+                {data.order.rider_name && <div className="mt-3 border-t border-border pt-3">Rider: <span className="font-medium">{data.order.rider_name}</span> <a href={`tel:${data.order.rider_phone}`} className="text-primary hover:underline">{data.order.rider_phone}</a></div>}
               </section>
               <section className="card-soft p-5 text-sm bg-secondary/30">
                 <div className="flex items-center gap-2 font-medium text-foreground">

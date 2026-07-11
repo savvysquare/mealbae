@@ -228,7 +228,7 @@ function Overview() {
                                 <div className="font-semibold">{o.customer_name ?? "No Name"}</div>
                                 <div className="flex items-center gap-1">
                                   <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                                  <span>{o.delivery_phone}</span>
+                                  <a href={`tel:${o.delivery_phone}`} className="text-primary font-medium hover:underline">{o.delivery_phone}</a>
                                 </div>
                                 <div className="flex items-start gap-1 mt-1.5 pt-1.5 border-t border-border">
                                   <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-0.5" />
@@ -237,6 +237,12 @@ function Overview() {
                                 {o.notes && (
                                   <div className="mt-2 text-xs italic bg-secondary/30 p-2 rounded-xl text-muted-foreground">
                                     Notes: "{o.notes}"
+                                  </div>
+                                )}
+                                {o.rejection_reason && (
+                                  <div className="mt-2 rounded-xl bg-destructive/10 border border-destructive/20 px-3 py-2 text-xs">
+                                    <span className="font-semibold text-destructive">Rejection reason: </span>
+                                    <span className="text-destructive/80">{o.rejection_reason}</span>
                                   </div>
                                 )}
                               </div>
