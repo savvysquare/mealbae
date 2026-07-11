@@ -120,7 +120,7 @@ function CartPage() {
                 </button>
 
                 <Link
-                  to="/"
+                  to="/home"
                   className="mt-3 w-full rounded-full border border-border py-3 text-xs font-bold text-muted-foreground text-center hover:bg-secondary transition flex items-center justify-center cursor-pointer"
                 >
                   Add more items
