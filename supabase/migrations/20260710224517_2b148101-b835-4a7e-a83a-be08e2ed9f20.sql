@@ -280,7 +280,7 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.order_status_events;
 
 -- ============ SEED: Bank + Restaurants + Menus ============
 INSERT INTO public.bank_accounts (bank_name, account_name, account_number) VALUES
-  ('Opay', 'MealBAE Nigeria Ltd', '8100000000');
+  ('Opay', 'MealBAE', '8141894696');
 
 -- Restaurants
 WITH r AS (
