@@ -83,6 +83,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           {/* Desktop */}
           <Link to="/admin/overview" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Overview</Link>
           <Link to="/admin/dispatch" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Dispatch</Link>
+          <Link to="/admin/riders" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Riders</Link>
           <Link to="/admin/payments" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Payments</Link>
           <Link to="/admin/restaurants" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Restaurants</Link>
           <Link to="/admin/meals" className={`${desktopLinkClass} hidden sm:inline-flex`} activeProps={desktopActiveClass}>Meals</Link>
@@ -90,6 +91,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           {/* Mobile */}
           <Link to="/admin/overview" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Overview</Link>
           <Link to="/admin/dispatch" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Dispatch</Link>
+          <Link to="/admin/riders" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Riders</Link>
           <Link to="/admin/payments" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Payments</Link>
           <Link to="/admin/restaurants" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Restaurants</Link>
           <Link to="/admin/meals" className={`${mobileLinkClass} sm:hidden`} activeProps={mobileActiveClass}>Meals</Link>

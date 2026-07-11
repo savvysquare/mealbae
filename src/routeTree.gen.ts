@@ -27,6 +27,7 @@ import { Route as VendorHistoryRouteImport } from './routes/vendor.history'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
+import { Route as AdminRidersRouteImport } from './routes/admin.riders'
 import { Route as AdminRestaurantsRouteImport } from './routes/admin.restaurants'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
@@ -125,6 +126,11 @@ const AdminVendorsRoute = AdminVendorsRouteImport.update({
   path: '/vendors',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRidersRoute = AdminRidersRouteImport.update({
+  id: '/riders',
+  path: '/riders',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminRestaurantsRoute = AdminRestaurantsRouteImport.update({
   id: '/restaurants',
   path: '/restaurants',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/riders': typeof AdminRidersRoute
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/riders': typeof AdminRidersRoute
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -234,6 +242,7 @@ export interface FileRoutesById {
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/riders': typeof AdminRidersRoute
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -263,6 +272,7 @@ export interface FileRouteTypes {
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
+    | '/admin/riders'
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
+    | '/admin/riders'
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
+    | '/admin/riders'
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -468,6 +480,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminVendorsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/riders': {
+      id: '/admin/riders'
+      path: '/riders'
+      fullPath: '/admin/riders'
+      preLoaderRoute: typeof AdminRidersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/restaurants': {
       id: '/admin/restaurants'
       path: '/restaurants'
@@ -557,6 +576,7 @@ interface AdminRouteChildren {
   AdminOverviewRoute: typeof AdminOverviewRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminRestaurantsRoute: typeof AdminRestaurantsRoute
+  AdminRidersRoute: typeof AdminRidersRoute
   AdminVendorsRoute: typeof AdminVendorsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -567,6 +587,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOverviewRoute: AdminOverviewRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminRestaurantsRoute: AdminRestaurantsRoute,
+  AdminRidersRoute: AdminRidersRoute,
   AdminVendorsRoute: AdminVendorsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
