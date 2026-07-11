@@ -16,11 +16,19 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            "vendor-react": ["react", "react-dom"],
-            "vendor-router": ["@tanstack/react-router", "@tanstack/react-query"],
-            "vendor-supabase": ["@supabase/supabase-js"],
-            "vendor-icons": ["lucide-react"],
+          manualChunks: (id: string) => {
+            if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+              return "vendor-react";
+            }
+            if (id.includes("node_modules/@tanstack/react-router") || id.includes("node_modules/@tanstack/react-query")) {
+              return "vendor-router";
+            }
+            if (id.includes("node_modules/@supabase")) {
+              return "vendor-supabase";
+            }
+            if (id.includes("node_modules/lucide-react")) {
+              return "vendor-icons";
+            }
           },
         },
       },
