@@ -208,21 +208,13 @@ function Landing() {
           })}
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-          <div className="mx-auto w-full max-w-md">
-            <p className="mb-2 text-center text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground md:text-left">
-              Pay with bank transfer
-            </p>
-            <PaymentAccountCard />
-          </div>
-          <div className="flex justify-center md:justify-end">
-            <Link
-              to="/" hash="restaurants"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all text-sm cursor-pointer"
-            >
-              Start Your Order <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
+        <div className="mt-12 flex justify-center">
+          <Link
+            to="/" hash="restaurants"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all text-sm cursor-pointer"
+          >
+            Start Your Order <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
