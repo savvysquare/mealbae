@@ -25,6 +25,7 @@ import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AdminRestaurantsRouteImport } from './routes/admin.restaurants'
 import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
+import { Route as AdminMealsRouteImport } from './routes/admin.meals'
 import { Route as AdminDispatchRouteImport } from './routes/admin.dispatch'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
@@ -109,6 +110,11 @@ const AdminOverviewRoute = AdminOverviewRouteImport.update({
   path: '/overview',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMealsRoute = AdminMealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDispatchRoute = AdminDispatchRouteImport.update({
   id: '/dispatch',
   path: '/dispatch',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/vendor': typeof VendorRouteWithChildren
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
   '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/vendor': typeof VendorRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/admin/payments': typeof AdminPaymentsRoute
   '/admin/restaurants': typeof AdminRestaurantsRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/vendor'
     | '/orders'
     | '/admin/dispatch'
+    | '/admin/meals'
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/home'
     | '/admin/dispatch'
+    | '/admin/meals'
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
@@ -243,6 +254,7 @@ export interface FileRouteTypes {
     | '/vendor'
     | '/_authenticated/orders'
     | '/admin/dispatch'
+    | '/admin/meals'
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
@@ -381,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOverviewRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/meals': {
+      id: '/admin/meals'
+      path: '/meals'
+      fullPath: '/admin/meals'
+      preLoaderRoute: typeof AdminMealsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/dispatch': {
       id: '/admin/dispatch'
       path: '/dispatch'
@@ -438,6 +457,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface AdminRouteChildren {
   AdminDispatchRoute: typeof AdminDispatchRoute
+  AdminMealsRoute: typeof AdminMealsRoute
   AdminOverviewRoute: typeof AdminOverviewRoute
   AdminPaymentsRoute: typeof AdminPaymentsRoute
   AdminRestaurantsRoute: typeof AdminRestaurantsRoute
@@ -446,6 +466,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDispatchRoute: AdminDispatchRoute,
+  AdminMealsRoute: AdminMealsRoute,
   AdminOverviewRoute: AdminOverviewRoute,
   AdminPaymentsRoute: AdminPaymentsRoute,
   AdminRestaurantsRoute: AdminRestaurantsRoute,
