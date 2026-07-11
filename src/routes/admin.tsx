@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
     const ctx = await getAdminContext();
     // Block sub-routes when not admin — bounce back to /admin (login form).
-    if (!ctx.isAdmin && location.pathname !== "/admin") {
+    if (!ctx.isAdmin && !["/admin", "/admin/"].includes(location.pathname)) {
       throw redirect({ to: "/admin" });
     }
     return ctx;
