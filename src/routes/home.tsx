@@ -72,6 +72,7 @@ function Home() {
 
   const { data: restaurants } = useQuery({
     queryKey: ["restaurants"],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("restaurants").select("*").order("name");
       if (error) throw error;
@@ -82,6 +83,7 @@ function Home() {
   // Fetch all available meals to build category tags per restaurant.
   const { data: mealsByRestaurant } = useQuery({
     queryKey: ["meals-tags"],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("meals")

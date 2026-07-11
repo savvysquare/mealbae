@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { AppShell } from "@/components/AppShell";
+import { LazyImage } from "@/components/LazyImage";
 import { useCart } from "@/lib/cart";
 import { Plus, ShoppingBag, Clock, MapPin, Star, ChevronLeft } from "lucide-react";
 
@@ -42,6 +43,7 @@ function RestaurantPage() {
 
   const { data: restaurant } = useQuery({
     queryKey: ["restaurant", restaurantId],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("restaurants").select("*").eq("id", restaurantId).single();
       if (error) throw error;
@@ -50,6 +52,7 @@ function RestaurantPage() {
   });
   const { data: cats } = useQuery({
     queryKey: ["categories", restaurantId],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("menu_categories").select("*").eq("restaurant_id", restaurantId).order("sort_order");
       if (error) throw error;
@@ -58,6 +61,7 @@ function RestaurantPage() {
   });
   const { data: meals } = useQuery({
     queryKey: ["meals", restaurantId],
+    staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("meals").select("*").eq("restaurant_id", restaurantId).order("name");
       if (error) throw error;
@@ -194,10 +198,16 @@ function RestaurantPage() {
                         {/* Right Side: Square Image & Floating Red Plus Action Button */}
                         <div className="relative h-24 w-24 rounded-lg bg-secondary overflow-hidden shrink-0 border border-border/50">
                           {m.image_url ? (
-                            <img
+                            <LazyImage
                               src={m.image_url}
                               alt={m.name}
-                              className="h-full w-full object-cover"
+                              width={192}
+                              className="h-24 w-24 rounded-lg"
+                              fallback={
+                                <div className="h-full w-full flex items-center justify-center text-[10px] text-muted-foreground font-bold text-center p-1 bg-secondary/50">
+                                  {m.name}
+                                </div>
+                              }
                             />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center text-[10px] text-muted-foreground font-bold text-center p-1 bg-secondary/50">

@@ -85,6 +85,8 @@ function Landing() {
               <img
                 src={heroDish}
                 alt="Delicious Jollof Rice with Chicken"
+                loading="eager"
+                fetchPriority="high"
                 className="relative z-10 h-full w-full object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] animate-pulse-slow"
               />
             </div>

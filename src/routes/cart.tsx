@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { useCart } from "@/lib/cart";
 import { formatNaira } from "@/lib/format";
+import { LazyImage } from "@/components/LazyImage";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/cart")({ component: CartPage });
@@ -46,10 +47,11 @@ function CartPage() {
                   <div key={item.mealId} className="flex items-center gap-4 p-4 bg-white hover:bg-secondary/30 transition-colors">
                     {/* Meal Image */}
                     {item.imageUrl && (
-                      <img
+                      <LazyImage
                         src={item.imageUrl}
                         alt={item.name}
-                        className="h-16 w-16 rounded-lg object-cover border border-border/60 shrink-0"
+                        width={128}
+                        className="h-16 w-16 rounded-lg border border-border/60 shrink-0"
                       />
                     )}
 

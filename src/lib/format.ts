@@ -44,3 +44,20 @@ export const STATUS_ORDER = [
   "out_for_delivery",
   "delivered",
 ] as const;
+
+export function optimizeImageUrl(url: string | null | undefined, width: number = 300): string {
+  if (!url) return "";
+  if (url.includes("unsplash.com")) {
+    try {
+      const urlObj = new URL(url);
+      urlObj.searchParams.set("w", width.toString());
+      urlObj.searchParams.set("auto", "format");
+      urlObj.searchParams.set("q", "75");
+      urlObj.searchParams.set("fit", "crop");
+      return urlObj.toString();
+    } catch {
+      return url;
+    }
+  }
+  return url;
+}
