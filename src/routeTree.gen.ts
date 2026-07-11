@@ -23,6 +23,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
+import { Route as AdminDispatchRouteImport } from './routes/admin.dispatch'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
@@ -96,6 +97,11 @@ const AdminOverviewRoute = AdminOverviewRouteImport.update({
   path: '/overview',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDispatchRoute = AdminDispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/overview': typeof AdminOverviewRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/track'
     | '/vendor'
     | '/orders'
+    | '/admin/dispatch'
     | '/admin/overview'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/admin/dispatch'
     | '/admin/overview'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/track'
     | '/vendor'
     | '/_authenticated/orders'
+    | '/admin/dispatch'
     | '/admin/overview'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -331,6 +343,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOverviewRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/dispatch': {
+      id: '/admin/dispatch'
+      path: '/dispatch'
+      fullPath: '/admin/dispatch'
+      preLoaderRoute: typeof AdminDispatchRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/_authenticated/orders': {
       id: '/_authenticated/orders'
       path: '/orders'
@@ -380,11 +399,13 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface AdminRouteChildren {
+  AdminDispatchRoute: typeof AdminDispatchRoute
   AdminOverviewRoute: typeof AdminOverviewRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminDispatchRoute: AdminDispatchRoute,
   AdminOverviewRoute: AdminOverviewRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
