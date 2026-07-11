@@ -63,7 +63,7 @@ function RiderDashboard() {
       const { data, error } = await supabase
         .from("orders")
         .select("*, restaurants(*)")
-        .eq("status", "ready_for_pickup")
+        .in("status", ["preparing", "ready_for_pickup"])
         .is("rider_phone", null)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -105,11 +105,11 @@ function RiderDashboard() {
           // If a new order is ready for pickup and has no rider
           if (
             payload.new &&
-            (payload.new as any).status === "ready_for_pickup" &&
+            ((payload.new as any).status === "preparing" || (payload.new as any).status === "ready_for_pickup") &&
             !(payload.new as any).rider_phone
           ) {
             playNotificationSound();
-            toast.info(`🔔 New order ready for pickup!`, {
+            toast.info(`🔔 New order available for pickup!`, {
               duration: 5000,
               position: "top-center",
             });
@@ -160,13 +160,12 @@ function RiderDashboard() {
         .from("orders")
         .update({
           rider_name: riderName,
-          rider_phone: riderPhone,
-          status: "rider_arrived_at_restaurant" // Auto-transition to arrived once accepted
+          rider_phone: riderPhone
         })
         .eq("id", orderId);
 
       if (error) throw error;
-      toast.success("Pickup accepted! Arrived at restaurant.");
+      toast.success("Pickup accepted! Head to the restaurant.");
       qc.invalidateQueries({ queryKey: ["available-pickups"] });
       qc.invalidateQueries({ queryKey: ["my-deliveries", riderPhone] });
       setActiveTab("deliveries");
@@ -391,7 +390,7 @@ function RiderDashboard() {
 
                   {/* Rider Status Action workflow buttons */}
                   <div className="mt-6 pt-4 border-t border-border flex flex-wrap gap-2 justify-end">
-                    {o.status === "ready_for_pickup" && (
+                    {(o.status === "preparing" || o.status === "ready_for_pickup") && (
                       <button
                         onClick={() => updateStatus(o.id, "rider_arrived_at_restaurant")}
                         className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-secondary/80 transition whitespace-nowrap"
@@ -408,6 +407,14 @@ function RiderDashboard() {
                       </button>
                     )}
                     {o.status === "out_for_delivery" && (
+                      <button
+                        onClick={() => updateStatus(o.id, "rider_arrived_at_delivery")}
+                        className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-secondary/80 transition whitespace-nowrap"
+                      >
+                        Mark Arrived at Delivery
+                      </button>
+                    )}
+                    {o.status === "rider_arrived_at_delivery" && (
                       <button
                         onClick={() => updateStatus(o.id, "delivered")}
                         className="rounded-xl bg-success px-5 py-2.5 text-sm font-semibold text-success-foreground hover:opacity-90 transition whitespace-nowrap"

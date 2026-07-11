@@ -13,7 +13,7 @@ function Dispatch() {
   const { data } = useQuery({
     queryKey: ["dispatch"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("*, restaurants(name, address, phone)").in("status", ["ready_for_pickup", "out_for_delivery"]).order("created_at");
+      const { data, error } = await supabase.from("orders").select("*, restaurants(name, address, phone)").in("status", ["preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"]).order("created_at");
       if (error) throw error;
       return data;
     },
@@ -22,7 +22,7 @@ function Dispatch() {
 
   async function assign(id: string, rider_name: string, rider_phone: string) {
     if (!rider_name.trim()) { toast.error("Rider name required"); return; }
-    const { error } = await supabase.from("orders").update({ rider_name, rider_phone, status: "out_for_delivery" }).eq("id", id);
+    const { error } = await supabase.from("orders").update({ rider_name, rider_phone }).eq("id", id);
     if (error) toast.error(error.message); else toast.success("Rider assigned");
     qc.invalidateQueries({ queryKey: ["dispatch"] });
   }
@@ -55,7 +55,7 @@ function DispatchCard({ order, onAssign, onDelivered }: any) {
         </div>
         <div className="text-right font-medium">{formatNaira(order.total_naira)}</div>
       </div>
-      {order.status === "ready_for_pickup" ? (
+      {!order.rider_name ? (
         <div className="mt-3 flex flex-wrap gap-2">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Rider name" className="min-w-[140px] flex-1 rounded-xl border border-input bg-surface px-3 py-2 text-sm" />
           <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Rider phone" className="min-w-[140px] flex-1 rounded-xl border border-input bg-surface px-3 py-2 text-sm" />

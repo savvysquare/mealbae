@@ -9,7 +9,7 @@ import { ChevronDown, ChevronUp, MapPin, Phone, User, ClipboardList, Navigation 
 
 export const Route = createFileRoute("/vendor/orders")({ component: VendorOrders });
 
-const ACTIVE_STATUSES = ["awaiting_restaurant_acceptance", "accepted_by_restaurant", "preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery"] as const;
+const ACTIVE_STATUSES = ["awaiting_restaurant_acceptance", "accepted_by_restaurant", "preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"] as const;
 
 function VendorOrders() {
   const { restaurantId } = Route.useRouteContext() as { restaurantId: string };
