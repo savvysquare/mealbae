@@ -63,7 +63,7 @@ function Landing() {
               to="/" hash="restaurants"
               className="rounded-full bg-primary px-5 py-2 font-bold text-primary-foreground shadow-xs hover:brightness-105 transition-all"
             >
-              Sign Up
+              Order Now
             </Link>
           </div>
         </div>
