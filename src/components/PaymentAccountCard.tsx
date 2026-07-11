@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Copy, Check, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
-const ACCOUNT_NUMBER = "08141894696";
+const ACCOUNT_NUMBER = "8141894696";
 const ACCOUNT_NAME = "MealBAE";
 const BANK = "OPAY";
 
