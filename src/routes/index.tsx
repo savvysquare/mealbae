@@ -72,10 +72,23 @@ function Landing() {
       <section className="bg-secondary/40 py-12 md:py-20 border-b border-border">
         <div className="mx-auto max-w-7xl px-4 md:px-8 grid gap-8 md:grid-cols-12 items-center">
           <div className="md:col-span-7 flex flex-col justify-center text-left">
-            <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl text-foreground leading-[1.1]">
-              Your favourite meal, <span className="text-primary text-nowrap">Before Anything Else.</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-lg">
+            {/* Food ordering badge */}
+            <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-bold text-primary">
+              <ChefHat className="h-4 w-4" />
+              <span>Fast food ordering</span>
+            </div>
+
+            {/* Bold stacked headline */}
+            <div className="space-y-1">
+              <h1 className="font-display text-5xl font-black uppercase tracking-tight md:text-7xl text-foreground leading-[1.05]">
+                Order your Meal
+              </h1>
+              <p className="font-display text-3xl font-black uppercase tracking-tight md:text-5xl text-primary leading-[1.05]">
+                Before Anything Else
+              </p>
+            </div>
+
+            <p className="mt-5 text-lg text-muted-foreground max-w-lg">
               Order from the best local kitchens. Pay easily with bank transfers, track real-time delivery, and enjoy delicious meals.
             </p>
 
@@ -88,7 +101,7 @@ function Landing() {
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               <Sparkles className="relative h-5 w-5 shrink-0" />
               <span className="relative text-center text-base md:text-lg tracking-tight">
-                Order your Meal, Before Anything Else
+                Order Now
               </span>
               <ArrowRight className="relative h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>
