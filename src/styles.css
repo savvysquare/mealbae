@@ -43,33 +43,35 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* Pure white background and dark gray text */
-  --background: #ffffff;
-  --foreground: #191919;
+  --radius: 1rem;
+  /* Warm cream background inspired by orange-forward food UI */
+  --background: #fff8f3;
+  --foreground: #1a1208;
 
   --surface: #ffffff;
-  --surface-foreground: #191919;
+  --surface-foreground: #1a1208;
 
   --card: #ffffff;
-  --card-foreground: #191919;
+  --card-foreground: #1a1208;
 
   --popover: #ffffff;
-  --popover-foreground: #191919;
+  --popover-foreground: #1a1208;
 
-  /* DoorDash signature Red */
-  --primary: #ff3008;
+
+  /* Vibrant food-app orange */
+  --primary: #ff6a1a;
   --primary-foreground: #ffffff;
 
-  /* Light gray secondary/muted backgrounds */
-  --secondary: #f6f6f6;
-  --secondary-foreground: #191919;
+  /* Warm cream secondary */
+  --secondary: #fff1e6;
+  --secondary-foreground: #1a1208;
 
-  --muted: #f6f6f6;
-  --muted-foreground: #767676;
+  --muted: #fff1e6;
+  --muted-foreground: #8a6b55;
 
-  --accent: #fff0ed;
-  --accent-foreground: #ff3008;
+  --accent: #ffe4d1;
+  --accent-foreground: #ff6a1a;
+
 
   --destructive: #eb002b;
   --destructive-foreground: #ffffff;
@@ -80,9 +82,10 @@
   --warning: #eebb00;
   --warning-foreground: #191919;
 
-  --border: #e7e7e7;
-  --input: #e7e7e7;
-  --ring: #ff3008;
+  --border: #f0dcc7;
+  --input: #f0dcc7;
+  --ring: #ff6a1a;
+
 }
 
 @layer base {
