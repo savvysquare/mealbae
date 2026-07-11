@@ -83,6 +83,11 @@
   --border: #e7e7e7;
   --input: #e7e7e7;
   --ring: #ff3008;
+
+  /* Hero CTA two-tone button */
+  --hero-cta-lime: #c5c41a;
+  --hero-cta-red: #e8461c;
+  --hero-cta-lime-dark: #9c9b15;
 }
 
 @layer base {
