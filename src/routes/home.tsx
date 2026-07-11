@@ -162,7 +162,7 @@ function Home() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search a meal (e.g. jollof, chicken, burgers)"
+              placeholder="Search a meal, restaurant (e.g. jollof, Amoke, burgers)"
               className="w-full rounded-full border border-border bg-white pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/25 placeholder:text-muted-foreground/70 font-medium"
             />
           </div>
