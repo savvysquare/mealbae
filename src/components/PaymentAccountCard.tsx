@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Copy, Check, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
-const ACCOUNT_NUMBER = "08141894696";
+const ACCOUNT_NUMBER = "8141894696";
 const ACCOUNT_NAME = "MealBAE";
 const BANK = "OPAY";
 
@@ -41,23 +41,21 @@ export function PaymentAccountCard({ compact = false }: { compact?: boolean }) {
         </div>
       </div>
 
-      <div className="relative mt-4 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-            {BANK} · {ACCOUNT_NAME}
-          </p>
-          <p className="mt-1 truncate font-display text-3xl font-black tracking-tight text-foreground tabular-nums md:text-4xl">
-            {ACCOUNT_NUMBER}
-          </p>
-        </div>
+      <div className="relative mt-4">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+          {BANK} · {ACCOUNT_NAME}
+        </p>
+        <p className="mt-1 font-display text-[28px] leading-none font-black tracking-tight text-foreground tabular-nums sm:text-4xl">
+          {ACCOUNT_NUMBER}
+        </p>
         <button
           type="button"
           onClick={copyNumber}
           aria-label="Copy account number"
-          className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-md shadow-primary/25 transition-all hover:brightness-105 active:scale-95 cursor-pointer"
+          className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-xs font-bold text-primary-foreground shadow-md shadow-primary/25 transition-all hover:brightness-105 active:scale-95 cursor-pointer sm:w-auto"
         >
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-          {copied ? "Copied" : "Copy"}
+          {copied ? "Copied" : "Copy account number"}
         </button>
       </div>
     </div>
