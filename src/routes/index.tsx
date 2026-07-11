@@ -76,10 +76,9 @@ function Landing() {
 
             {/* Bold two-tone CTA Button — consistent with website red palette */}
             <Link
-              to="/" hash="restaurants"
+              to="/home"
               className="mt-8 group relative inline-flex w-full max-w-md items-stretch overflow-hidden rounded-full shadow-2xl shadow-primary/25 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              {/* Left body — primary red with centered text */}
               <div className="relative flex flex-1 flex-col items-center justify-center bg-primary px-6 py-5 md:py-6 text-center">
                 <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative text-2xl md:text-3xl font-black text-primary-foreground tracking-tight leading-none drop-shadow-sm">
@@ -89,7 +88,6 @@ function Landing() {
                   BEFORE ANYTHING ELSE
                 </span>
               </div>
-              {/* Right cap — darker red with chevron arrow */}
               <div className="relative flex aspect-square items-center justify-center bg-[var(--hero-cta-cap)] md:w-20 w-16 shrink-0">
                 <ChevronRight className="h-8 w-8 md:h-10 md:w-10 text-primary-foreground transition-transform duration-300 group-hover:translate-x-1" strokeWidth={3} />
               </div>
