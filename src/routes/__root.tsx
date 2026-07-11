@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/lib/cart";
+import { FloatingCartButton } from "@/components/FloatingCartButton";
 
 function NotFoundComponent() {
   return (
@@ -113,6 +114,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <Outlet />
+        <FloatingCartButton />
         <Toaster richColors position="top-center" />
       </CartProvider>
     </QueryClientProvider>

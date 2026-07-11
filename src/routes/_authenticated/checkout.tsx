@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { AppShell } from "@/components/AppShell";
+import { PaymentAccountCard } from "@/components/PaymentAccountCard";
 import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
@@ -94,10 +95,13 @@ function Checkout() {
             <div className="flex justify-between"><span className="text-muted-foreground">Delivery fee</span><span>{formatNaira(deliveryFee)}</span></div>
             <div className="flex justify-between text-base font-semibold"><span>Total</span><span>{formatNaira(total)}</span></div>
           </div>
+          <div className="mt-5">
+            <PaymentAccountCard compact />
+          </div>
           <button onClick={placeOrder} disabled={submitting} className="mt-5 w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-60">
             {submitting ? "Placing order…" : "Place order & see payment details"}
           </button>
-          <p className="mt-2 text-center text-xs text-muted-foreground">Payment is by bank transfer. Your order confirms after payment is verified.</p>
+          <p className="mt-2 text-center text-xs text-muted-foreground">Payment is by bank transfer to the account above. Your order confirms after payment is verified.</p>
         </section>
       </div>
     </AppShell>
