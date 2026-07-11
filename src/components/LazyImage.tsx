@@ -35,7 +35,7 @@ export function LazyImage({ src, alt, className = "", width = 300, eager = false
         decoding="async"
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
-        className={`h-full w-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+        className={`h-full w-full object-cover ${loaded ? "opacity-100" : "opacity-0"}`}
       />
     </div>
   );

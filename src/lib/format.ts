@@ -55,13 +55,31 @@ export function optimizeImageUrl(url: string | null | undefined, width: number =
     try {
       const urlObj = new URL(url);
       urlObj.searchParams.set("w", width.toString());
-      urlObj.searchParams.set("auto", "format");
-      urlObj.searchParams.set("q", "75");
+      urlObj.searchParams.set("auto", "format,compress");
+      urlObj.searchParams.set("q", "50"); // Maximum compression for fastest loading
       urlObj.searchParams.set("fit", "crop");
       return urlObj.toString();
     } catch {
       return url;
     }
   }
+
+  // Optimize Supabase Storage images if they exist
+  if (url.includes("supabase.co/storage/v1/object/public")) {
+    try {
+      const transformedUrl = url.replace(
+        "/storage/v1/object/public/",
+        "/storage/v1/render/image/public/"
+      );
+      const urlObj = new URL(transformedUrl);
+      urlObj.searchParams.set("width", width.toString());
+      urlObj.searchParams.set("quality", "50");
+      urlObj.searchParams.set("format", "webp");
+      return urlObj.toString();
+    } catch {
+      return url;
+    }
+  }
+
   return url;
 }
