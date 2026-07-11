@@ -54,10 +54,10 @@ function Landing() {
           <Logo className="text-xl" />
           <div className="flex items-center gap-4 text-sm font-semibold">
             <Link
-              to="/auth/staff"
+              to="/track"
               className="rounded-full px-4 py-2 text-foreground hover:bg-secondary transition-colors"
             >
-              Sign In (Staff)
+              Track my Meal
             </Link>
             <Link
               to="/" hash="restaurants"
