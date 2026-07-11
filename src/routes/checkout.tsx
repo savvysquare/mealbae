@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
 import { Phone, CheckCircle2, ArrowLeft } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/checkout")({ component: Checkout });
+export const Route = createFileRoute("/checkout")({ component: Checkout });
 
 const CONFIRM_PHONE = "08141894696";
 

@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { formatNaira } from "@/lib/format";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/cart")({ component: CartPage });
+export const Route = createFileRoute("/cart")({ component: CartPage });
 
 function CartPage() {
   const { cart, setQty, remove, subtotal } = useCart();
