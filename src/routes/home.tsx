@@ -115,6 +115,7 @@ function Home() {
 
   const list = useMemo(() => {
     if (!restaurants) return [];
+    const term = q.trim().toLowerCase();
     const filtered = restaurants.filter((r) => {
       const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
       if (openOnly && !open) return false;
@@ -129,9 +130,12 @@ function Home() {
         if (!tags || !tags.has(selectedCategory)) return false;
       }
 
-      if (q.trim().length > 1) {
-        if (!matchingByMeal) return false;
-        if (!matchingByMeal.has(r.id)) return false;
+      if (term.length > 1) {
+        const restaurantMatch =
+          r.name.toLowerCase().includes(term) ||
+          (r.description ?? "").toLowerCase().includes(term);
+        const mealMatch = matchingByMeal?.has(r.id) ?? false;
+        if (!restaurantMatch && !mealMatch) return false;
         if (!open) return false;
       }
       return true;
@@ -162,7 +166,7 @@ function Home() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search a meal (e.g. jollof, chicken, burgers)"
+              placeholder="Search a meal, restaurant (e.g. jollof, Amoke, burgers)"
               className="w-full rounded-full border border-border bg-white pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/25 placeholder:text-muted-foreground/70 font-medium"
             />
           </div>
