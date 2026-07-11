@@ -50,20 +50,25 @@ export const bootstrapAdmin = createServerFn({ method: "POST" })
 export const listVendorAccounts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
-    if (!isAdmin) throw new Error("Forbidden");
-    const admin = await loadAdmin();
-    const [{ data: restaurants }, { data: usersList }] = await Promise.all([
-      admin.from("restaurants").select("id,name").order("name"),
-      admin.auth.admin.listUsers({ page: 1, perPage: 200 }),
-    ]);
-    const emails = new Set((usersList?.users ?? []).map((u) => u.email?.toLowerCase()));
-    return (restaurants ?? []).map((r) => ({
-      restaurantId: r.id as string,
-      name: r.name as string,
-      email: vendorEmailFor(r.id as string),
-      hasAccount: emails.has(vendorEmailFor(r.id as string).toLowerCase()),
-    }));
+    try {
+      const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+      if (!isAdmin) throw new Error("Forbidden");
+      const admin = await loadAdmin();
+      const [{ data: restaurants }, { data: usersList }] = await Promise.all([
+        admin.from("restaurants").select("id,name").order("name"),
+        admin.auth.admin.listUsers({ page: 1, perPage: 200 }),
+      ]);
+      const emails = new Set((usersList?.users ?? []).map((u) => u.email?.toLowerCase()));
+      return (restaurants ?? []).map((r) => ({
+        restaurantId: r.id as string,
+        name: r.name as string,
+        email: vendorEmailFor(r.id as string),
+        hasAccount: emails.has(vendorEmailFor(r.id as string).toLowerCase()),
+      }));
+    } catch (e) {
+      console.error("Error in listVendorAccounts server function:", e);
+      throw e;
+    }
   });
 
 /** Admin-only: create-or-update a vendor account (auth user + restaurant_staff role) with a password. */

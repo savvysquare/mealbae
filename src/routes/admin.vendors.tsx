@@ -16,7 +16,7 @@ function AdminVendors() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["vendor-accounts"],
     queryFn: () => listFn(),
   });
@@ -47,6 +47,11 @@ function AdminVendors() {
 
         <div className="card-soft mt-6 divide-y divide-border">
           {isLoading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
+          {isError && (
+            <div className="p-6 text-sm text-destructive font-medium">
+              Failed to load vendor accounts: {error instanceof Error ? error.message : String(error)}
+            </div>
+          )}
           {(data ?? []).map((r) => (
             <div key={r.restaurantId} className="flex flex-wrap items-center gap-3 p-4">
               <div className="flex-1 min-w-[180px]">
