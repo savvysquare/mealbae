@@ -60,7 +60,7 @@ function Landing() {
               Sign In (Staff)
             </Link>
             <Link
-              to="/auth/customer"
+              to="/" hash="restaurants"
               className="rounded-full bg-primary px-5 py-2 font-bold text-primary-foreground shadow-xs hover:brightness-105 transition-all"
             >
               Sign Up
@@ -82,7 +82,7 @@ function Landing() {
 
             {/* Bold two-tone CTA Button — consistent with website red palette */}
             <Link
-              to="/auth/customer"
+              to="/" hash="restaurants"
               className="mt-8 group relative inline-flex w-full max-w-md items-stretch overflow-hidden rounded-full shadow-2xl shadow-primary/25 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
               {/* Left body — primary red with centered text */}
@@ -108,7 +108,7 @@ function Landing() {
                 {CATEGORIES.map((cat) => (
                   <Link
                     key={cat.name}
-                    to="/auth/customer"
+                    to="/" hash="restaurants"
                     className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary transition-all shadow-xs cursor-pointer"
                   >
                     <span>{cat.emoji}</span>
@@ -223,7 +223,7 @@ function Landing() {
           </div>
           <div className="flex justify-center md:justify-end">
             <Link
-              to="/auth/customer"
+              to="/" hash="restaurants"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all text-sm cursor-pointer"
             >
               Start Your Order <ArrowRight className="h-4 w-4" />
