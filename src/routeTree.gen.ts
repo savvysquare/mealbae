@@ -9,30 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VendorRouteImport } from './routes/vendor'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VendorIndexRouteImport } from './routes/vendor.index'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VendorOrdersRouteImport } from './routes/vendor.orders'
+import { Route as VendorMenuRouteImport } from './routes/vendor.menu'
+import { Route as VendorHistoryRouteImport } from './routes/vendor.history'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
-import { Route as AuthStaffRouteImport } from './routes/auth.staff'
-import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
+import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
+import { Route as AdminRestaurantsRouteImport } from './routes/admin.restaurants'
+import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
+import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
+import { Route as AdminMealsRouteImport } from './routes/admin.meals'
+import { Route as AdminDispatchRouteImport } from './routes/admin.dispatch'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
-import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
-import { Route as AuthenticatedRestaurantOrdersRouteImport } from './routes/_authenticated/restaurant.orders'
-import { Route as AuthenticatedRestaurantMenuRouteImport } from './routes/_authenticated/restaurant.menu'
-import { Route as AuthenticatedRestaurantHistoryRouteImport } from './routes/_authenticated/restaurant.history'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
-import { Route as AuthenticatedAdminRestaurantsRouteImport } from './routes/_authenticated/admin.restaurants'
-import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
-import { Route as AuthenticatedAdminOverviewRouteImport } from './routes/_authenticated/admin.overview'
-import { Route as AuthenticatedAdminMealsRouteImport } from './routes/_authenticated/admin.meals'
-import { Route as AuthenticatedAdminDispatchRouteImport } from './routes/_authenticated/admin.dispatch'
 
+const VendorRoute = VendorRouteImport.update({
+  id: '/vendor',
+  path: '/vendor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
@@ -53,6 +60,11 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -62,10 +74,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VendorIndexRoute = VendorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => VendorRoute,
+} as any)
 const TrackIndexRoute = TrackIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => TrackRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const VendorOrdersRoute = VendorOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => VendorRoute,
+} as any)
+const VendorMenuRoute = VendorMenuRouteImport.update({
+  id: '/menu',
+  path: '/menu',
+  getParentRoute: () => VendorRoute,
+} as any)
+const VendorHistoryRoute = VendorHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => VendorRoute,
 } as any)
 const TrackIdRoute = TrackIdRouteImport.update({
   id: '/$id',
@@ -77,24 +114,39 @@ const RRestaurantIdRoute = RRestaurantIdRouteImport.update({
   path: '/r/$restaurantId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthStaffRoute = AuthStaffRouteImport.update({
-  id: '/auth/staff',
-  path: '/auth/staff',
-  getParentRoute: () => rootRouteImport,
+const AdminVendorsRoute = AdminVendorsRouteImport.update({
+  id: '/vendors',
+  path: '/vendors',
+  getParentRoute: () => AdminRoute,
 } as any)
-const AuthenticatedRestaurantRoute = AuthenticatedRestaurantRouteImport.update({
-  id: '/restaurant',
-  path: '/restaurant',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AdminRestaurantsRoute = AdminRestaurantsRouteImport.update({
+  id: '/restaurants',
+  path: '/restaurants',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaymentsRoute = AdminPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOverviewRoute = AdminOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMealsRoute = AdminMealsRouteImport.update({
+  id: '/meals',
+  path: '/meals',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDispatchRoute = AdminDispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedOrdersIndexRoute =
@@ -103,81 +155,36 @@ const AuthenticatedOrdersIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedOrdersRoute,
   } as any)
-const AuthenticatedRestaurantOrdersRoute =
-  AuthenticatedRestaurantOrdersRouteImport.update({
-    id: '/orders',
-    path: '/orders',
-    getParentRoute: () => AuthenticatedRestaurantRoute,
-  } as any)
-const AuthenticatedRestaurantMenuRoute =
-  AuthenticatedRestaurantMenuRouteImport.update({
-    id: '/menu',
-    path: '/menu',
-    getParentRoute: () => AuthenticatedRestaurantRoute,
-  } as any)
-const AuthenticatedRestaurantHistoryRoute =
-  AuthenticatedRestaurantHistoryRouteImport.update({
-    id: '/history',
-    path: '/history',
-    getParentRoute: () => AuthenticatedRestaurantRoute,
-  } as any)
 const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => AuthenticatedOrdersRoute,
 } as any)
-const AuthenticatedAdminRestaurantsRoute =
-  AuthenticatedAdminRestaurantsRouteImport.update({
-    id: '/restaurants',
-    path: '/restaurants',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminPaymentsRoute =
-  AuthenticatedAdminPaymentsRouteImport.update({
-    id: '/payments',
-    path: '/payments',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminOverviewRoute =
-  AuthenticatedAdminOverviewRouteImport.update({
-    id: '/overview',
-    path: '/overview',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminMealsRoute = AuthenticatedAdminMealsRouteImport.update({
-  id: '/meals',
-  path: '/meals',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminDispatchRoute =
-  AuthenticatedAdminDispatchRouteImport.update({
-    id: '/dispatch',
-    path: '/dispatch',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
   '/track': typeof TrackRouteWithChildren
-  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/vendor': typeof VendorRouteWithChildren
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
-  '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/staff': typeof AuthStaffRoute
+  '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/history': typeof VendorHistoryRoute
+  '/vendor/menu': typeof VendorMenuRoute
+  '/vendor/orders': typeof VendorOrdersRoute
+  '/admin/': typeof AdminIndexRoute
   '/track/': typeof TrackIndexRoute
-  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
-  '/admin/meals': typeof AuthenticatedAdminMealsRoute
-  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
-  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
-  '/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/vendor/': typeof VendorIndexRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
-  '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
-  '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
   '/orders/': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -185,73 +192,77 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
-  '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/staff': typeof AuthStaffRoute
+  '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/history': typeof VendorHistoryRoute
+  '/vendor/menu': typeof VendorMenuRoute
+  '/vendor/orders': typeof VendorOrdersRoute
+  '/admin': typeof AdminIndexRoute
   '/track': typeof TrackIndexRoute
-  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
-  '/admin/meals': typeof AuthenticatedAdminMealsRoute
-  '/admin/overview': typeof AuthenticatedAdminOverviewRoute
-  '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
-  '/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/vendor': typeof VendorIndexRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
-  '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
-  '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
   '/orders': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
   '/track': typeof TrackRouteWithChildren
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/vendor': typeof VendorRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
-  '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/staff': typeof AuthStaffRoute
+  '/admin/dispatch': typeof AdminDispatchRoute
+  '/admin/meals': typeof AdminMealsRoute
+  '/admin/overview': typeof AdminOverviewRoute
+  '/admin/payments': typeof AdminPaymentsRoute
+  '/admin/restaurants': typeof AdminRestaurantsRoute
+  '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/history': typeof VendorHistoryRoute
+  '/vendor/menu': typeof VendorMenuRoute
+  '/vendor/orders': typeof VendorOrdersRoute
+  '/admin/': typeof AdminIndexRoute
   '/track/': typeof TrackIndexRoute
-  '/_authenticated/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
-  '/_authenticated/admin/meals': typeof AuthenticatedAdminMealsRoute
-  '/_authenticated/admin/overview': typeof AuthenticatedAdminOverviewRoute
-  '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
-  '/_authenticated/admin/restaurants': typeof AuthenticatedAdminRestaurantsRoute
+  '/vendor/': typeof VendorIndexRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/_authenticated/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
-  '/_authenticated/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
-  '/_authenticated/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
   '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/cart'
     | '/checkout'
     | '/home'
     | '/track'
-    | '/admin'
+    | '/vendor'
     | '/orders'
-    | '/restaurant'
-    | '/auth/staff'
-    | '/r/$restaurantId'
-    | '/track/$id'
-    | '/track/'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
+    | '/admin/vendors'
+    | '/r/$restaurantId'
+    | '/track/$id'
+    | '/vendor/history'
+    | '/vendor/menu'
+    | '/vendor/orders'
+    | '/admin/'
+    | '/track/'
+    | '/vendor/'
     | '/orders/$id'
-    | '/restaurant/history'
-    | '/restaurant/menu'
-    | '/restaurant/orders'
     | '/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -259,62 +270,72 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
-    | '/admin'
-    | '/restaurant'
-    | '/auth/staff'
-    | '/r/$restaurantId'
-    | '/track/$id'
-    | '/track'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
     | '/admin/payments'
     | '/admin/restaurants'
+    | '/admin/vendors'
+    | '/r/$restaurantId'
+    | '/track/$id'
+    | '/vendor/history'
+    | '/vendor/menu'
+    | '/vendor/orders'
+    | '/admin'
+    | '/track'
+    | '/vendor'
     | '/orders/$id'
-    | '/restaurant/history'
-    | '/restaurant/menu'
-    | '/restaurant/orders'
     | '/orders'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin'
     | '/cart'
     | '/checkout'
     | '/home'
     | '/track'
-    | '/_authenticated/admin'
+    | '/vendor'
     | '/_authenticated/orders'
-    | '/_authenticated/restaurant'
-    | '/auth/staff'
+    | '/admin/dispatch'
+    | '/admin/meals'
+    | '/admin/overview'
+    | '/admin/payments'
+    | '/admin/restaurants'
+    | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
+    | '/vendor/history'
+    | '/vendor/menu'
+    | '/vendor/orders'
+    | '/admin/'
     | '/track/'
-    | '/_authenticated/admin/dispatch'
-    | '/_authenticated/admin/meals'
-    | '/_authenticated/admin/overview'
-    | '/_authenticated/admin/payments'
-    | '/_authenticated/admin/restaurants'
+    | '/vendor/'
     | '/_authenticated/orders/$id'
-    | '/_authenticated/restaurant/history'
-    | '/_authenticated/restaurant/menu'
-    | '/_authenticated/restaurant/orders'
     | '/_authenticated/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   HomeRoute: typeof HomeRoute
   TrackRoute: typeof TrackRouteWithChildren
-  AuthStaffRoute: typeof AuthStaffRoute
+  VendorRoute: typeof VendorRouteWithChildren
   RRestaurantIdRoute: typeof RRestaurantIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vendor': {
+      id: '/vendor'
+      path: '/vendor'
+      fullPath: '/vendor'
+      preLoaderRoute: typeof VendorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
@@ -343,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -357,12 +385,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vendor/': {
+      id: '/vendor/'
+      path: '/'
+      fullPath: '/vendor/'
+      preLoaderRoute: typeof VendorIndexRouteImport
+      parentRoute: typeof VendorRoute
+    }
     '/track/': {
       id: '/track/'
       path: '/'
       fullPath: '/track/'
       preLoaderRoute: typeof TrackIndexRouteImport
       parentRoute: typeof TrackRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/vendor/orders': {
+      id: '/vendor/orders'
+      path: '/orders'
+      fullPath: '/vendor/orders'
+      preLoaderRoute: typeof VendorOrdersRouteImport
+      parentRoute: typeof VendorRoute
+    }
+    '/vendor/menu': {
+      id: '/vendor/menu'
+      path: '/menu'
+      fullPath: '/vendor/menu'
+      preLoaderRoute: typeof VendorMenuRouteImport
+      parentRoute: typeof VendorRoute
+    }
+    '/vendor/history': {
+      id: '/vendor/history'
+      path: '/history'
+      fullPath: '/vendor/history'
+      preLoaderRoute: typeof VendorHistoryRouteImport
+      parentRoute: typeof VendorRoute
     }
     '/track/$id': {
       id: '/track/$id'
@@ -378,32 +441,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RRestaurantIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/staff': {
-      id: '/auth/staff'
-      path: '/auth/staff'
-      fullPath: '/auth/staff'
-      preLoaderRoute: typeof AuthStaffRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/vendors': {
+      id: '/admin/vendors'
+      path: '/vendors'
+      fullPath: '/admin/vendors'
+      preLoaderRoute: typeof AdminVendorsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/_authenticated/restaurant': {
-      id: '/_authenticated/restaurant'
-      path: '/restaurant'
-      fullPath: '/restaurant'
-      preLoaderRoute: typeof AuthenticatedRestaurantRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/admin/restaurants': {
+      id: '/admin/restaurants'
+      path: '/restaurants'
+      fullPath: '/admin/restaurants'
+      preLoaderRoute: typeof AdminRestaurantsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payments': {
+      id: '/admin/payments'
+      path: '/payments'
+      fullPath: '/admin/payments'
+      preLoaderRoute: typeof AdminPaymentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/overview': {
+      id: '/admin/overview'
+      path: '/overview'
+      fullPath: '/admin/overview'
+      preLoaderRoute: typeof AdminOverviewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/meals': {
+      id: '/admin/meals'
+      path: '/meals'
+      fullPath: '/admin/meals'
+      preLoaderRoute: typeof AdminMealsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dispatch': {
+      id: '/admin/dispatch'
+      path: '/dispatch'
+      fullPath: '/admin/dispatch'
+      preLoaderRoute: typeof AdminDispatchRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_authenticated/orders': {
       id: '/_authenticated/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof AuthenticatedOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/orders/': {
@@ -413,27 +497,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersIndexRouteImport
       parentRoute: typeof AuthenticatedOrdersRoute
     }
-    '/_authenticated/restaurant/orders': {
-      id: '/_authenticated/restaurant/orders'
-      path: '/orders'
-      fullPath: '/restaurant/orders'
-      preLoaderRoute: typeof AuthenticatedRestaurantOrdersRouteImport
-      parentRoute: typeof AuthenticatedRestaurantRoute
-    }
-    '/_authenticated/restaurant/menu': {
-      id: '/_authenticated/restaurant/menu'
-      path: '/menu'
-      fullPath: '/restaurant/menu'
-      preLoaderRoute: typeof AuthenticatedRestaurantMenuRouteImport
-      parentRoute: typeof AuthenticatedRestaurantRoute
-    }
-    '/_authenticated/restaurant/history': {
-      id: '/_authenticated/restaurant/history'
-      path: '/history'
-      fullPath: '/restaurant/history'
-      preLoaderRoute: typeof AuthenticatedRestaurantHistoryRouteImport
-      parentRoute: typeof AuthenticatedRestaurantRoute
-    }
     '/_authenticated/orders/$id': {
       id: '/_authenticated/orders/$id'
       path: '/$id'
@@ -441,62 +504,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOrdersIdRouteImport
       parentRoute: typeof AuthenticatedOrdersRoute
     }
-    '/_authenticated/admin/restaurants': {
-      id: '/_authenticated/admin/restaurants'
-      path: '/restaurants'
-      fullPath: '/admin/restaurants'
-      preLoaderRoute: typeof AuthenticatedAdminRestaurantsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/payments': {
-      id: '/_authenticated/admin/payments'
-      path: '/payments'
-      fullPath: '/admin/payments'
-      preLoaderRoute: typeof AuthenticatedAdminPaymentsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/overview': {
-      id: '/_authenticated/admin/overview'
-      path: '/overview'
-      fullPath: '/admin/overview'
-      preLoaderRoute: typeof AuthenticatedAdminOverviewRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/meals': {
-      id: '/_authenticated/admin/meals'
-      path: '/meals'
-      fullPath: '/admin/meals'
-      preLoaderRoute: typeof AuthenticatedAdminMealsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/dispatch': {
-      id: '/_authenticated/admin/dispatch'
-      path: '/dispatch'
-      fullPath: '/admin/dispatch'
-      preLoaderRoute: typeof AuthenticatedAdminDispatchRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
   }
 }
-
-interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminDispatchRoute: typeof AuthenticatedAdminDispatchRoute
-  AuthenticatedAdminMealsRoute: typeof AuthenticatedAdminMealsRoute
-  AuthenticatedAdminOverviewRoute: typeof AuthenticatedAdminOverviewRoute
-  AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
-  AuthenticatedAdminRestaurantsRoute: typeof AuthenticatedAdminRestaurantsRoute
-}
-
-const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminDispatchRoute: AuthenticatedAdminDispatchRoute,
-  AuthenticatedAdminMealsRoute: AuthenticatedAdminMealsRoute,
-  AuthenticatedAdminOverviewRoute: AuthenticatedAdminOverviewRoute,
-  AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
-  AuthenticatedAdminRestaurantsRoute: AuthenticatedAdminRestaurantsRoute,
-}
-
-const AuthenticatedAdminRouteWithChildren =
-  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedOrdersRouteChildren {
   AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
@@ -511,38 +520,38 @@ const AuthenticatedOrdersRouteChildren: AuthenticatedOrdersRouteChildren = {
 const AuthenticatedOrdersRouteWithChildren =
   AuthenticatedOrdersRoute._addFileChildren(AuthenticatedOrdersRouteChildren)
 
-interface AuthenticatedRestaurantRouteChildren {
-  AuthenticatedRestaurantHistoryRoute: typeof AuthenticatedRestaurantHistoryRoute
-  AuthenticatedRestaurantMenuRoute: typeof AuthenticatedRestaurantMenuRoute
-  AuthenticatedRestaurantOrdersRoute: typeof AuthenticatedRestaurantOrdersRoute
-}
-
-const AuthenticatedRestaurantRouteChildren: AuthenticatedRestaurantRouteChildren =
-  {
-    AuthenticatedRestaurantHistoryRoute: AuthenticatedRestaurantHistoryRoute,
-    AuthenticatedRestaurantMenuRoute: AuthenticatedRestaurantMenuRoute,
-    AuthenticatedRestaurantOrdersRoute: AuthenticatedRestaurantOrdersRoute,
-  }
-
-const AuthenticatedRestaurantRouteWithChildren =
-  AuthenticatedRestaurantRoute._addFileChildren(
-    AuthenticatedRestaurantRouteChildren,
-  )
-
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRouteWithChildren
-  AuthenticatedRestaurantRoute: typeof AuthenticatedRestaurantRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRouteWithChildren,
-  AuthenticatedRestaurantRoute: AuthenticatedRestaurantRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface AdminRouteChildren {
+  AdminDispatchRoute: typeof AdminDispatchRoute
+  AdminMealsRoute: typeof AdminMealsRoute
+  AdminOverviewRoute: typeof AdminOverviewRoute
+  AdminPaymentsRoute: typeof AdminPaymentsRoute
+  AdminRestaurantsRoute: typeof AdminRestaurantsRoute
+  AdminVendorsRoute: typeof AdminVendorsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDispatchRoute: AdminDispatchRoute,
+  AdminMealsRoute: AdminMealsRoute,
+  AdminOverviewRoute: AdminOverviewRoute,
+  AdminPaymentsRoute: AdminPaymentsRoute,
+  AdminRestaurantsRoute: AdminRestaurantsRoute,
+  AdminVendorsRoute: AdminVendorsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface TrackRouteChildren {
   TrackIdRoute: typeof TrackIdRoute
@@ -556,26 +565,34 @@ const TrackRouteChildren: TrackRouteChildren = {
 
 const TrackRouteWithChildren = TrackRoute._addFileChildren(TrackRouteChildren)
 
+interface VendorRouteChildren {
+  VendorHistoryRoute: typeof VendorHistoryRoute
+  VendorMenuRoute: typeof VendorMenuRoute
+  VendorOrdersRoute: typeof VendorOrdersRoute
+  VendorIndexRoute: typeof VendorIndexRoute
+}
+
+const VendorRouteChildren: VendorRouteChildren = {
+  VendorHistoryRoute: VendorHistoryRoute,
+  VendorMenuRoute: VendorMenuRoute,
+  VendorOrdersRoute: VendorOrdersRoute,
+  VendorIndexRoute: VendorIndexRoute,
+}
+
+const VendorRouteWithChildren =
+  VendorRoute._addFileChildren(VendorRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   HomeRoute: HomeRoute,
   TrackRoute: TrackRouteWithChildren,
-  AuthStaffRoute: AuthStaffRoute,
+  VendorRoute: VendorRouteWithChildren,
   RRestaurantIdRoute: RRestaurantIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

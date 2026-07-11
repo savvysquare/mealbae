@@ -4,8 +4,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
+import { AdminShell } from "@/components/PanelShells";
 
-export const Route = createFileRoute("/_authenticated/admin/dispatch")({ component: Dispatch });
+export const Route = createFileRoute("/admin/dispatch")({ component: Dispatch });
 
 function Dispatch() {
   const qc = useQueryClient();
@@ -32,10 +33,12 @@ function Dispatch() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-3">
-      {(data ?? []).length === 0 && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Nothing waiting for dispatch.</div>}
-      {data?.map((o: any) => <DispatchCard key={o.id} order={o} onAssign={assign} onDelivered={markDelivered} />)}
-    </div>
+    <AdminShell>
+      <div className="mx-auto max-w-4xl space-y-3">
+        {(data ?? []).length === 0 && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Nothing waiting for dispatch.</div>}
+        {data?.map((o: any) => <DispatchCard key={o.id} order={o} onAssign={assign} onDelivered={markDelivered} />)}
+      </div>
+    </AdminShell>
   );
 }
 
