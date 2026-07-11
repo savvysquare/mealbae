@@ -162,26 +162,33 @@ function Home() {
 
       {/* Category Icons Carousel */}
       <div className="mb-8 border-b border-border pb-6 overflow-x-auto scrollbar-none">
-        <div className="flex gap-4">
+        <div className="flex gap-5">
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.name;
             return (
               <button
                 key={cat.name}
                 onClick={() => setSelectedCategory(active ? null : cat.name)}
-                className={`flex flex-col items-center gap-2 shrink-0 rounded-2xl p-3 w-20 border transition-all cursor-pointer ${
-                  active
-                    ? "border-primary bg-primary/5 text-primary scale-105 font-bold"
-                    : "border-border/60 bg-white text-foreground hover:border-border hover:bg-secondary/40"
-                }`}
+                className="group flex flex-col items-center gap-2 shrink-0 w-16 cursor-pointer"
               >
-                <span className="text-2xl">{cat.emoji}</span>
-                <span className="text-[11px] font-semibold text-center leading-none">{cat.name}</span>
+                <span
+                  className={`grid h-14 w-14 place-items-center rounded-full text-2xl transition-all ring-4 ring-white ${
+                    active
+                      ? "bg-primary shadow-lg shadow-primary/40 scale-110"
+                      : "bg-primary/90 shadow-md shadow-primary/25 group-hover:scale-105"
+                  }`}
+                >
+                  {cat.emoji}
+                </span>
+                <span className={`text-[11px] font-semibold text-center leading-none ${active ? "text-primary" : "text-foreground"}`}>
+                  {cat.name}
+                </span>
               </button>
             );
           })}
         </div>
       </div>
+
 
       {/* Badges Filter Bar */}
       <div className="mb-6 flex flex-wrap gap-2 items-center text-sm">
