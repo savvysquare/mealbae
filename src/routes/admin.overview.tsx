@@ -239,6 +239,8 @@ function Overview() {
                                     Notes: "{o.notes}"
                                   </div>
                                 )}
+                              </div>
+                            </div>
                             {/* Right Side: Management actions */}
                             <div className="space-y-4">
                               {/* Quick Confirm Payment */}
