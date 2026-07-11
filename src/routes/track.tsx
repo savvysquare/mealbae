@@ -39,8 +39,13 @@ function TrackPage() {
       return;
     }
     setLoading(true);
-    // @ts-expect-error - RPC not in generated types yet
-    const { data, error } = await supabase.rpc("track_orders_by_phone", { _phone: p });
+    const { data, error } = await (supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ data: TrackedOrder[] | null; error: { message: string } | null }>)(
+      "track_orders_by_phone",
+      { _phone: p },
+    );
     setLoading(false);
     if (error) {
       toast.error(error.message);
