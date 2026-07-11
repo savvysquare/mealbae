@@ -99,6 +99,11 @@
     font-family: var(--font-display);
     letter-spacing: -0.02em;
   }
+  @media (max-width: 767px) {
+    input, select, textarea {
+      font-size: 16px;
+    }
+  }
 }
 
 @utility card-soft {
