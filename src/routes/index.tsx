@@ -82,14 +82,19 @@ function Landing() {
             {/* Bold CTA Button */}
             <Link
               to="/auth/customer"
-              className="mt-8 group relative inline-flex w-full max-w-xl items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-6 py-4 md:py-5 font-extrabold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="mt-8 group relative inline-flex w-full max-w-xl items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-6 py-4 md:py-5 text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
               {/* shimmer sweep */}
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
               <Sparkles className="relative h-5 w-5 shrink-0" />
-              <span className="relative text-center text-base md:text-lg tracking-tight">
-                Order your Meal, Before Anything Else
-              </span>
+              <div className="relative flex flex-col items-center justify-center text-center leading-none">
+                <span className="text-2xl md:text-3xl font-black tracking-tight">
+                  Order your Meal
+                </span>
+                <span className="text-warning text-xs md:text-sm font-bold tracking-[0.2em] uppercase">
+                  BEFORE ANYTHING ELSE
+                </span>
+              </div>
               <ArrowRight className="relative h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
             </Link>
 
