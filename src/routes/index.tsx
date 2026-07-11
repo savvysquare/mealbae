@@ -83,22 +83,22 @@ function Landing() {
             {/* Bold CTA Button */}
             <Link
               to="/auth/customer"
-              className="mt-8 group relative inline-flex w-full max-w-xl items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-6 py-5 md:py-6 text-primary-foreground shadow-2xl shadow-primary/30 ring-2 ring-primary-foreground/20 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="mt-8 group relative flex w-full max-w-xl flex-col items-center justify-center overflow-hidden rounded-3xl bg-primary px-6 py-6 md:py-7 text-primary-foreground text-center shadow-2xl shadow-primary/40 ring-2 ring-primary-foreground/20 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
+              {/* Meal-plate decorative rim */}
+              <span className="pointer-events-none absolute inset-3 rounded-2xl border border-dashed border-primary-foreground/25" />
               {/* shimmer sweep */}
-              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-foreground/20">
-                <ChefHat className="h-6 w-6" />
+              <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              {/* Chef plate emblem */}
+              <div className="relative mb-2 grid h-11 w-11 place-items-center rounded-full bg-primary-foreground/15 ring-2 ring-primary-foreground/30">
+                <UtensilsCrossed className="h-5 w-5" />
               </div>
-              <div className="relative flex flex-col items-center justify-center text-center leading-none">
-                <span className="text-2xl md:text-3xl font-black tracking-tight">
-                  Order your Meal
-                </span>
-                <span className="text-warning text-xs md:text-sm font-bold tracking-[0.2em] uppercase">
-                  BEFORE ANYTHING ELSE
-                </span>
-              </div>
-              <ArrowRight className="relative h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
+              <span className="relative text-2xl md:text-3xl font-black tracking-tight leading-tight">
+                Order your Meal
+              </span>
+              <span className="relative mt-1 inline-flex items-center gap-1.5 text-warning text-[11px] md:text-xs font-bold tracking-[0.24em] uppercase">
+                Before Anything Else <ArrowRight className="h-3.5 w-3.5" />
+              </span>
             </Link>
 
             {/* Circular Category Bubbles */}
