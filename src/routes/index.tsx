@@ -73,7 +73,7 @@ function Landing() {
         <div className="mx-auto max-w-7xl px-4 md:px-8 grid gap-8 md:grid-cols-12 items-center">
           <div className="md:col-span-7 flex flex-col justify-center text-left">
             <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl text-foreground leading-[1.1]">
-              Osogbo's favorite restaurants, <span className="text-primary text-nowrap">delivered warm.</span>
+              Your favourite meal, <span className="text-primary text-nowrap">Before Anything Else.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-lg">
               Order from the best local kitchens. Pay easily with bank transfers, track real-time delivery, and enjoy delicious meals.
