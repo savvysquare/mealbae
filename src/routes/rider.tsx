@@ -139,28 +139,24 @@ function RiderDashboard() {
     }
 
     try {
-      const { data: rider, error } = await supabase
-        .from("riders")
-        .select("*")
-        .eq("phone", inputPhone.trim())
-        .eq("is_active", true)
-        .maybeSingle();
+      const { data, error } = await (supabase.rpc as any)("verify_rider_login", {
+        _phone: inputPhone.trim(),
+        _name: inputName.trim(),
+      });
 
       if (error) {
         toast.error("Error verifying details: " + error.message);
         return;
       }
 
-      if (!rider) {
-        toast.error("Rider phone number not registered or deactivated. Contact Admin.");
+      const res = data as { success: boolean; message?: string; rider?: { name: string; phone: string } };
+
+      if (!res.success) {
+        toast.error(res.message || "Failed to verify details");
         return;
       }
 
-      if (rider.name.toLowerCase().trim() !== inputName.toLowerCase().trim()) {
-        toast.error("Name does not match our records for this phone number.");
-        return;
-      }
-
+      const rider = res.rider!;
       localStorage.setItem("rider_name", rider.name);
       localStorage.setItem("rider_phone", rider.phone);
       setRiderName(rider.name);
