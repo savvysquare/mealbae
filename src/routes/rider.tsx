@@ -443,7 +443,22 @@ function RiderDashboard() {
                         Mark Arrived at Restaurant
                       </button>
                     )}
-                    {(o.status === "ready_for_pickup" || o.status === "rider_arrived_at_restaurant") && (
+
+                    {/* Waiting for vendor: arrived but food not ready yet */}
+                    {o.status === "rider_arrived_at_restaurant" && (
+                      <div className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 flex items-start gap-3">
+                        <span className="text-lg leading-none mt-0.5">⏳</span>
+                        <div>
+                          <div className="text-sm font-semibold text-amber-800">Waiting for food to be ready</div>
+                          <div className="text-xs text-amber-700 mt-0.5">
+                            The restaurant will mark the order as ready. The pickup button will appear once food is ready.
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Only show pickup button when vendor has marked ready */}
+                    {o.status === "ready_for_pickup" && (
                       <button
                         onClick={() => updateStatus(o.id, "out_for_delivery")}
                         className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:opacity-90 transition whitespace-nowrap"
@@ -451,6 +466,7 @@ function RiderDashboard() {
                         Mark Picked Up (Out for Delivery)
                       </button>
                     )}
+
                     {o.status === "out_for_delivery" && (
                       <button
                         onClick={() => updateStatus(o.id, "rider_arrived_at_delivery")}
