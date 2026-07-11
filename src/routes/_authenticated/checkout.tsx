@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { AppShell } from "@/components/AppShell";
+import { PaymentAccountCard } from "@/components/PaymentAccountCard";
 import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
