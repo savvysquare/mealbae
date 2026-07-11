@@ -8,8 +8,11 @@ import { PaymentAccountCard } from "@/components/PaymentAccountCard";
 import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
+import { Phone, CheckCircle2, ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/checkout")({ component: Checkout });
+
+const CONFIRM_PHONE = "08141894696";
 
 function Checkout() {
   const { cart, subtotal, clear } = useCart();
@@ -20,6 +23,7 @@ function Checkout() {
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [stage, setStage] = useState<"form" | "payment">("form");
 
   const { data: restaurant } = useQuery({
     queryKey: ["restaurant", cart.restaurantId],
@@ -34,9 +38,14 @@ function Checkout() {
   const deliveryFee = restaurant?.delivery_fee_naira ?? 0;
   const total = subtotal + deliveryFee;
 
-  async function placeOrder() {
-    if (!cart.restaurantId || !user) return;
+  function proceedToPayment() {
     if (!address.trim() || !phone.trim()) { toast.error("Address and phone are required"); return; }
+    setStage("payment");
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function confirmPayment() {
+    if (!cart.restaurantId || !user) return;
     setSubmitting(true);
     const { data: order, error } = await supabase.from("orders").insert({
       customer_id: user.id,
@@ -57,6 +66,7 @@ function Checkout() {
     if (itemsErr) { setSubmitting(false); toast.error(itemsErr.message); return; }
     clear();
     setSubmitting(false);
+    toast.success("Payment noted — tracking your order");
     nav({ to: "/orders/$id", params: { id: order.id } });
   }
 
@@ -64,6 +74,80 @@ function Checkout() {
     return (
       <AppShell title="Checkout">
         <p className="text-muted-foreground">Your cart is empty. <Link to="/home" className="text-primary underline">Browse</Link></p>
+      </AppShell>
+    );
+  }
+
+  if (stage === "payment") {
+    return (
+      <AppShell title="Payment">
+        <div className="mx-auto max-w-xl">
+          <button
+            onClick={() => setStage("form")}
+            className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to details
+          </button>
+
+          <div className="card-soft p-5 md:p-6">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-warning/20 text-[11px] font-black text-foreground">1</span>
+              <h2 className="font-display text-xl font-black tracking-tight">Send payment</h2>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Transfer the exact total below to this account. Your order is placed once you tap <span className="font-semibold text-foreground">I have paid</span>.
+            </p>
+
+            <div className="mt-4 rounded-2xl bg-secondary/60 p-4">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <span>Amount to pay</span>
+                <span>{cart.items.length} item{cart.items.length === 1 ? "" : "s"}</span>
+              </div>
+              <p className="mt-1 font-display text-3xl font-black tracking-tight text-primary tabular-nums">
+                {formatNaira(total)}
+              </p>
+              <div className="mt-1 text-xs text-muted-foreground">
+                {formatNaira(subtotal)} subtotal · {formatNaira(deliveryFee)} delivery
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <PaymentAccountCard />
+            </div>
+
+            <div className="mt-6 flex items-center gap-2">
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-warning/20 text-[11px] font-black text-foreground">2</span>
+              <h3 className="font-display text-lg font-black tracking-tight">Confirm payment</h3>
+            </div>
+            <p className="mt-1 text-sm text-muted-foreground">
+              After the transfer succeeds on your bank app, tap the button below. We'll open your live order tracker.
+            </p>
+
+            <a
+              href={`tel:${CONFIRM_PHONE}`}
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm font-semibold text-foreground shadow-xs hover:bg-secondary transition-colors"
+            >
+              <Phone className="h-4 w-4 text-primary" />
+              Trouble? Call {CONFIRM_PHONE}
+            </a>
+
+            <button
+              onClick={confirmPayment}
+              disabled={submitting}
+              className="mt-3 group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-xl shadow-primary/30 ring-2 ring-primary-foreground/20 transition-all hover:brightness-105 active:scale-[0.99] disabled:opacity-60 cursor-pointer"
+            >
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              <CheckCircle2 className="relative h-5 w-5" />
+              <span className="relative text-base font-black tracking-tight">
+                {submitting ? "Placing order…" : "I have paid"}
+              </span>
+            </button>
+
+            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+              Confirmation phone: <span className="font-semibold text-foreground">{CONFIRM_PHONE}</span>. We verify every transfer before dispatch.
+            </p>
+          </div>
+        </div>
       </AppShell>
     );
   }
@@ -95,13 +179,10 @@ function Checkout() {
             <div className="flex justify-between"><span className="text-muted-foreground">Delivery fee</span><span>{formatNaira(deliveryFee)}</span></div>
             <div className="flex justify-between text-base font-semibold"><span>Total</span><span>{formatNaira(total)}</span></div>
           </div>
-          <div className="mt-5">
-            <PaymentAccountCard compact />
-          </div>
-          <button onClick={placeOrder} disabled={submitting} className="mt-5 w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground disabled:opacity-60">
-            {submitting ? "Placing order…" : "Place order & see payment details"}
+          <button onClick={proceedToPayment} className="mt-5 w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground cursor-pointer">
+            Place order
           </button>
-          <p className="mt-2 text-center text-xs text-muted-foreground">Payment is by bank transfer to the account above. Your order confirms after payment is verified.</p>
+          <p className="mt-2 text-center text-xs text-muted-foreground">Next step: bank transfer, then tap "I have paid".</p>
         </section>
       </div>
     </AppShell>
