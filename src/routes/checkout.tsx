@@ -73,7 +73,7 @@ function Checkout() {
   if (!cart.restaurantId || cart.items.length === 0) {
     return (
       <AppShell title="Checkout">
-        <p className="text-muted-foreground">Your cart is empty. <Link to="/home" className="text-primary underline">Browse</Link></p>
+        <p className="text-muted-foreground">Your cart is empty. <Link to="/" className="text-primary underline">Browse</Link></p>
       </AppShell>
     );
   }
