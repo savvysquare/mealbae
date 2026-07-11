@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Logo } from "@/components/Logo";
+import { AppShell } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { Search, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
@@ -61,22 +62,9 @@ function TrackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-white py-3 shadow-xs">
-        <div className="mx-auto max-w-7xl px-4 md:px-8 flex items-center justify-between">
-          <Link to="/" className="hover:opacity-90">
-            <Logo className="text-xl" />
-          </Link>
-          <Link
-            to="/home"
-            className="rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground shadow-xs hover:brightness-105 transition-all"
-          >
-            Order Now
-          </Link>
-        </div>
-      </header>
+    <AppShell title="Track my Meal" right={<HeaderActions />}>
+      <main className="mx-auto w-full max-w-xl">
 
-      <main className="flex-1 mx-auto w-full max-w-xl px-4 py-16 md:py-24">
         <h1 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">Track my Meal</h1>
         <p className="mt-3 text-muted-foreground">
           Enter the phone number you used when placing your order to see live status.
@@ -129,6 +117,6 @@ function TrackPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }
