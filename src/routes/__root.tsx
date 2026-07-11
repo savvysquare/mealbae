@@ -65,8 +65,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#ff7a2d" },
       { name: "twitter:title", content: "MealBAE — Your meal, before anything else." },
       { name: "twitter:description", content: "Osogbo's cleanest, fastest food delivery. Order from your favourite spots and track every step." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9ba98fcd-390d-4aef-8c92-e881d8f66d3b/id-preview-a32ca0aa--06e28c51-ab5a-490f-b5cc-0274c1e2a304.lovable.app-1783725322160.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9ba98fcd-390d-4aef-8c92-e881d8f66d3b/id-preview-a32ca0aa--06e28c51-ab5a-490f-b5cc-0274c1e2a304.lovable.app-1783725322160.png" },
+      { property: "og:image", content: "/og-image.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "MealBAE — Order food from your favourite restaurants in Osogbo" },
+      { name: "twitter:image", content: "/og-image.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
