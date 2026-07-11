@@ -20,6 +20,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VendorIndexRouteImport } from './routes/vendor.index'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as VendorOrdersRouteImport } from './routes/vendor.orders'
 import { Route as TrackIdRouteImport } from './routes/track.$id'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AdminVendorsRouteImport } from './routes/admin.vendors'
@@ -85,6 +86,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const VendorOrdersRoute = VendorOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => VendorRoute,
 } as any)
 const TrackIdRoute = TrackIdRouteImport.update({
   id: '/$id',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/orders': typeof VendorOrdersRoute
   '/admin/': typeof AdminIndexRoute
   '/track/': typeof TrackIndexRoute
   '/vendor/': typeof VendorIndexRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/orders': typeof VendorOrdersRoute
   '/admin': typeof AdminIndexRoute
   '/track': typeof TrackIndexRoute
   '/vendor': typeof VendorIndexRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/admin/vendors': typeof AdminVendorsRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
+  '/vendor/orders': typeof VendorOrdersRoute
   '/admin/': typeof AdminIndexRoute
   '/track/': typeof TrackIndexRoute
   '/vendor/': typeof VendorIndexRoute
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
+    | '/vendor/orders'
     | '/admin/'
     | '/track/'
     | '/vendor/'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
+    | '/vendor/orders'
     | '/admin'
     | '/track'
     | '/vendor'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin/vendors'
     | '/r/$restaurantId'
     | '/track/$id'
+    | '/vendor/orders'
     | '/admin/'
     | '/track/'
     | '/vendor/'
@@ -369,6 +381,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/vendor/orders': {
+      id: '/vendor/orders'
+      path: '/orders'
+      fullPath: '/vendor/orders'
+      preLoaderRoute: typeof VendorOrdersRouteImport
+      parentRoute: typeof VendorRoute
     }
     '/track/$id': {
       id: '/track/$id'
@@ -509,10 +528,12 @@ const TrackRouteChildren: TrackRouteChildren = {
 const TrackRouteWithChildren = TrackRoute._addFileChildren(TrackRouteChildren)
 
 interface VendorRouteChildren {
+  VendorOrdersRoute: typeof VendorOrdersRoute
   VendorIndexRoute: typeof VendorIndexRoute
 }
 
 const VendorRouteChildren: VendorRouteChildren = {
+  VendorOrdersRoute: VendorOrdersRoute,
   VendorIndexRoute: VendorIndexRoute,
 }
 
