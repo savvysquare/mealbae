@@ -117,6 +117,6 @@ function TrackPage() {
           </div>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }
