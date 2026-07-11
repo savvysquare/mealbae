@@ -100,7 +100,7 @@ function Landing() {
                 {CATEGORIES.map((cat) => (
                   <Link
                     key={cat.name}
-                    to="/" hash="restaurants"
+                    to="/home"
                     className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary transition-all shadow-xs cursor-pointer"
                   >
                     <span>{cat.emoji}</span>
@@ -123,82 +123,6 @@ function Landing() {
               />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Featured Restaurant Feed */}
-      <section id="restaurants" className="mx-auto w-full max-w-7xl px-4 py-16 md:px-8 flex-1">
-        <div className="mb-8 flex items-baseline justify-between border-b border-border pb-4">
-          <div>
-            <h2 className="font-display text-2xl font-extrabold md:text-3xl text-foreground">
-              Popular Kitchens in Osogbo
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">Local spots delivering warm and fast</p>
-          </div>
-          <span className="text-xs font-semibold text-muted-foreground bg-secondary px-3 py-1.5 rounded-full">
-            {restaurants?.length ?? 0} Restaurants open
-          </span>
-        </div>
-
-        {/* Restaurant Card Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {restaurants?.map((r) => {
-            const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
-            // Simulate a rating since the table doesn't have it (standard DoorDash style)
-            const rating = 4.5 + (r.name.charCodeAt(0) % 5) * 0.1;
-            
-            return (
-              <Link
-                key={r.id}
-                to="/r/$restaurantId"
-                params={{ restaurantId: r.id }}
-                className="group flex flex-col overflow-hidden rounded-xl bg-white border border-border/80 transition-all duration-300 hover:shadow-md hover:border-border"
-              >
-                {/* Closed banner */}
-                {!open && (
-                  <div className="bg-warning/10 border-b border-warning/20 px-4 py-1.5 text-center text-xs font-bold text-warning-foreground">
-                    Closed Now
-                  </div>
-                )}
-
-                {/* Info Metadata */}
-                <div className="p-4 flex-1 flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="font-bold text-base text-foreground group-hover:text-primary transition-colors">
-                        {r.name}
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0 rounded-full bg-secondary px-2 py-0.5 text-xs font-bold text-foreground">
-                        <Star className="h-3 w-3 fill-primary text-primary" />
-                        {rating.toFixed(1)}
-                      </div>
-                    </div>
-                    <div className="mt-1 text-xs text-muted-foreground line-clamp-1">
-                      {r.address}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-3 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" /> 25–35 Min
-                    </span>
-                    <span className="font-bold text-foreground">
-                      {formatNaira(r.delivery_fee_naira)} delivery
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        <div className="mt-12 flex justify-center">
-          <Link
-            to="/" hash="restaurants"
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-8 py-3.5 font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all text-sm cursor-pointer"
-          >
-            Start Your Order <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
 
