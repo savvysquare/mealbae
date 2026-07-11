@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
-import { Copy, CheckCircle2, MessageCircle } from "lucide-react";
+import { Copy, CheckCircle2, MessageCircle, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/track/$id")({
@@ -85,6 +85,16 @@ function TrackDetail() {
     else { toast.success("Payment noted. Awaiting confirmation."); refetch(); }
   }
 
+  async function markReceived() {
+    if (!phone || !data) return;
+    const { error } = await (supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, unknown>,
+    ) => Promise<{ error: { message: string } | null }>)("confirm_delivery_received", { _order_id: id, _phone: phone });
+    if (error) toast.error(error.message);
+    else { toast.success("Order confirmed received! Enjoy your meal 🎉"); refetch(); }
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       <header className="sticky top-0 z-50 w-full border-b border-border bg-white py-3 shadow-xs">
@@ -116,6 +126,36 @@ function TrackDetail() {
               </section>
             </div>
             <div className="space-y-4 md:col-span-2">
+              {/* Confirm Received — shown when rider has marked as delivered */}
+              {data.order.status === "delivered" && (
+                <section className="card-soft p-5 border-l-4 border-success bg-success/5">
+                  <div className="flex items-center gap-2">
+                    <PartyPopper className="h-5 w-5 text-success" />
+                    <h2 className="font-display text-lg font-bold text-success">Your order has arrived!</h2>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    The rider has marked your order as delivered. Please confirm once you've received your food.
+                  </p>
+                  <button
+                    onClick={markReceived}
+                    className="mt-4 w-full rounded-2xl bg-success px-4 py-3 text-sm font-bold text-success-foreground hover:opacity-90 transition"
+                  >
+                    ✓ Confirm Order Received
+                  </button>
+                </section>
+              )}
+
+              {/* Already received confirmation */}
+              {data.order.status === "received" && (
+                <section className="card-soft p-5 border-l-4 border-primary bg-primary/5">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <h2 className="font-display text-base font-bold text-primary">Order received! Enjoy your meal 🎉</h2>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">Thank you for ordering with MealBae!</p>
+                </section>
+              )}
+
               {data.order.status === "pending_payment" && bank && (
                 <section className="card-soft p-5">
                   <h2 className="font-display text-lg font-bold">Bank transfer</h2>

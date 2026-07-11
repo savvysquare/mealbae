@@ -32,6 +32,7 @@ export const STATUS_LABELS: Record<string, string> = {
   out_for_delivery: "Out for delivery",
   rider_arrived_at_delivery: "Rider at delivery",
   delivered: "Delivered",
+  received: "Order Received",
   rejected: "Rejected",
   cancelled: "Cancelled",
 };
@@ -47,6 +48,7 @@ export const STATUS_ORDER = [
   "out_for_delivery",
   "rider_arrived_at_delivery",
   "delivered",
+  "received",
 ] as const;
 
 export function optimizeImageUrl(url: string | null | undefined, width: number = 300): string {
