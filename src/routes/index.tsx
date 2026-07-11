@@ -30,7 +30,7 @@ function Landing() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-secondary/40 py-12 md:py-20 border-b border-border">
+      <section className="flex-1 bg-secondary/40 py-12 md:py-20 border-b border-border">
         <div className="mx-auto max-w-7xl px-4 md:px-8 grid gap-8 md:grid-cols-12 items-center">
           <div className="md:col-span-7 flex flex-col justify-center text-left">
             <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl text-foreground leading-[1.1]">
