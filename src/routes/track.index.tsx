@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Logo } from "@/components/Logo";
+import { AppShell } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { Search, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
