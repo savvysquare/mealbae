@@ -27,3 +27,6 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.verify_rider_login(TEXT, TEXT) TO anon, authenticated;
+
+-- Ensure replica identity is full so that old column values (like old.rider_phone) are sent in update payloads
+ALTER TABLE public.orders REPLICA IDENTITY FULL;

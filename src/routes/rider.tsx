@@ -115,12 +115,43 @@ function RiderDashboard() {
             });
             qc.invalidateQueries({ queryKey: ["available-pickups"] });
           }
-          // If order assigned to me has changed status
+          // If order assigned to me has changed or been newly assigned
           if (
             payload.new &&
             (payload.new as any).rider_phone === riderPhone
           ) {
+            const newOrder = payload.new as any;
+            const oldOrder = payload.old as any;
+
+            // Trigger alert on new assignment or status update
+            if (payload.eventType === "INSERT") {
+              playNotificationSound();
+              toast.success(`📋 New order #${newOrder.short_code} assigned to you!`, {
+                duration: 8000,
+                position: "top-center",
+              });
+              setActiveTab("deliveries");
+            } else if (payload.eventType === "UPDATE") {
+              // If the rider_phone just changed to me (new assignment)
+              if (!oldOrder || oldOrder.rider_phone !== riderPhone) {
+                playNotificationSound();
+                toast.success(`📋 New order #${newOrder.short_code} assigned to you!`, {
+                  duration: 8000,
+                  position: "top-center",
+                });
+                setActiveTab("deliveries");
+              } else if (oldOrder && oldOrder.status !== newOrder.status) {
+                // If the status of my current assignment changed (e.g. ready_for_pickup)
+                playNotificationSound();
+                toast.info(`🔔 Order #${newOrder.short_code} is now: ${STATUS_LABELS[newOrder.status] ?? newOrder.status}`, {
+                  duration: 5000,
+                  position: "top-center",
+                });
+              }
+            }
+
             qc.invalidateQueries({ queryKey: ["my-deliveries", riderPhone] });
+            qc.invalidateQueries({ queryKey: ["available-pickups"] });
           }
         }
       )
