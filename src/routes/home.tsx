@@ -1,12 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useSession, useRoles, primaryRole } from "@/hooks/use-auth";
-import { AppShell, SignOutButton } from "@/components/AppShell";
+import { useSession } from "@/hooks/use-auth";
+import { AppShell } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
-import { Search, ShoppingBag, Clock, Store, Star, SlidersHorizontal } from "lucide-react";
-import { useCart } from "@/lib/cart";
+import { Search, Clock, Store, Star, SlidersHorizontal } from "lucide-react";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
@@ -31,11 +31,38 @@ const CATEGORIES = [
   { name: "Drinks", emoji: "🥤" },
 ];
 
+// Keyword → category tagging. Order matters: specific first.
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  Swallow: ["amala", "eba", "semo", "semovita", "pounded yam", "poundo", "fufu", "wheat", "tuwo", "iyan", "starch", "garri"],
+  Pizza: ["pizza"],
+  Desserts: ["cake", "ice cream", "doughnut", "donut", "cupcake", "pudding", "chocolate", "dessert", "pastry", "muffin"],
+  Drinks: ["coke", "coca", "fanta", "sprite", "pepsi", "juice", "malt", "smoothie", "zobo", "chapman", "water", "tea", "coffee", "yoghurt", "yogurt", "cocktail", "wine", "beer", "drink"],
+  Chicken: ["chicken", "wings", "drumstick"],
+};
+
+// meal → tags
+function tagMeal(name: string): Set<string> {
+  const n = name.toLowerCase();
+  const tags = new Set<string>();
+  for (const [cat, kws] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (kws.some((k) => n.includes(k))) tags.add(cat);
+  }
+  // Fast Food is the catch-all for savory meals not already swallow/pizza/dessert/drink.
+  if (!tags.has("Swallow") && !tags.has("Pizza") && !tags.has("Desserts") && !tags.has("Drinks")) {
+    tags.add("Fast Food");
+  }
+  return tags;
+}
+
+function formatHour(t: string): string {
+  const [hh, mm] = t.split(":").map(Number);
+  const h12 = ((hh + 11) % 12) + 1;
+  const ampm = hh < 12 ? "AM" : "PM";
+  return `${h12}:${mm.toString().padStart(2, "0")} ${ampm}`;
+}
+
 function Home() {
   const { user } = useSession();
-  const { data: roles } = useRoles(user?.id);
-  const role = primaryRole(roles);
-  const nav = useNavigate();
 
   const [q, setQ] = useState("");
   const [openOnly, setOpenOnly] = useState(true);
@@ -49,6 +76,26 @@ function Home() {
       const { data, error } = await supabase.from("restaurants").select("*").order("name");
       if (error) throw error;
       return data as RestaurantRow[];
+    },
+  });
+
+  // Fetch all available meals to build category tags per restaurant.
+  const { data: mealsByRestaurant } = useQuery({
+    queryKey: ["meals-tags"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("meals")
+        .select("restaurant_id, name, is_available")
+        .eq("is_available", true);
+      if (error) throw error;
+      const map = new Map<string, Set<string>>();
+      for (const m of data ?? []) {
+        const tags = tagMeal(m.name as string);
+        const cur = map.get(m.restaurant_id as string) ?? new Set<string>();
+        tags.forEach((t) => cur.add(t));
+        map.set(m.restaurant_id as string, cur);
+      }
+      return map;
     },
   });
 
@@ -68,7 +115,7 @@ function Home() {
 
   const list = useMemo(() => {
     if (!restaurants) return [];
-    return restaurants.filter((r) => {
+    const filtered = restaurants.filter((r) => {
       const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
       if (openOnly && !open) return false;
 
@@ -78,74 +125,28 @@ function Home() {
       if (lowDelivery && r.delivery_fee_naira > 500) return false;
 
       if (selectedCategory) {
-        const term = selectedCategory.toLowerCase();
-        // Categorize based on keywords in name or description
-        const nameMatch = r.name.toLowerCase().includes(term);
-        const descMatch = (r.description ?? "").toLowerCase().includes(term);
-        if (!nameMatch && !descMatch) return false;
+        const tags = mealsByRestaurant?.get(r.id);
+        if (!tags || !tags.has(selectedCategory)) return false;
       }
 
       if (q.trim().length > 1) {
         if (!matchingByMeal) return false;
         if (!matchingByMeal.has(r.id)) return false;
-        if (!open) return false; // when searching a meal, only show if open per spec
+        if (!open) return false;
       }
       return true;
     });
-  }, [restaurants, matchingByMeal, openOnly, q, topRated, lowDelivery, selectedCategory]);
-
-  const { count } = useCart();
+    // Open first, then by name
+    return filtered.sort((a, b) => {
+      const ao = isRestaurantOpen(a.opens_at, a.closes_at, a.is_open_override) ? 0 : 1;
+      const bo = isRestaurantOpen(b.opens_at, b.closes_at, b.is_open_override) ? 0 : 1;
+      if (ao !== bo) return ao - bo;
+      return a.name.localeCompare(b.name);
+    });
+  }, [restaurants, mealsByRestaurant, matchingByMeal, openOnly, q, topRated, lowDelivery, selectedCategory]);
 
   return (
-    <AppShell
-      right={
-        <div className="flex items-center gap-2">
-          {user && role === "restaurant_staff" && (
-            <Link
-              to="/restaurant/orders"
-              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
-            >
-              Restaurant panel
-            </Link>
-          )}
-          {user && role === "admin" && (
-            <Link
-              to="/admin/overview"
-              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
-            >
-              Admin panel
-            </Link>
-          )}
-          {user ? (
-            <Link
-              to="/orders"
-              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
-            >
-              My Orders
-            </Link>
-          ) : (
-            <Link
-              to="/track"
-              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
-            >
-              Track order
-            </Link>
-          )}
-          <button
-            onClick={() => nav({ to: "/cart" })}
-            className="relative rounded-full bg-primary p-2.5 text-primary-foreground shadow-sm hover:brightness-105 transition cursor-pointer"
-          >
-            <ShoppingBag className="h-4.5 w-4.5" />
-            {count > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
-                {count}
-              </span>
-            )}
-          </button>
-          {user && <SignOutButton />}
-        </div>
-      }
-    >
+    <AppShell right={<HeaderActions />}>
       {/* Search Header */}
       <div className="mb-8 grid gap-4 md:grid-cols-12 items-center">
         <div className="md:col-span-4">
@@ -154,8 +155,7 @@ function Home() {
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">What are you craving today?</p>
         </div>
-        
-        {/* Modern Search bar */}
+
         <div className="md:col-span-8 flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -169,9 +169,9 @@ function Home() {
         </div>
       </div>
 
-      {/* Category Icons Carousel */}
-      <div className="mb-8 border-b border-border pb-6 overflow-x-auto scrollbar-none">
-        <div className="flex gap-4">
+      {/* Category Icons Carousel — py padding so the active border/scale isn't clipped */}
+      <div className="mb-8 border-b border-border pb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
+        <div className="flex gap-4 py-2">
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.name;
             return (
@@ -180,7 +180,7 @@ function Home() {
                 onClick={() => setSelectedCategory(active ? null : cat.name)}
                 className={`flex flex-col items-center gap-2 shrink-0 rounded-2xl p-3 w-20 border transition-all cursor-pointer ${
                   active
-                    ? "border-primary bg-primary/5 text-primary scale-105 font-bold"
+                    ? "border-primary bg-primary/5 text-primary scale-105 font-bold shadow-sm"
                     : "border-border/60 bg-white text-foreground hover:border-border hover:bg-secondary/40"
                 }`}
               >
@@ -192,49 +192,39 @@ function Home() {
         </div>
       </div>
 
-      {/* Badges Filter Bar */}
+      {/* Filter pills */}
       <div className="mb-6 flex flex-wrap gap-2 items-center text-sm">
         <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5 mr-2">
           <SlidersHorizontal className="h-3.5 w-3.5" /> Filters
         </span>
 
-        {/* Open Now Pill */}
         <button
           onClick={() => setOpenOnly((prev) => !prev)}
           className={`rounded-full px-4 py-2 text-xs font-bold border transition cursor-pointer ${
-            openOnly
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-white text-foreground border-border hover:bg-secondary"
+            openOnly ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-border hover:bg-secondary"
           }`}
         >
           Open Now
         </button>
 
-        {/* Top Rated Pill */}
         <button
           onClick={() => setTopRated((prev) => !prev)}
           className={`rounded-full px-4 py-2 text-xs font-bold border transition cursor-pointer ${
-            topRated
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-white text-foreground border-border hover:bg-secondary"
+            topRated ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-border hover:bg-secondary"
           }`}
         >
           Top Rated (4.7+)
         </button>
 
-        {/* Low Delivery Pill */}
         <button
           onClick={() => setLowDelivery((prev) => !prev)}
           className={`rounded-full px-4 py-2 text-xs font-bold border transition cursor-pointer ${
-            lowDelivery
-              ? "bg-primary text-primary-foreground border-primary"
-              : "bg-white text-foreground border-border hover:bg-secondary"
+            lowDelivery ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-border hover:bg-secondary"
           }`}
         >
           Under ₦500 Delivery
         </button>
 
-        {/* Reset Filter Button */}
         {(selectedCategory || !openOnly || topRated || lowDelivery || q) && (
           <button
             onClick={() => {
@@ -263,17 +253,18 @@ function Home() {
           {list.map((r) => {
             const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
             const rating = 4.5 + (r.name.charCodeAt(0) % 5) * 0.1;
+            const hours = `${formatHour(r.opens_at)} – ${formatHour(r.closes_at)}`;
 
             return (
               <Link
                 key={r.id}
                 to="/r/$restaurantId"
                 params={{ restaurantId: r.id }}
-                className="group flex flex-col overflow-hidden rounded-xl bg-white border border-border/80 transition-all duration-300 hover:shadow-md hover:border-border"
+                className={`group flex flex-col overflow-hidden rounded-xl bg-white border border-border/80 transition-all duration-300 hover:shadow-md hover:border-border ${!open ? "opacity-75" : ""}`}
               >
                 {!open && (
                   <div className="bg-warning/10 border-b border-warning/20 px-4 py-1.5 text-center text-xs font-bold text-warning-foreground">
-                    Closed
+                    Closed · Opens {formatHour(r.opens_at)}
                   </div>
                 )}
 
@@ -289,12 +280,15 @@ function Home() {
                       </div>
                     </div>
                     {r.description && (
-                      <p className="mt-1 text-xs text-muted-foreground line-clamp-1">
-                        {r.description}
-                      </p>
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-1">{r.description}</p>
                     )}
-                    <div className="mt-1.5 text-xs text-muted-foreground line-clamp-1">
-                      {r.address}
+                    <div className="mt-1.5 text-xs text-muted-foreground line-clamp-1">{r.address}</div>
+                    <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span className={open ? "text-emerald-600" : "text-warning-foreground"}>
+                        {open ? "Open now" : "Closed"}
+                      </span>
+                      <span className="text-muted-foreground/70">· {hours}</span>
                     </div>
                   </div>
 
