@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { formatNaira } from "@/lib/format";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/cart")({ component: CartPage });
+export const Route = createFileRoute("/cart")({ component: CartPage });
 
 function CartPage() {
   const { cart, setQty, remove, subtotal } = useCart();
@@ -23,7 +23,7 @@ function CartPage() {
               Add items from a restaurant or store to start a new cart
             </p>
             <Link
-              to="/home"
+              to="/"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all cursor-pointer"
             >
               Browse Restaurants <ArrowRight className="h-4 w-4" />
@@ -120,7 +120,7 @@ function CartPage() {
                 </button>
 
                 <Link
-                  to="/home"
+                  to="/"
                   className="mt-3 w-full rounded-full border border-border py-3 text-xs font-bold text-muted-foreground text-center hover:bg-secondary transition flex items-center justify-center cursor-pointer"
                 >
                   Add more items
