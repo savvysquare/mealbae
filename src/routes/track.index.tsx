@@ -112,8 +112,9 @@ function TrackPage() {
             {orders.map((o) => (
               <Link
                 key={o.id}
-                to="/orders/$id"
+                to="/track/$id"
                 params={{ id: o.id }}
+                search={{ phone }}
                 className="flex items-center justify-between rounded-2xl border border-border bg-white p-4 hover:border-primary transition"
               >
                 <div>
