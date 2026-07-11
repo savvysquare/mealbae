@@ -82,9 +82,10 @@
   --warning: #eebb00;
   --warning-foreground: #191919;
 
-  --border: #e7e7e7;
-  --input: #e7e7e7;
-  --ring: #ff3008;
+  --border: #f0dcc7;
+  --input: #f0dcc7;
+  --ring: #ff6a1a;
+
 }
 
 @layer base {
