@@ -230,8 +230,10 @@ function Overview() {
                               <div className="bg-white p-4 rounded-2xl border border-border/80">
                                 <h4 className="font-semibold text-sm mb-2">Manage Order Status</h4>
                                 <div className="flex flex-wrap gap-1.5">
-                                  {Object.entries(STATUS_LABELS).map(([k, label]) => {
-                                    const isActive = o.status === k;
+                                  {Object.entries(STATUS_LABELS)
+                                    .filter(([k]) => ["pending_payment", "payment_confirmed", "cancelled"].includes(k) || o.status === k)
+                                    .map(([k, label]) => {
+                                      const isActive = o.status === k;
                                     return (
                                       <button
                                         key={k}

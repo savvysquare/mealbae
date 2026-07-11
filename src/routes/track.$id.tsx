@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { StatusTimeline } from "@/components/StatusTimeline";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
-import { Copy, CheckCircle2 } from "lucide-react";
+import { Copy, CheckCircle2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/track/$id")({
@@ -151,6 +151,20 @@ function TrackDetail() {
                 <div className="mt-1 text-muted-foreground">{data.order.delivery_address}</div>
                 <div className="text-muted-foreground">{data.order.delivery_phone}</div>
                 {data.order.rider_name && <div className="mt-3 border-t border-border pt-3">Rider: <span className="font-medium">{data.order.rider_name}</span> {data.order.rider_phone}</div>}
+              </section>
+              <section className="card-soft p-5 text-sm bg-secondary/30">
+                <div className="flex items-center gap-2 font-medium text-foreground">
+                  <MessageCircle className="h-4 w-4 text-primary" />
+                  Need help?
+                </div>
+                <div className="mt-2 text-muted-foreground">
+                  Contact our support team on WhatsApp or Call:
+                </div>
+                <div className="mt-1">
+                  <a href="https://wa.me/2348141894696" target="_blank" rel="noreferrer" className="font-semibold text-primary hover:underline">
+                    08141894696
+                  </a>
+                </div>
               </section>
             </div>
           </div>

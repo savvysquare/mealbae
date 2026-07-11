@@ -192,7 +192,7 @@ function VendorOrders() {
                         <div className="bg-white p-3 rounded-xl border border-border/80">
                           <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-foreground mb-2">Force Status Override</h4>
                           <div className="flex flex-wrap gap-1">
-                            {["accepted_by_restaurant", "preparing", "ready_for_pickup", "delivered", "rejected"].map((st) => (
+                            {["accepted_by_restaurant", "preparing", "ready_for_pickup", "rejected"].map((st) => (
                               <button
                                 key={st}
                                 onClick={() => updateStatus(o.id, st)}

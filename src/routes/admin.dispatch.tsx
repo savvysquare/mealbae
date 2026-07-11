@@ -26,23 +26,19 @@ function Dispatch() {
     if (error) toast.error(error.message); else toast.success("Rider assigned");
     qc.invalidateQueries({ queryKey: ["dispatch"] });
   }
-  async function markDelivered(id: string) {
-    const { error } = await supabase.from("orders").update({ status: "delivered" }).eq("id", id);
-    if (error) toast.error(error.message); else toast.success("Marked delivered");
-    qc.invalidateQueries({ queryKey: ["dispatch"] });
-  }
+
 
   return (
     <AdminShell>
       <div className="mx-auto max-w-4xl space-y-3">
         {(data ?? []).length === 0 && <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Nothing waiting for dispatch.</div>}
-        {data?.map((o: any) => <DispatchCard key={o.id} order={o} onAssign={assign} onDelivered={markDelivered} />)}
+        {data?.map((o: any) => <DispatchCard key={o.id} order={o} onAssign={assign} />)}
       </div>
     </AdminShell>
   );
 }
 
-function DispatchCard({ order, onAssign, onDelivered }: any) {
+function DispatchCard({ order, onAssign }: any) {
   const [name, setName] = useState(order.rider_name ?? "");
   const [phone, setPhone] = useState(order.rider_phone ?? "");
   return (
@@ -64,7 +60,6 @@ function DispatchCard({ order, onAssign, onDelivered }: any) {
       ) : (
         <div className="mt-3 flex items-center justify-between text-sm">
           <div>Rider: <span className="font-medium">{order.rider_name}</span> — {order.rider_phone}</div>
-          <button onClick={() => onDelivered(order.id)} className="rounded-full bg-success px-3 py-1.5 text-xs font-medium text-success-foreground whitespace-nowrap">Mark delivered</button>
         </div>
       )}
     </div>
