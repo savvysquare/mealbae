@@ -15,7 +15,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AuthStaffRouteImport } from './routes/auth.staff'
-import { Route as AuthCustomerRouteImport } from './routes/auth.customer'
 import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
@@ -57,11 +56,6 @@ const RRestaurantIdRoute = RRestaurantIdRouteImport.update({
 const AuthStaffRoute = AuthStaffRouteImport.update({
   id: '/auth/staff',
   path: '/auth/staff',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthCustomerRoute = AuthCustomerRouteImport.update({
-  id: '/auth/customer',
-  path: '/auth/customer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRestaurantRoute = AuthenticatedRestaurantRouteImport.update({
@@ -145,7 +139,6 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/customer': typeof AuthCustomerRoute
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
@@ -166,7 +159,6 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/customer': typeof AuthCustomerRoute
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
@@ -189,7 +181,6 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
-  '/auth/customer': typeof AuthCustomerRoute
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/_authenticated/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
@@ -212,7 +203,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/orders'
     | '/restaurant'
-    | '/auth/customer'
     | '/auth/staff'
     | '/r/$restaurantId'
     | '/admin/dispatch'
@@ -233,7 +223,6 @@ export interface FileRouteTypes {
     | '/home'
     | '/orders'
     | '/restaurant'
-    | '/auth/customer'
     | '/auth/staff'
     | '/r/$restaurantId'
     | '/admin/dispatch'
@@ -255,7 +244,6 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/orders'
     | '/_authenticated/restaurant'
-    | '/auth/customer'
     | '/auth/staff'
     | '/r/$restaurantId'
     | '/_authenticated/admin/dispatch'
@@ -274,7 +262,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  AuthCustomerRoute: typeof AuthCustomerRoute
   AuthStaffRoute: typeof AuthStaffRoute
   RRestaurantIdRoute: typeof RRestaurantIdRoute
 }
@@ -321,13 +308,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/staff'
       fullPath: '/auth/staff'
       preLoaderRoute: typeof AuthStaffRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/customer': {
-      id: '/auth/customer'
-      path: '/auth/customer'
-      fullPath: '/auth/customer'
-      preLoaderRoute: typeof AuthCustomerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/restaurant': {
@@ -494,7 +474,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  AuthCustomerRoute: AuthCustomerRoute,
   AuthStaffRoute: AuthStaffRoute,
   RRestaurantIdRoute: RRestaurantIdRoute,
 }
