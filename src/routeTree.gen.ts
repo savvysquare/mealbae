@@ -20,6 +20,7 @@ import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authentic
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
 import { Route as AuthenticatedRestaurantOrdersRouteImport } from './routes/_authenticated/restaurant.orders'
 import { Route as AuthenticatedRestaurantMenuRouteImport } from './routes/_authenticated/restaurant.menu'
 import { Route as AuthenticatedRestaurantHistoryRouteImport } from './routes/_authenticated/restaurant.history'
@@ -84,6 +85,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOrdersIndexRoute =
+  AuthenticatedOrdersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedOrdersRoute,
+  } as any)
 const AuthenticatedRestaurantOrdersRoute =
   AuthenticatedRestaurantOrdersRouteImport.update({
     id: '/orders',
@@ -157,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
   '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
   '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
+  '/orders/': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,7 +173,6 @@ export interface FileRoutesByTo {
   '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/home': typeof AuthenticatedHomeRoute
-  '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
   '/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
   '/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
+  '/orders': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/restaurant/history': typeof AuthenticatedRestaurantHistoryRoute
   '/_authenticated/restaurant/menu': typeof AuthenticatedRestaurantMenuRoute
   '/_authenticated/restaurant/orders': typeof AuthenticatedRestaurantOrdersRoute
+  '/_authenticated/orders/': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/restaurant/history'
     | '/restaurant/menu'
     | '/restaurant/orders'
+    | '/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,7 +242,6 @@ export interface FileRouteTypes {
     | '/track'
     | '/admin'
     | '/home'
-    | '/orders'
     | '/restaurant'
     | '/auth/staff'
     | '/r/$restaurantId'
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/restaurant/history'
     | '/restaurant/menu'
     | '/restaurant/orders'
+    | '/orders'
   id:
     | '__root__'
     | '/'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/_authenticated/restaurant/history'
     | '/_authenticated/restaurant/menu'
     | '/_authenticated/restaurant/orders'
+    | '/_authenticated/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -358,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/orders/': {
+      id: '/_authenticated/orders/'
+      path: '/'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof AuthenticatedOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedOrdersRoute
+    }
     '/_authenticated/restaurant/orders': {
       id: '/_authenticated/restaurant/orders'
       path: '/orders'
@@ -445,10 +463,12 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedOrdersRouteChildren {
   AuthenticatedOrdersIdRoute: typeof AuthenticatedOrdersIdRoute
+  AuthenticatedOrdersIndexRoute: typeof AuthenticatedOrdersIndexRoute
 }
 
 const AuthenticatedOrdersRouteChildren: AuthenticatedOrdersRouteChildren = {
   AuthenticatedOrdersIdRoute: AuthenticatedOrdersIdRoute,
+  AuthenticatedOrdersIndexRoute: AuthenticatedOrdersIndexRoute,
 }
 
 const AuthenticatedOrdersRouteWithChildren =
@@ -501,3 +521,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
