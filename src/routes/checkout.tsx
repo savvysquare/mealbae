@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
 import { Phone, CheckCircle2, ArrowLeft } from "lucide-react";
 
+type PlaceOrderResult = { id: string; short_code: string };
+
 export const Route = createFileRoute("/checkout")({ component: Checkout });
 
 const CONFIRM_PHONE = "08141894696";
@@ -51,52 +53,49 @@ function Checkout() {
     return "+234" + trimmed;
   }
 
-  async function ensureSession(): Promise<string | null> {
-    if (user) return user.id;
-    const p = normalizePhone(phone);
-    const digits = p.replace(/\D/g, "");
-    const email = `${digits}@mealbae.local`;
-    const password = `mb_${digits}_pw`;
-    let signIn = await supabase.auth.signInWithPassword({ email, password });
-    if (signIn.error) {
-      const { error: signUpErr } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: name || null, phone: p, role: "customer" } },
-      });
-      if (signUpErr) { toast.error(signUpErr.message); return null; }
-      signIn = await supabase.auth.signInWithPassword({ email, password });
-      if (signIn.error) { toast.error(signIn.error.message); return null; }
-    }
-    return signIn.data.user?.id ?? null;
-  }
-
   async function confirmPayment() {
     if (!cart.restaurantId) return;
     setSubmitting(true);
-    const customerId = await ensureSession();
-    if (!customerId) { setSubmitting(false); return; }
-    const { data: order, error } = await supabase.from("orders").insert({
-      customer_id: customerId,
-      restaurant_id: cart.restaurantId,
-      subtotal_naira: subtotal,
-      delivery_fee_naira: deliveryFee,
-      total_naira: total,
-      delivery_address: address,
-      delivery_phone: phone,
-      customer_name: name || null,
-      notes: notes || null,
-    }).select("id").single();
-    if (error || !order) { setSubmitting(false); toast.error(error?.message ?? "Could not create order"); return; }
-    const items = cart.items.map((i) => ({
-      order_id: order.id, meal_id: i.mealId, name_snapshot: i.name, price_snapshot: i.price, quantity: i.quantity,
-    }));
-    const { error: itemsErr } = await supabase.from("order_items").insert(items);
-    if (itemsErr) { setSubmitting(false); toast.error(itemsErr.message); return; }
-    clear();
-    setSubmitting(false);
-    toast.success("Payment noted — tracking your order");
-    nav({ to: "/orders/$id", params: { id: order.id } });
+    try {
+      const items = cart.items.map((i) => ({
+        meal_id: i.mealId,
+        name_snapshot: i.name,
+        price_snapshot: i.price,
+        quantity: i.quantity,
+      }));
+
+      const { data, error } = await (supabase.rpc as unknown as (
+        fn: string,
+        args: Record<string, unknown>
+      ) => Promise<{ data: PlaceOrderResult | null; error: { message: string } | null }>)(
+        "place_order_guest",
+        {
+          _restaurant_id: cart.restaurantId,
+          _delivery_address: address,
+          _delivery_phone: phone,
+          _customer_name: name || null,
+          _notes: notes || null,
+          _subtotal_naira: subtotal,
+          _delivery_fee_naira: deliveryFee,
+          _total_naira: total,
+          _items: items,
+        }
+      );
+
+      if (error || !data) {
+        toast.error(error?.message ?? "Could not place order. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+
+      clear();
+      toast.success("Order placed! Track your delivery below.");
+      // Redirect to the public tracking page using phone for verification
+      nav({ to: "/track/$id", params: { id: data.id }, search: { phone } });
+    } catch (e: any) {
+      toast.error(e.message || "Something went wrong.");
+      setSubmitting(false);
+    }
   }
 
   if (!cart.restaurantId || cart.items.length === 0) {

@@ -80,7 +80,7 @@ function TrackDetail() {
     const { error } = await (supabase.rpc as unknown as (
       fn: string,
       args: Record<string, unknown>,
-    ) => Promise<{ error: { message: string } | null }>)("mark_order_paid_by_phone", { _order_id: id, _phone: phone });
+    ) => Promise<{ error: { message: string } | null }>)("mark_order_paid_guest", { _order_id: id, _phone: phone });
     if (error) toast.error(error.message);
     else { toast.success("Payment noted. Awaiting confirmation."); refetch(); }
   }
