@@ -131,18 +131,45 @@ function RiderDashboard() {
     };
   }, [isLoggedIn, riderPhone, notificationsEnabled, qc]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputName.trim() || !inputPhone.trim()) {
       toast.error("Name and Phone Number are required");
       return;
     }
-    localStorage.setItem("rider_name", inputName.trim());
-    localStorage.setItem("rider_phone", inputPhone.trim());
-    setRiderName(inputName.trim());
-    setRiderPhone(inputPhone.trim());
-    setIsLoggedIn(true);
-    toast.success(`Welcome, ${inputName.trim()}!`);
+
+    try {
+      const { data: rider, error } = await supabase
+        .from("riders")
+        .select("*")
+        .eq("phone", inputPhone.trim())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) {
+        toast.error("Error verifying details: " + error.message);
+        return;
+      }
+
+      if (!rider) {
+        toast.error("Rider phone number not registered or deactivated. Contact Admin.");
+        return;
+      }
+
+      if (rider.name.toLowerCase().trim() !== inputName.toLowerCase().trim()) {
+        toast.error("Name does not match our records for this phone number.");
+        return;
+      }
+
+      localStorage.setItem("rider_name", rider.name);
+      localStorage.setItem("rider_phone", rider.phone);
+      setRiderName(rider.name);
+      setRiderPhone(rider.phone);
+      setIsLoggedIn(true);
+      toast.success(`Welcome, ${rider.name}!`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to log in");
+    }
   };
 
   const handleLogout = () => {

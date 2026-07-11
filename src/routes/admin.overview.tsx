@@ -34,6 +34,24 @@ function Overview() {
     refetchInterval: 15000,
   });
 
+  // Fetch active riders list
+  const { data: allRiders } = useQuery({
+    queryKey: ["riders-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("riders").select("*").eq("is_active", true).order("name");
+      if (error) throw error;
+      return data as { id: string; name: string; phone: string }[];
+    },
+    refetchInterval: 15000,
+  });
+
+  // Determine which riders are currently busy on an assignment
+  const busyPhones = new Set(
+    (data ?? [])
+      .filter((o: any) => o.rider_phone && !["delivered", "cancelled", "rejected"].includes(o.status))
+      .map((o: any) => o.rider_phone)
+  );
+
   const filtered = (data ?? []).filter(
     (o: any) =>
       !q ||
@@ -254,36 +272,36 @@ function Overview() {
                               {/* Dispatch Rider Assignment */}
                               <div className="bg-white p-4 rounded-2xl border border-border/80 space-y-3">
                                 <h4 className="font-semibold text-sm">Assign Dispatch Rider</h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  <input
-                                    placeholder="Rider name"
-                                    value={riderName}
-                                    onChange={(e) =>
-                                      setRiderDrafts((prev) => ({
-                                        ...prev,
-                                        [o.id]: { ...prev[o.id], name: e.target.value }
-                                      }))
-                                    }
-                                    className="rounded-xl border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                                  />
-                                  <input
-                                    placeholder="Rider phone"
-                                    value={riderPhone}
-                                    onChange={(e) =>
-                                      setRiderDrafts((prev) => ({
-                                        ...prev,
-                                        [o.id]: { ...prev[o.id], phone: e.target.value }
-                                      }))
-                                    }
-                                    className="rounded-xl border border-input bg-surface px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                                  />
-                                </div>
+                                <select
+                                  value={riderPhone}
+                                  onChange={(e) => {
+                                    const selected = (allRiders ?? []).find((r) => r.phone === e.target.value);
+                                    setRiderDrafts((prev) => ({
+                                      ...prev,
+                                      [o.id]: {
+                                        name: selected ? selected.name : "",
+                                        phone: selected ? selected.phone : ""
+                                      }
+                                    }));
+                                  }}
+                                  className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                                >
+                                  <option value="">— Unassigned / No Rider —</option>
+                                  {(allRiders ?? []).map((r) => {
+                                    const isBusy = busyPhones.has(r.phone) && r.phone !== o.rider_phone;
+                                    return (
+                                      <option key={r.id} value={r.phone} disabled={isBusy}>
+                                        {r.name} · {r.phone} {isBusy ? "(Busy)" : ""}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
                                 <div className="flex justify-end">
                                   <button
                                     onClick={() => updateRiderDetails(o.id)}
                                     className="inline-flex items-center gap-1 rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition whitespace-nowrap"
                                   >
-                                    Save Rider Info
+                                    Save Rider Assignment
                                   </button>
                                 </div>
                               </div>
