@@ -80,25 +80,25 @@ function Landing() {
               Order from the best local kitchens. Pay easily with bank transfers, track real-time delivery, and enjoy delicious meals.
             </p>
 
-            {/* Bold CTA Button */}
+            {/* Bold two-tone CTA Button inspired by the uploaded pill button */}
             <Link
               to="/auth/customer"
-              className="mt-8 group relative flex w-full max-w-xl flex-col items-center justify-center overflow-hidden rounded-3xl bg-primary px-6 py-6 md:py-7 text-primary-foreground text-center shadow-2xl shadow-primary/40 ring-2 ring-primary-foreground/20 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="mt-8 group relative inline-flex w-full max-w-md items-stretch overflow-hidden rounded-full shadow-2xl shadow-black/15 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
             >
-              {/* Meal-plate decorative rim */}
-              <span className="pointer-events-none absolute inset-3 rounded-2xl border border-dashed border-primary-foreground/25" />
-              {/* shimmer sweep */}
-              <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-              {/* Chef plate emblem */}
-              <div className="relative mb-2 grid h-11 w-11 place-items-center rounded-full bg-primary-foreground/15 ring-2 ring-primary-foreground/30">
-                <UtensilsCrossed className="h-5 w-5" />
+              {/* Left body — lime green with centered text */}
+              <div className="relative flex flex-1 flex-col items-center justify-center bg-[var(--hero-cta-lime)] px-6 py-5 md:py-6 text-center">
+                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+                <span className="relative text-2xl md:text-3xl font-black text-white tracking-tight leading-none drop-shadow-sm">
+                  Order your Meal
+                </span>
+                <span className="relative mt-1.5 text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#191919]">
+                  BEFORE ANYTHING ELSE
+                </span>
               </div>
-              <span className="relative text-2xl md:text-3xl font-black tracking-tight leading-tight">
-                Order your Meal
-              </span>
-              <span className="relative mt-1 inline-flex items-center gap-1.5 text-warning text-[11px] md:text-xs font-bold tracking-[0.24em] uppercase">
-                Before Anything Else <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+              {/* Right cap — red-orange with chevron arrow */}
+              <div className="relative flex aspect-square items-center justify-center bg-[var(--hero-cta-red)] md:w-20 w-16 shrink-0">
+                <ChevronRight className="h-8 w-8 md:h-10 md:w-10 text-white transition-transform duration-300 group-hover:translate-x-1" strokeWidth={3} />
+              </div>
             </Link>
 
             {/* Circular Category Bubbles */}
