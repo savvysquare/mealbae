@@ -40,7 +40,9 @@ export const bootstrapAdmin = createServerFn({ method: "POST" })
       await admin.auth.admin.updateUserById(user.id, { password: expected });
     }
     // Ensure admin role
-    await admin.from("user_roles").upsert({ user_id: user.id, role: "admin" }, { onConflict: "user_id,role" });
+    await admin.from("user_roles").delete().eq("user_id", user.id).eq("role", "admin");
+    const { error: roleErr } = await admin.from("user_roles").insert({ user_id: user.id, role: "admin" });
+    if (roleErr) throw new Error(roleErr.message);
     return { ok: true as const, email: ADMIN_EMAIL };
   });
 
