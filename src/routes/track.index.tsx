@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatNaira, STATUS_LABELS } from "@/lib/format";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/track")({
+export const Route = createFileRoute("/track/")({
   component: TrackPage,
   head: () => ({
     meta: [

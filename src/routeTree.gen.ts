@@ -9,12 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TrackRouteImport } from './routes/track'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as RRestaurantIdRouteImport } from './routes/r.$restaurantId'
 import { Route as AuthStaffRouteImport } from './routes/auth.staff'
 import { Route as AuthenticatedRestaurantRouteImport } from './routes/_authenticated/restaurant'
@@ -31,11 +31,6 @@ import { Route as AuthenticatedAdminOverviewRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminMealsRouteImport } from './routes/_authenticated/admin.meals'
 import { Route as AuthenticatedAdminDispatchRouteImport } from './routes/_authenticated/admin.dispatch'
 
-const TrackRoute = TrackRouteImport.update({
-  id: '/track',
-  path: '/track',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -58,6 +53,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackIndexRoute = TrackIndexRouteImport.update({
+  id: '/track/',
+  path: '/track/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RRestaurantIdRoute = RRestaurantIdRouteImport.update({
@@ -149,12 +149,12 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
-  '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/track/': typeof TrackIndexRoute
   '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
   '/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/admin/overview': typeof AuthenticatedAdminOverviewRoute
@@ -171,11 +171,11 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
-  '/track': typeof TrackRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/track': typeof TrackIndexRoute
   '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
   '/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/admin/overview': typeof AuthenticatedAdminOverviewRoute
@@ -194,12 +194,12 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
-  '/track': typeof TrackRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/_authenticated/restaurant': typeof AuthenticatedRestaurantRouteWithChildren
   '/auth/staff': typeof AuthStaffRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
+  '/track/': typeof TrackIndexRoute
   '/_authenticated/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
   '/_authenticated/admin/meals': typeof AuthenticatedAdminMealsRoute
   '/_authenticated/admin/overview': typeof AuthenticatedAdminOverviewRoute
@@ -218,12 +218,12 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
-    | '/track'
     | '/admin'
     | '/orders'
     | '/restaurant'
     | '/auth/staff'
     | '/r/$restaurantId'
+    | '/track/'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
@@ -240,11 +240,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
-    | '/track'
     | '/admin'
     | '/restaurant'
     | '/auth/staff'
     | '/r/$restaurantId'
+    | '/track'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
@@ -262,12 +262,12 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
-    | '/track'
     | '/_authenticated/admin'
     | '/_authenticated/orders'
     | '/_authenticated/restaurant'
     | '/auth/staff'
     | '/r/$restaurantId'
+    | '/track/'
     | '/_authenticated/admin/dispatch'
     | '/_authenticated/admin/meals'
     | '/_authenticated/admin/overview'
@@ -286,20 +286,13 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   HomeRoute: typeof HomeRoute
-  TrackRoute: typeof TrackRoute
   AuthStaffRoute: typeof AuthStaffRoute
   RRestaurantIdRoute: typeof RRestaurantIdRoute
+  TrackIndexRoute: typeof TrackIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/track': {
-      id: '/track'
-      path: '/track'
-      fullPath: '/track'
-      preLoaderRoute: typeof TrackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -333,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/': {
+      id: '/track/'
+      path: '/track'
+      fullPath: '/track/'
+      preLoaderRoute: typeof TrackIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/r/$restaurantId': {
@@ -514,9 +514,9 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   HomeRoute: HomeRoute,
-  TrackRoute: TrackRoute,
   AuthStaffRoute: AuthStaffRoute,
   RRestaurantIdRoute: RRestaurantIdRoute,
+  TrackIndexRoute: TrackIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
