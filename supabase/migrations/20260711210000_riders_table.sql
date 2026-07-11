@@ -23,6 +23,15 @@ CREATE POLICY "Admins manage riders" ON public.riders FOR ALL TO authenticated
 CREATE POLICY "Staff read riders" ON public.riders FOR SELECT TO authenticated
   USING (is_active = true);
 
+-- Create trigger function if not exists
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
 -- Trigger to keep updated_at fresh
 CREATE TRIGGER riders_updated_at
   BEFORE UPDATE ON public.riders
