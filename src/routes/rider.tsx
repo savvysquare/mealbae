@@ -56,37 +56,25 @@ function RiderDashboard() {
     }
   }
 
-  // Fetch available pickups (ready_for_pickup with no rider assigned)
+  // Fetch available pickups securely via RPC (bypasses RLS)
   const { data: availablePickups } = useQuery({
     queryKey: ["available-pickups"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, restaurants(*)")
-        .in("status", ["preparing", "ready_for_pickup"])
-        .is("rider_phone", null)
-        .order("created_at", { ascending: true });
+      const { data, error } = await supabase.rpc("get_available_pickups");
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     enabled: isLoggedIn,
     refetchInterval: 10000,
   });
 
-  // Fetch my deliveries (active ones assigned to my phone number)
+  // Fetch my deliveries securely via RPC (bypasses RLS)
   const { data: myDeliveries } = useQuery({
     queryKey: ["my-deliveries", riderPhone],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, restaurants(*)")
-        .eq("rider_phone", riderPhone)
-        .neq("status", "delivered")
-        .neq("status", "cancelled")
-        .neq("status", "rejected")
-        .order("created_at", { ascending: true });
+      const { data, error } = await supabase.rpc("get_rider_assignments", { _phone: riderPhone });
       if (error) throw error;
-      return data;
+      return data as any[];
     },
     enabled: isLoggedIn && !!riderPhone,
     refetchInterval: 10000,
@@ -210,15 +198,15 @@ function RiderDashboard() {
 
   const acceptPickup = async (orderId: string) => {
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({
-          rider_name: riderName,
-          rider_phone: riderPhone
-        })
-        .eq("id", orderId);
+      const { data, error } = await supabase.rpc("accept_pickup_guest", {
+        _order_id: orderId,
+        _rider_name: riderName,
+        _rider_phone: riderPhone,
+      });
 
       if (error) throw error;
+      if (!data) throw new Error("Could not claim pickup. Order may have already been assigned.");
+
       toast.success("Pickup accepted! Head to the restaurant.");
       qc.invalidateQueries({ queryKey: ["available-pickups"] });
       qc.invalidateQueries({ queryKey: ["my-deliveries", riderPhone] });
@@ -230,13 +218,16 @@ function RiderDashboard() {
 
   const updateStatus = async (orderId: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: status as any })
-        .eq("id", orderId);
+      const { data, error } = await supabase.rpc("update_order_status_rider", {
+        _order_id: orderId,
+        _rider_phone: riderPhone,
+        _status: status,
+      });
 
       if (error) throw error;
-      toast.success(`Order status updated to: ${STATUS_LABELS[status]}`);
+      if (!data) throw new Error("Could not update order. You might not be assigned to it.");
+
+      toast.success(`Order status updated to: ${STATUS_LABELS[status] ?? status}`);
       qc.invalidateQueries({ queryKey: ["my-deliveries", riderPhone] });
     } catch (e: any) {
       toast.error(e.message || "Failed to update status");
