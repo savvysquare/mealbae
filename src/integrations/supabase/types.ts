@@ -383,6 +383,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_order_paid_by_phone: {
+        Args: { _order_id: string; _phone: string }
+        Returns: boolean
+      }
       staff_restaurant_id: { Args: { _user_id: string }; Returns: string }
       track_orders_by_phone: {
         Args: { _phone: string }
