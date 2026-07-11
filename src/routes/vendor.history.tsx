@@ -14,7 +14,7 @@ function History() {
       const { data, error } = await supabase.from("orders")
         .select("*")
         .eq("restaurant_id", restaurantId)
-        .in("status", ["delivered", "rejected", "cancelled"])
+        .in("status", ["delivered", "received", "rejected", "cancelled"])
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;

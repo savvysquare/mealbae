@@ -48,7 +48,7 @@ function Overview() {
   // Determine which riders are currently busy on an assignment
   const busyPhones = new Set(
     (data ?? [])
-      .filter((o: any) => o.rider_phone && !["delivered", "cancelled", "rejected"].includes(o.status))
+      .filter((o: any) => o.rider_phone && !["delivered", "received", "cancelled", "rejected"].includes(o.status))
       .map((o: any) => o.rider_phone)
   );
 
