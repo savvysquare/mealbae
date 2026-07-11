@@ -8,7 +8,7 @@ import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Search, ShoppingBag, Clock, Store, Star, SlidersHorizontal } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
-export const Route = createFileRoute("/_authenticated/home")({ component: Home });
+export const Route = createFileRoute("/home")({ component: Home });
 
 interface RestaurantRow {
   id: string;
@@ -100,7 +100,7 @@ function Home() {
     <AppShell
       right={
         <div className="flex items-center gap-2">
-          {role === "restaurant_staff" && (
+          {user && role === "restaurant_staff" && (
             <Link
               to="/restaurant/orders"
               className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
@@ -108,7 +108,7 @@ function Home() {
               Restaurant panel
             </Link>
           )}
-          {role === "admin" && (
+          {user && role === "admin" && (
             <Link
               to="/admin/overview"
               className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
@@ -116,12 +116,21 @@ function Home() {
               Admin panel
             </Link>
           )}
-          <Link
-            to="/orders"
-            className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
-          >
-            My Orders
-          </Link>
+          {user ? (
+            <Link
+              to="/orders"
+              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
+            >
+              My Orders
+            </Link>
+          ) : (
+            <Link
+              to="/track"
+              className="rounded-full border border-border px-4 py-2 text-xs font-semibold hover:bg-secondary transition"
+            >
+              Track order
+            </Link>
+          )}
           <button
             onClick={() => nav({ to: "/cart" })}
             className="relative rounded-full bg-primary p-2.5 text-primary-foreground shadow-sm hover:brightness-105 transition cursor-pointer"
@@ -133,7 +142,7 @@ function Home() {
               </span>
             )}
           </button>
-          <SignOutButton />
+          {user && <SignOutButton />}
         </div>
       }
     >

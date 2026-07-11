@@ -372,11 +372,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_order_tracking: {
+        Args: { _order_id: string; _phone: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      mark_order_paid_by_phone: {
+        Args: { _order_id: string; _phone: string }
         Returns: boolean
       }
       staff_restaurant_id: { Args: { _user_id: string }; Returns: string }
