@@ -107,6 +107,17 @@
       font-size: 16px;
     }
   }
+  button,
+  a,
+  select,
+  input[type="button"],
+  input[type="submit"],
+  input[type="checkbox"],
+  input[type="radio"],
+  label,
+  [role="button"] {
+    cursor: pointer;
+  }
 }
 
 @utility card-soft {

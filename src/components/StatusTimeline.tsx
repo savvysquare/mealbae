@@ -10,8 +10,11 @@ export function StatusTimeline({ current, events }: {
 
   if (isTerminalBad) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive-foreground">
-        <div className="font-medium">Order {current === "rejected" ? "rejected by restaurant" : "cancelled"}</div>
+      <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="font-semibold flex items-center gap-2">
+          <span>❌</span>
+          Order {current === "rejected" ? "rejected by restaurant" : "cancelled"}
+        </div>
       </div>
     );
   }

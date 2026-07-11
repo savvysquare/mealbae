@@ -118,19 +118,23 @@ function TrackDetail() {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
             <div className="md:col-span-3">
-              <section className={`card-soft p-5 ${["rejected", "cancelled"].includes(data.order.status) ? "border-l-4 border-destructive bg-destructive/5" : ""}`}>
-                <div className="text-xs uppercase tracking-wider text-muted-foreground">Order #{data.order.short_code}</div>
-                <div className={`mt-1 font-display text-2xl font-bold ${["rejected", "cancelled"].includes(data.order.status) ? "text-destructive" : ""}`}>
+              <section className={`card-soft p-6 ${["rejected", "cancelled"].includes(data.order.status) ? "border-t-4 border-destructive" : ""}`}>
+                <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Order #{data.order.short_code}</div>
+                <div className={`mt-1.5 font-display text-2xl font-black ${["rejected", "cancelled"].includes(data.order.status) ? "text-destructive" : ""}`}>
                   {data.order.status === "rejected" ? (
-                    <span className="flex items-center gap-2"><XCircle className="h-6 w-6" /> {STATUS_LABELS[data.order.status]}</span>
+                    <span className="flex items-center gap-2"><XCircle className="h-6 w-6 shrink-0" /> {STATUS_LABELS[data.order.status]}</span>
                   ) : STATUS_LABELS[data.order.status]}
                 </div>
-                <p className="mt-1 text-sm text-muted-foreground">{data.order.restaurant_name}</p>
+                <p className="mt-1 text-sm text-muted-foreground font-medium">{data.order.restaurant_name}</p>
                 {/* Rejection reason banner */}
                 {data.order.status === "rejected" && (
-                  <div className="mt-3 rounded-xl bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm">
-                    <span className="font-semibold text-destructive">Reason: </span>
-                    <span className="text-destructive/80">{(data.order as any).rejection_reason ?? "No reason provided"}</span>
+                  <div className="mt-4 p-4 rounded-xl bg-destructive/5 border border-destructive/20 text-sm">
+                    <div className="font-bold text-destructive flex items-center gap-1.5 mb-1">
+                      <span>Reason for Rejection:</span>
+                    </div>
+                    <div className="text-foreground font-medium text-sm leading-relaxed">
+                      "{(data.order as any).rejection_reason ?? "No reason provided"}"
+                    </div>
                   </div>
                 )}
                 <div className="mt-6"><StatusTimeline current={data.order.status} events={data.events} /></div>
@@ -169,25 +173,27 @@ function TrackDetail() {
 
               {/* Place another order — shown when rejected */}
               {data.order.status === "rejected" && (
-                <section className="card-soft p-5 border-l-4 border-primary">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xl">🍽️</span>
-                    <h2 className="font-display text-base font-bold">Still hungry?</h2>
+                <section className="card-soft p-6 border-l-4 border-primary bg-primary/5 shadow-sm space-y-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">🍕</span>
+                      <h2 className="font-display text-lg font-bold text-foreground">Still hungry?</h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Your order was rejected, but you can quickly reorder from the same restaurant menu or check out other great options nearby.
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    We're sorry your order was rejected. You can try ordering again from the same restaurant or browse others.
-                  </p>
-                  <div className="flex flex-col gap-2">
+                  <div className="space-y-2">
                     <Link
                       to="/r/$restaurantId"
                       params={{ restaurantId: data.order.restaurant_id }}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:opacity-90 transition"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:opacity-90 hover:scale-[1.01] active:scale-[0.99] transition shadow-md shadow-primary/20"
                     >
-                      Order again from {data.order.restaurant_name}
+                      Reorder from {data.order.restaurant_name}
                     </Link>
                     <Link
                       to="/"
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary transition"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground transition"
                     >
                       Browse other restaurants
                     </Link>
