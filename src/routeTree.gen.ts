@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VendorRouteImport } from './routes/vendor'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -24,6 +25,11 @@ import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOrdersIndexRouteImport } from './routes/_authenticated/orders.index'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
 
+const VendorRoute = VendorRouteImport.update({
+  id: '/vendor',
+  path: '/vendor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
@@ -102,6 +108,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
   '/track': typeof TrackRouteWithChildren
+  '/vendor': typeof VendorRoute
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/vendor': typeof VendorRoute
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
   '/admin': typeof AdminIndexRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
   '/track': typeof TrackRouteWithChildren
+  '/vendor': typeof VendorRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/r/$restaurantId': typeof RRestaurantIdRoute
   '/track/$id': typeof TrackIdRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/home'
     | '/track'
+    | '/vendor'
     | '/orders'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/vendor'
     | '/r/$restaurantId'
     | '/track/$id'
     | '/admin'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/home'
     | '/track'
+    | '/vendor'
     | '/_authenticated/orders'
     | '/r/$restaurantId'
     | '/track/$id'
@@ -193,11 +205,19 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   HomeRoute: typeof HomeRoute
   TrackRoute: typeof TrackRouteWithChildren
+  VendorRoute: typeof VendorRoute
   RRestaurantIdRoute: typeof RRestaurantIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/vendor': {
+      id: '/vendor'
+      path: '/vendor'
+      fullPath: '/vendor'
+      preLoaderRoute: typeof VendorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
@@ -353,6 +373,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   HomeRoute: HomeRoute,
   TrackRoute: TrackRouteWithChildren,
+  VendorRoute: VendorRoute,
   RRestaurantIdRoute: RRestaurantIdRoute,
 }
 export const routeTree = rootRouteImport
