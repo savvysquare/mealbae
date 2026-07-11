@@ -380,6 +380,17 @@ export type Database = {
         Returns: boolean
       }
       staff_restaurant_id: { Args: { _user_id: string }; Returns: string }
+      track_orders_by_phone: {
+        Args: { _phone: string }
+        Returns: {
+          created_at: string
+          id: string
+          restaurant_name: string
+          short_code: string
+          status: Database["public"]["Enums"]["order_status"]
+          total_naira: number
+        }[]
+      }
     }
     Enums: {
       app_role: "customer" | "restaurant_staff" | "admin"
