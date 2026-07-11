@@ -239,11 +239,32 @@ function Overview() {
                                     Notes: "{o.notes}"
                                   </div>
                                 )}
-                              </div>
-                            </div>
-
                             {/* Right Side: Management actions */}
                             <div className="space-y-4">
+                              {/* Quick Confirm Payment */}
+                              {o.status === "pending_payment" && (
+                                <div className="bg-success/5 p-4 rounded-2xl border border-success/30 space-y-2">
+                                  <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-success-foreground">
+                                    <span>Payment Status</span>
+                                    {o.payment_submitted_at ? (
+                                      <span className="rounded bg-success/20 px-1.5 py-0.5 text-[10px]">
+                                        Marked Paid by Customer
+                                      </span>
+                                    ) : (
+                                      <span className="rounded bg-secondary/50 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                        Awaiting customer action
+                                      </span>
+                                    )}
+                                  </div>
+                                  <button
+                                    onClick={() => updateOrderStatus(o.id, "payment_confirmed")}
+                                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-success px-4 py-3 text-sm font-bold text-success-foreground hover:opacity-90 transition whitespace-nowrap cursor-pointer shadow-md shadow-success/20"
+                                  >
+                                    <CheckCircle2 className="h-4 w-4" /> Confirm Payment
+                                  </button>
+                                </div>
+                              )}
+
                               {/* Order Status Management */}
                               <div className="bg-white p-4 rounded-2xl border border-border/80">
                                 <h4 className="font-semibold text-sm mb-2">Manage Order Status</h4>
