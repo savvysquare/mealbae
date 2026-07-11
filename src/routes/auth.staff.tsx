@@ -61,8 +61,9 @@ function StaffAuth() {
       </button>
       <p className="mt-8 text-xs text-muted-foreground">
         Customer?{" "}
-        <Link to="/auth/customer" className="text-primary underline">Use phone sign-in</Link>.
+        <Link to="/" className="text-primary underline">Go to ordering</Link>.
       </p>
+
     </div>
   );
 }
