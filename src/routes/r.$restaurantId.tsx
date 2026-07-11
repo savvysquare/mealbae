@@ -94,20 +94,6 @@ function RestaurantPage() {
             <ChevronLeft className="h-4 w-4" /> Back to dashboard
           </Link>
 
-          {/* Banner cover image */}
-          <div className="relative aspect-[21/6] w-full overflow-hidden rounded-xl bg-secondary mb-6">
-            {restaurant.image_url ? (
-              <img
-                src={restaurant.image_url}
-                alt={restaurant.name}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center bg-secondary text-muted-foreground font-semibold text-lg">
-                {restaurant.name}
-              </div>
-            )}
-          </div>
 
           {/* Restaurant details header */}
           <div className="mb-6 pb-6 border-b border-border">

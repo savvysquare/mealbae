@@ -262,24 +262,11 @@ function Home() {
                 params={{ restaurantId: r.id }}
                 className="group flex flex-col overflow-hidden rounded-xl bg-white border border-border/80 transition-all duration-300 hover:shadow-md hover:border-border"
               >
-                <div className="aspect-[16/10] w-full overflow-hidden bg-secondary relative">
-                  {r.image_url ? (
-                    <img
-                      src={r.image_url}
-                      alt={r.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-muted-foreground font-semibold">
-                      {r.name}
-                    </div>
-                  )}
-                  {!open && (
-                    <div className="absolute inset-0 bg-black/45 flex items-center justify-center text-white font-bold text-sm">
-                      Closed
-                    </div>
-                  )}
-                </div>
+                {!open && (
+                  <div className="bg-warning/10 border-b border-warning/20 px-4 py-1.5 text-center text-xs font-bold text-warning-foreground">
+                    Closed
+                  </div>
+                )}
 
                 <div className="p-4 flex-1 flex flex-col justify-between">
                   <div>
