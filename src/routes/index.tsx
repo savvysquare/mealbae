@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Logo } from "@/components/Logo";
-import { Clock, ArrowRight, Sparkles, Star } from "lucide-react";
+import { Clock, ArrowRight, Sparkles, Star, ChefHat } from "lucide-react";
 import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
