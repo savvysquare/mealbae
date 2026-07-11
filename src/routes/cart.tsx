@@ -23,7 +23,7 @@ function CartPage() {
               Add items from a restaurant or store to start a new cart
             </p>
             <Link
-              to="/"
+              to="/home"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-105 transition-all cursor-pointer"
             >
               Browse Restaurants <ArrowRight className="h-4 w-4" />
