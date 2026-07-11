@@ -1,38 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Logo } from "@/components/Logo";
-import { Clock, ArrowRight, Star, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
-
-interface Restaurant {
-  id: string;
-  name: string;
-  address: string;
-  description: string | null;
-  image_url: string | null;
-  opens_at: string;
-  closes_at: string;
-  is_open_override: boolean | null;
-  delivery_fee_naira: number;
-}
-
-function useRestaurants() {
-  return useQuery({
-    queryKey: ["restaurants"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("restaurants").select("*").order("name");
-      if (error) throw error;
-      return data as Restaurant[];
-    },
-  });
-}
 
 const CATEGORIES = [
   { name: "Swallow", emoji: "🍲" },
@@ -44,7 +18,6 @@ const CATEGORIES = [
 ];
 
 function Landing() {
-  const { data: restaurants } = useRestaurants();
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
