@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
 import { Logo } from "@/components/Logo";
-import { Search, Clock, ArrowRight, MapPin, Star } from "lucide-react";
+import { Clock, ArrowRight, Sparkles, Star } from "lucide-react";
 import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
@@ -79,27 +79,19 @@ function Landing() {
               Order from the best local kitchens. Pay easily with bank transfers, track real-time delivery, and enjoy delicious meals.
             </p>
 
-            {/* Giant DoorDash Address Search Bar */}
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="mt-8 flex w-full max-w-xl items-center gap-2 rounded-full border border-border bg-white p-1 shadow-md focus-within:ring-2 focus-within:ring-primary/25"
+            {/* Bold CTA Button */}
+            <Link
+              to="/auth/customer"
+              className="mt-8 group relative inline-flex w-full max-w-xl items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-6 py-4 md:py-5 font-extrabold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:brightness-105 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
-              <div className="flex flex-1 items-center pl-4 gap-2">
-                <MapPin className="h-5 w-5 text-primary shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Enter delivery address"
-                  className="w-full bg-transparent py-2.5 text-sm outline-none placeholder:text-muted-foreground/75 font-medium"
-                />
-              </div>
-              <Link
-                to="/auth/customer"
-                aria-label="Find food"
-                className="flex items-center justify-center h-11 w-11 rounded-full bg-primary text-primary-foreground hover:brightness-105 transition shadow-sm shrink-0"
-              >
-                <Search className="h-4 w-4" />
-              </Link>
-            </form>
+              {/* shimmer sweep */}
+              <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+              <Sparkles className="relative h-5 w-5 shrink-0" />
+              <span className="relative text-center text-base md:text-lg tracking-tight">
+                Order your Meal, Before Anything Else
+              </span>
+              <ArrowRight className="relative h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
+            </Link>
 
             {/* Circular Category Bubbles */}
             <div className="mt-8">
