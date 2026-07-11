@@ -56,7 +56,7 @@ function TrackPage() {
     if (rows.length === 0) {
       toast.message("No orders found for that phone number.");
     } else if (rows.length === 1) {
-      nav({ to: "/orders/$id", params: { id: rows[0].id } });
+      nav({ to: "/track/$id", params: { id: rows[0].id }, search: { phone: p } });
     }
   }
 
