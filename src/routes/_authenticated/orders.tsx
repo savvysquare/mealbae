@@ -56,8 +56,10 @@ function OrdersList() {
               </div>
               <div className="mt-2 text-sm text-muted-foreground">{o.order_items?.length ?? 0} items · {formatNaira(o.total_naira)}</div>
               <div className="mt-3 flex gap-2">
-                <Link to="/orders/$id" params={{ id: o.id }} className="rounded-full border border-border px-3 py-1.5 text-xs">Track</Link>
-                <button onClick={() => reorder(o)} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">
+                <Link to="/orders/$id" params={{ id: o.id }} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:brightness-105">
+                  Track
+                </Link>
+                <button onClick={() => reorder(o)} className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs font-medium hover:bg-accent">
                   <RefreshCw className="h-3 w-3" /> Reorder
                 </button>
               </div>
