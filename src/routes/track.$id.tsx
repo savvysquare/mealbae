@@ -167,6 +167,34 @@ function TrackDetail() {
                 </section>
               )}
 
+              {/* Place another order — shown when rejected */}
+              {data.order.status === "rejected" && (
+                <section className="card-soft p-5 border-l-4 border-primary">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xl">🍽️</span>
+                    <h2 className="font-display text-base font-bold">Still hungry?</h2>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    We're sorry your order was rejected. You can try ordering again from the same restaurant or browse others.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      to="/r/$restaurantId"
+                      params={{ restaurantId: data.order.restaurant_id }}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground hover:opacity-90 transition"
+                    >
+                      Order again from {data.order.restaurant_name}
+                    </Link>
+                    <Link
+                      to="/"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-secondary transition"
+                    >
+                      Browse other restaurants
+                    </Link>
+                  </div>
+                </section>
+              )}
+
               {data.order.status === "pending_payment" && bank && (
                 <section className="card-soft p-5">
                   <h2 className="font-display text-lg font-bold">Bank transfer</h2>
