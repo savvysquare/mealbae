@@ -14,10 +14,10 @@ async function signOutToVendor() {
   window.location.href = "/vendor";
 }
 
-const desktopLinkClass = "rounded-full border border-border px-3 py-1.5 text-xs";
-const desktopActiveClass = { className: "rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground" };
-const mobileLinkClass = "flex w-full rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-secondary";
-const mobileActiveClass = { className: "flex w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground" };
+const desktopLinkClass = "rounded-full border border-border px-3 py-1.5 text-xs whitespace-nowrap";
+const desktopActiveClass = { className: "rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground whitespace-nowrap" };
+const mobileLinkClass = "flex w-full rounded-xl px-4 py-3 text-sm font-medium transition hover:bg-secondary whitespace-nowrap";
+const mobileActiveClass = { className: "flex w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground whitespace-nowrap" };
 
 function HamburgerMenu({ children, signOut }: { children: ReactNode; signOut: () => void }) {
   const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ function HamburgerMenu({ children, signOut }: { children: ReactNode; signOut: ()
         {children}
         <button
           onClick={signOut}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-secondary transition"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-secondary transition whitespace-nowrap"
         >
           <LogOut className="h-3.5 w-3.5" /> Sign out
         </button>

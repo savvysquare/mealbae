@@ -28,6 +28,7 @@ export const STATUS_LABELS: Record<string, string> = {
   accepted_by_restaurant: "Accepted",
   preparing: "Preparing",
   ready_for_pickup: "Ready for pickup",
+  rider_arrived_at_restaurant: "Rider at restaurant",
   out_for_delivery: "Out for delivery",
   delivered: "Delivered",
   rejected: "Rejected",
@@ -41,6 +42,7 @@ export const STATUS_ORDER = [
   "accepted_by_restaurant",
   "preparing",
   "ready_for_pickup",
+  "rider_arrived_at_restaurant",
   "out_for_delivery",
   "delivered",
 ] as const;

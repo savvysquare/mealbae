@@ -62,7 +62,7 @@ function AdminMeals() {
                   {cats?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
                 <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" className="rounded-xl border border-input bg-surface px-3 py-2 text-sm md:col-span-3" />
-                <button onClick={addMeal} className="inline-flex items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground"><Plus className="h-4 w-4" /> Add</button>
+                <button onClick={addMeal} className="inline-flex items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-nowrap"><Plus className="h-4 w-4" /> Add</button>
               </div>
             </section>
 

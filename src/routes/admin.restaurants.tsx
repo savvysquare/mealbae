@@ -41,7 +41,7 @@ function AdminRestaurants() {
             <label className="text-xs">Opens<input type="time" value={form.opens_at} onChange={(e) => setForm({ ...form, opens_at: e.target.value })} className="mt-1 w-full rounded-xl border border-input bg-surface px-3 py-2 text-sm" /></label>
             <label className="text-xs">Closes<input type="time" value={form.closes_at} onChange={(e) => setForm({ ...form, closes_at: e.target.value })} className="mt-1 w-full rounded-xl border border-input bg-surface px-3 py-2 text-sm" /></label>
             <label className="text-xs md:col-span-2">Delivery fee (₦)<input type="number" value={form.delivery_fee_naira} onChange={(e) => setForm({ ...form, delivery_fee_naira: parseInt(e.target.value || "0") })} className="mt-1 w-full rounded-xl border border-input bg-surface px-3 py-2 text-sm" /></label>
-            <button onClick={add} className="inline-flex items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground md:col-span-2"><Plus className="h-4 w-4" /> Add restaurant</button>
+            <button onClick={add} className="inline-flex items-center justify-center gap-1 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground md:col-span-2 whitespace-nowrap"><Plus className="h-4 w-4" /> Add restaurant</button>
           </div>
         </section>
 

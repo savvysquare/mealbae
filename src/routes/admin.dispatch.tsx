@@ -59,12 +59,12 @@ function DispatchCard({ order, onAssign, onDelivered }: any) {
         <div className="mt-3 flex flex-wrap gap-2">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Rider name" className="min-w-[140px] flex-1 rounded-xl border border-input bg-surface px-3 py-2 text-sm" />
           <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Rider phone" className="min-w-[140px] flex-1 rounded-xl border border-input bg-surface px-3 py-2 text-sm" />
-          <button onClick={() => onAssign(order.id, name, phone)} className="rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground">Dispatch</button>
+          <button onClick={() => onAssign(order.id, name, phone)} className="rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-nowrap">Dispatch</button>
         </div>
       ) : (
         <div className="mt-3 flex items-center justify-between text-sm">
           <div>Rider: <span className="font-medium">{order.rider_name}</span> — {order.rider_phone}</div>
-          <button onClick={() => onDelivered(order.id)} className="rounded-full bg-success px-3 py-1.5 text-xs font-medium text-success-foreground">Mark delivered</button>
+          <button onClick={() => onDelivered(order.id)} className="rounded-full bg-success px-3 py-1.5 text-xs font-medium text-success-foreground whitespace-nowrap">Mark delivered</button>
         </div>
       )}
     </div>

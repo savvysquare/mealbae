@@ -40,7 +40,7 @@ function Payments() {
             </div>
             <div className="flex items-center gap-3">
               <div className="text-right font-medium">{formatNaira(o.total_naira)}</div>
-              <button onClick={() => confirm(o.id)} className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground">
+              <button onClick={() => confirm(o.id)} className="inline-flex items-center gap-1 rounded-full bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-nowrap">
                 <CheckCircle2 className="h-4 w-4" /> Confirm payment
               </button>
             </div>

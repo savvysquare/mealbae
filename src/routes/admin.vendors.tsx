@@ -74,7 +74,7 @@ function AdminVendors() {
               <button
                 onClick={() => save(r.restaurantId)}
                 disabled={busy === r.restaurantId}
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground disabled:opacity-60 whitespace-nowrap"
               >
                 <KeyRound className="h-3.5 w-3.5" />
                 {busy === r.restaurantId ? "Saving…" : r.hasAccount ? "Update" : "Create"}

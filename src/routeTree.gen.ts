@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VendorRouteImport } from './routes/vendor'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as RiderRouteImport } from './routes/rider'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -43,6 +44,11 @@ const VendorRoute = VendorRouteImport.update({
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiderRoute = RiderRouteImport.update({
+  id: '/rider',
+  path: '/rider',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -167,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/rider': typeof RiderRoute
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
   '/orders': typeof AuthenticatedOrdersRouteWithChildren
@@ -192,6 +199,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/rider': typeof RiderRoute
   '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/rider': typeof RiderRoute
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
@@ -245,6 +254,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/rider'
     | '/track'
     | '/vendor'
     | '/orders'
@@ -270,6 +280,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/rider'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/rider'
     | '/track'
     | '/vendor'
     | '/_authenticated/orders'
@@ -322,6 +334,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   HomeRoute: typeof HomeRoute
+  RiderRoute: typeof RiderRoute
   TrackRoute: typeof TrackRouteWithChildren
   VendorRoute: typeof VendorRouteWithChildren
   RRestaurantIdRoute: typeof RRestaurantIdRoute
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rider': {
+      id: '/rider'
+      path: '/rider'
+      fullPath: '/rider'
+      preLoaderRoute: typeof RiderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -589,6 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   HomeRoute: HomeRoute,
+  RiderRoute: RiderRoute,
   TrackRoute: TrackRouteWithChildren,
   VendorRoute: VendorRouteWithChildren,
   RRestaurantIdRoute: RRestaurantIdRoute,
