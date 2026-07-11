@@ -98,9 +98,7 @@ function OrderTracking() {
                 <div className="flex justify-between items-center"><dt className="text-muted-foreground">Account no.</dt>
                   <dd className="flex items-center gap-2 font-mono font-medium">{bank.account_number} <button onClick={() => copy(bank.account_number)}><Copy className="h-3.5 w-3.5 text-muted-foreground" /></button></dd>
                 </div>
-                <div className="flex justify-between items-center"><dt className="text-muted-foreground">Reference</dt>
-                  <dd className="flex items-center gap-2 font-mono font-medium">MB-{order.short_code} <button onClick={() => copy(`MB-${order.short_code}`)}><Copy className="h-3.5 w-3.5 text-muted-foreground" /></button></dd>
-                </div>
+
               </dl>
               <button onClick={markPaid} disabled={!!order.payment_submitted_at} className="mt-4 w-full rounded-2xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-60">
                 {order.payment_submitted_at ? <><CheckCircle2 className="mr-1 inline h-4 w-4" /> Payment marked — awaiting confirmation</> : "I have paid"}
