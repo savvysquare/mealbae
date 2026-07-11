@@ -44,11 +44,40 @@ function Checkout() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function normalizePhone(p: string) {
+    const trimmed = p.replace(/\s+/g, "");
+    if (trimmed.startsWith("+")) return trimmed;
+    if (trimmed.startsWith("0")) return "+234" + trimmed.slice(1);
+    return "+234" + trimmed;
+  }
+
+  async function ensureSession(): Promise<string | null> {
+    if (user) return user.id;
+    const p = normalizePhone(phone);
+    const digits = p.replace(/\D/g, "");
+    const email = `${digits}@mealbae.local`;
+    const password = `mb_${digits}_pw`;
+    let signIn = await supabase.auth.signInWithPassword({ email, password });
+    if (signIn.error) {
+      const { error: signUpErr } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name || null, phone: p, role: "customer" } },
+      });
+      if (signUpErr) { toast.error(signUpErr.message); return null; }
+      signIn = await supabase.auth.signInWithPassword({ email, password });
+      if (signIn.error) { toast.error(signIn.error.message); return null; }
+    }
+    return signIn.data.user?.id ?? null;
+  }
+
   async function confirmPayment() {
-    if (!cart.restaurantId || !user) return;
+    if (!cart.restaurantId) return;
     setSubmitting(true);
+    const customerId = await ensureSession();
+    if (!customerId) { setSubmitting(false); return; }
     const { data: order, error } = await supabase.from("orders").insert({
-      customer_id: user.id,
+      customer_id: customerId,
       restaurant_id: cart.restaurantId,
       subtotal_naira: subtotal,
       delivery_fee_naira: deliveryFee,
