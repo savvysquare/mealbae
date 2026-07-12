@@ -11,7 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VendorRouteImport } from './routes/vendor'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as SupportRouteImport } from './routes/support'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RiderRouteImport } from './routes/rider'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -47,9 +51,29 @@ const TrackRoute = TrackRouteImport.update({
   path: '/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RiderRoute = RiderRouteImport.update({
   id: '/rider',
   path: '/rider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -179,10 +203,13 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/orders': typeof AuthenticatedOrdersRouteWithChildren
+  '/profile': typeof ProfileRoute
   '/rider': typeof RiderRoute
+  '/search': typeof SearchRoute
+  '/support': typeof SupportRoute
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
-  '/orders': typeof AuthenticatedOrdersRouteWithChildren
   '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -206,7 +233,11 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/orders': typeof AuthenticatedOrdersIndexRoute
+  '/profile': typeof ProfileRoute
   '/rider': typeof RiderRoute
+  '/search': typeof SearchRoute
+  '/support': typeof SupportRoute
   '/admin/dispatch': typeof AdminDispatchRoute
   '/admin/meals': typeof AdminMealsRoute
   '/admin/overview': typeof AdminOverviewRoute
@@ -223,7 +254,6 @@ export interface FileRoutesByTo {
   '/track': typeof TrackIndexRoute
   '/vendor': typeof VendorIndexRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
-  '/orders': typeof AuthenticatedOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -233,7 +263,11 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/home': typeof HomeRoute
+  '/orders': typeof OrdersRoute
+  '/profile': typeof ProfileRoute
   '/rider': typeof RiderRoute
+  '/search': typeof SearchRoute
+  '/support': typeof SupportRoute
   '/track': typeof TrackRouteWithChildren
   '/vendor': typeof VendorRouteWithChildren
   '/_authenticated/orders': typeof AuthenticatedOrdersRouteWithChildren
@@ -263,10 +297,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/orders'
+    | '/profile'
     | '/rider'
+    | '/search'
+    | '/support'
     | '/track'
     | '/vendor'
-    | '/orders'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
@@ -290,7 +327,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/orders'
+    | '/profile'
     | '/rider'
+    | '/search'
+    | '/support'
     | '/admin/dispatch'
     | '/admin/meals'
     | '/admin/overview'
@@ -307,7 +348,6 @@ export interface FileRouteTypes {
     | '/track'
     | '/vendor'
     | '/orders/$id'
-    | '/orders'
   id:
     | '__root__'
     | '/'
@@ -316,7 +356,11 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/home'
+    | '/orders'
+    | '/profile'
     | '/rider'
+    | '/search'
+    | '/support'
     | '/track'
     | '/vendor'
     | '/_authenticated/orders'
@@ -346,7 +390,11 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   HomeRoute: typeof HomeRoute
+  OrdersRoute: typeof OrdersRoute
+  ProfileRoute: typeof ProfileRoute
   RiderRoute: typeof RiderRoute
+  SearchRoute: typeof SearchRoute
+  SupportRoute: typeof SupportRoute
   TrackRoute: typeof TrackRouteWithChildren
   VendorRoute: typeof VendorRouteWithChildren
   RRestaurantIdRoute: typeof RRestaurantIdRoute
@@ -368,11 +416,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rider': {
       id: '/rider'
       path: '/rider'
       fullPath: '/rider'
       preLoaderRoute: typeof RiderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -630,7 +706,11 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   HomeRoute: HomeRoute,
+  OrdersRoute: OrdersRoute,
+  ProfileRoute: ProfileRoute,
   RiderRoute: RiderRoute,
+  SearchRoute: SearchRoute,
+  SupportRoute: SupportRoute,
   TrackRoute: TrackRouteWithChildren,
   VendorRoute: VendorRouteWithChildren,
   RRestaurantIdRoute: RRestaurantIdRoute,
