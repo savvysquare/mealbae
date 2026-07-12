@@ -1,124 +1,112 @@
-# MealBAE — Build Plan
+# MealBae — Chowdeck-style rebuild plan
 
-"Your meal, before anything else." A minimalist DoorDash-style food delivery platform for Osogbo, Nigeria, with three role-based interfaces on one app.
+Scope decisions locked in from your answers:
+- Configurator options are a **global catalog** (admin-defined once, all restaurants inherit; per-restaurant price override optional later).
+- Seed **~15 core Osogbo dishes** with AI images.
+- Categories aren't confirmed — I'll use the sensible set below and you can rename in phase 1.
 
-## Scope of v1
+Approve each phase before I start it. I won't touch the next phase until you say go.
 
-- Customer app: browse, search, cart, checkout via bank transfer, live order tracking, history + reorder.
-- Restaurant dashboard: accept/reject orders, progress status, manage menu.
-- Admin dashboard: all orders, dispatch queue, restaurants & meals CRUD, manual payment confirmation.
-- Order status flow exactly as specified (8 states).
-- Realtime updates on orders via Supabase Realtime.
-- Seed 6 Osogbo restaurants with categorized menus.
+---
 
-## Design
+## Phase 1 — UI shell & navigation (no schema changes)
 
-Warm neutral background (off-white/cream), deep charcoal text, orange primary accent (`oklch` token), soft cards, rounded-2xl, generous spacing. Mobile-first layouts (390px baseline), sticky bottom cart bar on customer app, elegant status timeline. All colors as semantic tokens in `src/styles.css`. No purple, no default Inter.
+**Bottom tab bar** (mobile-first, sticky, matches reference):
+`Home · Search · Orders · Support · Profile`
 
-Fonts: **Fraunces** (display) + **Inter Tight** (body) via `<link>` in root head.
+- `Home` → `/home` (existing restaurant list, retouched)
+- `Search` → new `/search` route, unified meal + restaurant search
+- `Orders` → new `/orders` (replaces `_authenticated/orders`) — anonymous, phone-based, tabs: **My Cart · Ongoing · Completed**. Tracking opens from here.
+- `Support` → new `/support` (WhatsApp/phone contact card)
+- `Profile` → new `/profile` (saved address, phone, past orders lookup by phone — no login)
 
-## Auth
+**Header** unified everywhere: back arrow · page title (left) · location pill "Lagos ▾" or cart badge (right). Landing page keeps its marketing header; every other page uses the retouched app header.
 
-- **Customers**: phone + OTP (Supabase phone auth). NOTE: this requires an SMS provider configured in Cloud auth settings — I'll wire the UI and code; the user will need to enable an SMS provider (Twilio/MessageBird) in Cloud Auth for OTP to actually deliver. I'll note this clearly after build.
-- **Restaurant staff & Admin**: email + password.
-- Roles via a separate `user_roles` table + `has_role()` security-definer function (never on profiles). Roles: `customer`, `restaurant_staff`, `admin`.
-- Route gating: single `/_authenticated` layout owned by the Supabase integration + child pathless layouts `/_authenticated/_customer`, `/_authenticated/_restaurant`, `/_authenticated/_admin` each checking role via router context.
+**Meal-type category chips** on `/home`: horizontally scrollable pill row, no clipped border (`overflow-visible` + padding on the scroller). Proposed set — tell me what to change:
+`All · Swallow · Rice · Fast Food · Snacks · Drinks · Breakfast`
 
-## Data model (Supabase)
+**Uniformity pass**: cards, buttons, pill radii, spacing, empty states, skeletons all use one shared set of classes (`card-soft`, `pill`, `btn-primary`, `skeleton`). Fix the clipped category border.
 
-Tables (all `public`, RLS on, explicit GRANTs):
+**Visual polish only** — no data model changes. Deliverable: app looks like the reference screenshots with your green palette.
 
-- `profiles` (id=auth.users, full_name, phone)
-- `user_roles` (user_id, role enum: customer|restaurant_staff|admin, restaurant_id nullable)
-- `restaurants` (id, name, address, phone, opens_at, closes_at, is_open_override, image_url, description)
-- `menu_categories` (id, restaurant_id, name, sort_order)
-- `meals` (id, restaurant_id, category_id, name, description, price_naira, image_url, is_available)
-- `bank_accounts` (id, restaurant_id nullable — platform-level if null, bank_name, account_name, account_number)
-- `orders` (id, customer_id, restaurant_id, status enum, subtotal, delivery_fee, total, delivery_address, delivery_phone, payment_reference, payment_confirmed_at, rider_name, created_at, updated_at)
-- `order_items` (id, order_id, meal_id, name_snapshot, price_snapshot, quantity)
-- `order_status_events` (id, order_id, status, note, created_at) — powers timeline
+---
 
-Enum `order_status`: pending_payment, payment_confirmed, awaiting_restaurant_acceptance, accepted_by_restaurant, preparing, ready_for_pickup, out_for_delivery, delivered, rejected, cancelled.
+## Phase 2 — Meal configurator + global catalog (schema change)
 
-RLS highlights:
-- Customers read/write own orders, read restaurants+meals (public where `is_available`).
-- Restaurant staff read/update orders for their `restaurant_id`; CRUD meals/categories for their restaurant.
-- Admin (via `has_role`) full access.
-- Restaurants + meals: public SELECT to `anon` + `authenticated`.
-- Trigger: on `orders.status` change → insert into `order_status_events`.
-- Trigger: on new order → status defaults to `pending_payment`.
+New tables (global catalog, admin-managed under `/admin/catalog`):
 
-## Routes
+```text
+option_groups        (id, name, kind: soup|protein|drink|pack_size, required, min/max)
+options              (id, group_id, name, image_url, base_price_naira, sort)
+meal_option_groups   (meal_id, group_id)   -- which groups apply to a meal
+```
 
-Public:
-- `/` — customer landing (redirects into customer app if signed-in customer)
-- `/auth/customer` — phone + OTP
-- `/auth/staff` — email/password for restaurant + admin
-- `/r/$restaurantId` — public restaurant menu (SSR-friendly)
+`meals` gains: `portion_unit` (`portion` | `wrap` | `scoop`), `min_qty`, `max_qty`, `base_price_naira`.
 
-Authenticated (customer):
-- `/_authenticated/_customer/home` — restaurant grid + search + open-now filter
-- `/_authenticated/_customer/cart`
-- `/_authenticated/_customer/checkout`
-- `/_authenticated/_customer/orders` — history + reorder
-- `/_authenticated/_customer/orders/$id` — live tracking timeline
+Cart item shape becomes:
+```text
+{ mealId, quantity, selections: [{ groupId, optionId, quantity }], notes }
+```
 
-Restaurant:
-- `/_authenticated/_restaurant/orders` — new + active tabs
-- `/_authenticated/_restaurant/menu`
-- `/_authenticated/_restaurant/history`
+Order-item snapshot stores the resolved selections as JSON so historical orders don't break when the catalog changes.
 
-Admin:
-- `/_authenticated/_admin/overview`
-- `/_authenticated/_admin/dispatch`
-- `/_authenticated/_admin/restaurants`
-- `/_authenticated/_admin/meals`
-- `/_authenticated/_admin/payments`
+**Configurator UI** (bottom sheet on meal tap): quantity stepper, then each option group with its own picker (radio for single, +/- steppers for multi like protein pieces), live price total, "Add ₦X,XXX" CTA — matches your reference screenshots.
 
-## Search & filters
+**Admin panel `/admin/catalog`**: CRUD for option groups, options, and which meals get which groups.
 
-Server function `searchRestaurants({ query, openNow })`:
-- If `query`: match meals by name (ilike) → return distinct restaurants where meal `is_available` AND restaurant currently open (compare current Africa/Lagos time to `opens_at`/`closes_at`).
-- If `openNow`: filter to currently-open restaurants.
-- Uses publishable server client + public SELECT policies.
+---
 
-## Cart
+## Phase 3 — Ratings, delivery time, rider-at-restaurant
 
-Client-side Zustand store, persisted to localStorage, single-restaurant enforced (adding from another restaurant prompts to clear).
+**Rider-at-restaurant vs ready-for-pickup** (status split):
+Currently `rider_arrived_at_restaurant` and `ready_for_pickup` share the timeline slot. Split so both statuses can coexist: rider-arrived stays checked once passed, ready-for-pickup stays *unchecked* until vendor marks ready even if rider is already there. Timeline shows both dots independently.
 
-## Checkout / Payment
+**Delivery-time display** on order-received (`delivered` status) and on order history:
+Big, bold hero number: `Delivered in 42 min` (from `created_at` → first `delivered` event in `order_status_events`). Placed above the rating card.
 
-- Order created with status `pending_payment`.
-- Screen shows bank account + reference (order short id) and "I have paid" button → sets a `payment_submitted_at` flag (no status change yet).
-- Admin manually confirms → status → `payment_confirmed` → auto-advance to `awaiting_restaurant_acceptance` via trigger.
-- Restaurant Accept → `accepted_by_restaurant`; then Preparing → Ready for Pickup.
-- Admin dispatch assigns rider → `out_for_delivery`. Rider marks Delivered (admin action for v1).
+**Emoji rating 1–5** shown as soon as status hits `delivered`:
+```text
+1 😠  2 😕  3 😐  4 🙂  5 🤩
+```
+Plus optional text review. New table `restaurant_reviews (order_id UNIQUE, restaurant_id, rating 1-5, review_text, delivery_phone, created_at)`. Delivery-phone gate matches existing anonymous tracking pattern.
 
-## Realtime
+Restaurant card shows `⭐ avg(rating) (count)`, materialized via a view `restaurant_rating_stats`. Restaurant detail page lists recent reviews.
 
-Subscribe to `orders` row for tracking screen and to `orders` filtered by restaurant_id / status on dashboards. Invalidate React Query on change.
+**Reorder** button on `/orders` completed tab: hydrates cart from `order_items` snapshot (already partly wired) — will handle new configurator selections too.
 
-## Seed data (migration)
+---
 
-6 Osogbo restaurants with realistic Nigerian menus: **Iya Sikira Amala Spot**, **The Place Osogbo**, **Kilimanjaro Osogbo**, **Chicken Republic Gbongan Rd**, **Osogbo Suya Palace**, **Cool Chops & Grills**. Each with categories (Starters, Mains, Sides, Drinks, Desserts as applicable) and 6–10 meals with Naira prices. One platform bank account seeded.
+## Phase 4 — Seeded meals & images
 
-## Out of scope for v1 (I'll note in delivery)
+15 core Osogbo dishes, one AI image each (`gpt-image-2`, low quality, ~₦ minimal spend):
 
-- Automatic payment gateway (Paystack) — bank transfer + manual confirmation as specified.
-- Real SMS delivery for OTP — requires the user to enable a phone provider in Cloud Auth.
-- Actual rider app — admin marks statuses on rider's behalf.
-- Push notifications — realtime in-app only.
+Amala · Eba · Semo · Pounded Yam · Fufu · Wheat/Tuwo · Jollof Rice · Fried Rice · White Rice & Stew · Beans (Ewa) · Yam & Egg · Spaghetti · Moin Moin · Ewedu & Gbegiri · Asaro (Yam Porridge)
 
-## Implementation order
+Global option seeds:
+- Soups: Egusi, Efo Riro, Ogbono, Okra, Vegetable, Banga
+- Proteins: Chicken (fried/grilled), Turkey, Fish (titus/croaker), Beef, Goat Meat, Ponmo, Egg (boiled/fried), Sausage
+- Drinks: Bottled Water, Coke, Fanta, Sprite, Chivita Juice, Zobo, Kunu
+- Pack size: Small, Big
+- Portion units per swallow: wrap; rice/beans: portion; ewedu/gbegiri: scoop
 
-1. Enable Lovable Cloud.
-2. Migration: enum, tables, GRANTs, RLS, triggers, seed.
-3. Design tokens + fonts + shell.
-4. Auth pages + role-based routing gates.
-5. Customer flow (home → restaurant → cart → checkout → tracking → history).
-6. Restaurant dashboard.
-7. Admin dashboard.
-8. Realtime wiring.
-9. Verify with Playwright screenshots at key screens.
+Admin can assign these to any restaurant's menu with one click.
 
-Ready to build?
+---
+
+## Technical notes
+
+- All new pages: separate routes, own `head()` metadata, mobile-first.
+- Bottom tab is a shared component, hidden on `/`, `/admin/*`, `/vendor/*`, `/rider`, `/checkout`.
+- Configurator schema uses server functions for admin writes; customer reads via publishable client with anon SELECT policies.
+- Reviews table: anon can INSERT gated by matching `delivery_phone` on the order; anyone can SELECT aggregate.
+- All UI uses existing green tokens in `src/styles.css` — no palette change.
+
+---
+
+## What I need from you
+
+1. **Approve Phase 1** to start, or edit the category list first.
+2. Confirm the bottom-tab labels (Home/Search/Orders/Support/Profile) — or swap Support for "Track".
+3. Anything to add/remove from the 15 seed dishes.
+
+I'll ship Phase 1 in one turn, wait for your sign-off, then Phase 2, etc.
