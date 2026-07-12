@@ -60,7 +60,7 @@ function RiderDashboard() {
   const { data: availablePickups } = useQuery({
     queryKey: ["available-pickups"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_available_pickups");
+      const { data, error } = await (supabase.rpc as any)("get_available_pickups");
       if (error) throw error;
       return data as any[];
     },
@@ -72,7 +72,7 @@ function RiderDashboard() {
   const { data: myDeliveries } = useQuery({
     queryKey: ["my-deliveries", riderPhone],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_rider_assignments", { _phone: riderPhone });
+      const { data, error } = await (supabase.rpc as any)("get_rider_assignments", { _phone: riderPhone });
       if (error) throw error;
       return data as any[];
     },
@@ -198,7 +198,7 @@ function RiderDashboard() {
 
   const acceptPickup = async (orderId: string) => {
     try {
-      const { data, error } = await supabase.rpc("accept_pickup_guest", {
+      const { data, error } = await (supabase.rpc as any)("accept_pickup_guest", {
         _order_id: orderId,
         _rider_name: riderName,
         _rider_phone: riderPhone,
@@ -218,7 +218,7 @@ function RiderDashboard() {
 
   const updateStatus = async (orderId: string, status: string) => {
     try {
-      const { data, error } = await supabase.rpc("update_order_status_rider", {
+      const { data, error } = await (supabase.rpc as any)("update_order_status_rider", {
         _order_id: orderId,
         _rider_phone: riderPhone,
         _status: status,
