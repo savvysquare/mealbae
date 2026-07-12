@@ -44,7 +44,7 @@ function CartPage() {
 
               <div className="divide-y divide-border border border-border rounded-xl overflow-hidden">
                 {cart.items.map((item) => (
-                  <div key={item.mealId} className="flex items-center gap-4 p-4 bg-white hover:bg-secondary/30 transition-colors">
+                  <div key={item.cartItemId} className="flex items-center gap-4 p-4 bg-white hover:bg-secondary/30 transition-colors">
                     {/* Meal Image */}
                     {item.imageUrl && (
                       <LazyImage
@@ -57,16 +57,19 @@ function CartPage() {
 
                     {/* Meal Info */}
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-foreground text-sm">{item.name}</div>
-                      <div className="text-sm font-semibold text-primary mt-0.5">
-                        {formatNaira(item.price)}
+                      <div className="font-bold text-foreground text-sm leading-tight">{item.name}</div>
+                      {item.customLabel && item.customLabel !== item.name && (
+                        <div className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">{item.customLabel}</div>
+                      )}
+                      <div className="text-sm font-semibold text-primary mt-1">
+                        {formatNaira(item.price)} × {item.quantity} = {formatNaira(item.price * item.quantity)}
                       </div>
                     </div>
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2 shrink-0">
                       <button
-                        onClick={() => setQty(item.mealId, item.quantity - 1)}
+                        onClick={() => setQty(item.cartItemId, item.quantity - 1)}
                         className="h-7 w-7 rounded-full border border-border flex items-center justify-center hover:bg-secondary transition cursor-pointer"
                       >
                         <Minus className="h-3 w-3" />
@@ -75,13 +78,13 @@ function CartPage() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => setQty(item.mealId, item.quantity + 1)}
+                        onClick={() => setQty(item.cartItemId, item.quantity + 1)}
                         className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:brightness-105 transition cursor-pointer"
                       >
                         <Plus className="h-3 w-3" />
                       </button>
                       <button
-                        onClick={() => remove(item.mealId)}
+                        onClick={() => remove(item.cartItemId)}
                         className="ml-1 h-7 w-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition cursor-pointer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

@@ -2,11 +2,14 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { toast } from "sonner";
 
 export interface CartItem {
+  cartItemId: string;  // unique per customization combo: mealId + options hash
   mealId: string;
-  name: string;
-  price: number;
+  name: string;        // includes customization label e.g. "Amala (2 wraps) + Egusi + 2× Grilled Chicken"
+  price: number;       // total for this line (base + extras) × qty
   quantity: number;
   imageUrl?: string | null;
+  // customization snapshot for display
+  customLabel?: string;
 }
 export interface CartState {
   restaurantId: string | null;
@@ -14,14 +17,14 @@ export interface CartState {
   items: CartItem[];
 }
 
-const KEY = "mealbae.cart.v1";
+const KEY = "mealbae.cart.v2";
 const initial: CartState = { restaurantId: null, restaurantName: null, items: [] };
 
 interface Ctx {
   cart: CartState;
   add: (restaurantId: string, restaurantName: string, item: CartItem) => void;
-  setQty: (mealId: string, qty: number) => void;
-  remove: (mealId: string) => void;
+  setQty: (cartItemId: string, qty: number) => void;
+  remove: (cartItemId: string) => void;
   clear: () => void;
   subtotal: number;
   count: number;
@@ -49,29 +52,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const add: Ctx["add"] = (restaurantId, restaurantName, item) => {
     setCart((prev) => {
       if (prev.restaurantId && prev.restaurantId !== restaurantId) {
-        const proceed = typeof window !== "undefined" && window.confirm(
-          `Clear your cart from ${prev.restaurantName} and start a new order from ${restaurantName}?`,
-        );
+        const proceed =
+          typeof window !== "undefined" &&
+          window.confirm(
+            `Clear your cart from ${prev.restaurantName} and start a new order from ${restaurantName}?`
+          );
         if (!proceed) return prev;
+        toast.success(`${item.name} added to cart`);
         return { restaurantId, restaurantName, items: [item] };
       }
-      const existing = prev.items.find((i) => i.mealId === item.mealId);
+      // Each customization is a separate cart line — no merging by mealId
+      // Only merge if cartItemId matches exactly (e.g. re-adding same exact combo)
+      const existing = prev.items.find((i) => i.cartItemId === item.cartItemId);
       const items = existing
-        ? prev.items.map((i) => i.mealId === item.mealId ? { ...i, quantity: i.quantity + item.quantity } : i)
+        ? prev.items.map((i) =>
+            i.cartItemId === item.cartItemId ? { ...i, quantity: i.quantity + item.quantity } : i
+          )
         : [...prev.items, item];
-      toast.success(`${item.name} added`);
+      toast.success(`${item.name.split(" ")[0]} added!`);
       return { restaurantId, restaurantName, items };
     });
   };
-  const setQty: Ctx["setQty"] = (mealId, qty) => {
-    setCart((prev) => ({ ...prev, items: prev.items.map((i) => i.mealId === mealId ? { ...i, quantity: Math.max(1, qty) } : i) }));
+
+  const setQty: Ctx["setQty"] = (cartItemId, qty) => {
+    setCart((prev) => ({
+      ...prev,
+      items: prev.items.map((i) =>
+        i.cartItemId === cartItemId ? { ...i, quantity: Math.max(1, qty) } : i
+      ),
+    }));
   };
-  const remove: Ctx["remove"] = (mealId) => {
+
+  const remove: Ctx["remove"] = (cartItemId) => {
     setCart((prev) => {
-      const items = prev.items.filter((i) => i.mealId !== mealId);
+      const items = prev.items.filter((i) => i.cartItemId !== cartItemId);
       return items.length === 0 ? initial : { ...prev, items };
     });
   };
+
   const clear = () => setCart(initial);
   const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const count = cart.items.reduce((sum, i) => sum + i.quantity, 0);

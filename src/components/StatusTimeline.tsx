@@ -19,12 +19,18 @@ export function StatusTimeline({ current, events }: {
     );
   }
 
+  // Check if rider has arrived but vendor is still preparing (ready_for_pickup hasn't happened)
+  const isRiderArrivedButNotReady = current === "rider_arrived_at_restaurant" && !events?.some((e) => e.status === "ready_for_pickup");
+
   return (
     <ol className="relative space-y-4">
       {STATUS_ORDER.map((s, i) => {
-        const done = i <= idx;
-        const active = i === idx;
         const event = events?.find((e) => e.status === s);
+        
+        // done if the event actually happened, or it's the current status, or it's an earlier status (unless it's the ready_for_pickup step that was bypassed/not done yet)
+        const done = event !== undefined || current === s || (i < idx && !(isRiderArrivedButNotReady && s === "ready_for_pickup"));
+        const active = current === s;
+
         return (
           <li key={s} className="flex gap-3">
             <div className="relative flex flex-col items-center">

@@ -196,9 +196,14 @@ function Checkout() {
           <h2 className="font-display text-lg font-bold">Order summary</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {cart.items.map((i) => (
-              <li key={i.mealId} className="flex justify-between">
-                <span>{i.quantity}× {i.name}</span>
-                <span>{formatNaira(i.price * i.quantity)}</span>
+              <li key={i.cartItemId} className="flex flex-col gap-0.5 pb-2 last:pb-0">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium text-foreground">{i.quantity}× {i.name.split(" (")[0]}</span>
+                  <span className="font-medium">{formatNaira(i.price * i.quantity)}</span>
+                </div>
+                {i.customLabel && (
+                  <div className="text-[10px] text-muted-foreground pl-4 leading-relaxed">{i.customLabel}</div>
+                )}
               </li>
             ))}
           </ul>
