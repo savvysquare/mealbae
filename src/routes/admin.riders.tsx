@@ -25,12 +25,12 @@ function AdminRiders() {
   const { data: riders, isLoading } = useQuery({
     queryKey: ["admin-riders"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("riders")
         .select("*")
         .order("name");
       if (error) throw error;
-      return data as Rider[];
+      return (data ?? []) as Rider[];
     },
     refetchInterval: 15000,
   });
