@@ -38,7 +38,7 @@ function Overview() {
   const { data: allRiders } = useQuery({
     queryKey: ["riders-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("riders").select("*").eq("is_active", true).order("name");
+      const { data, error } = await (supabase as any).from("riders").select("*").eq("is_active", true).order("name");
       if (error) throw error;
       return data as { id: string; name: string; phone: string }[];
     },
