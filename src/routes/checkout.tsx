@@ -8,6 +8,7 @@ import { PaymentAccountCard } from "@/components/PaymentAccountCard";
 import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
+import { savePhone } from "@/lib/user-phone";
 import { Phone, CheckCircle2, ArrowLeft } from "lucide-react";
 
 type PlaceOrderResult = { id: string; short_code: string };
@@ -89,6 +90,7 @@ function Checkout() {
       }
 
       clear();
+      savePhone(phone);
       toast.success("Order placed! Track your delivery below.");
       // Redirect to the public tracking page using phone for verification
       nav({ to: "/track/$id", params: { id: data.id }, search: { phone } });
