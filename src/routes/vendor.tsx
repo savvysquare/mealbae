@@ -62,15 +62,28 @@ function VendorLogin() {
       const { email } = await getVendorLoginEmail({ data: { restaurantId } });
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
-        toast.error("Incorrect password. Ask an admin to set your vendor password.");
+        if (error.message.toLowerCase().includes("invalid") || error.message.toLowerCase().includes("credentials")) {
+          toast.error(
+            "Login failed. Either no account has been set up for this restaurant, or the password is incorrect. Ask your admin to set your vendor password.",
+            { duration: 6000 }
+          );
+        } else {
+          toast.error(error.message, { duration: 6000 });
+        }
         return;
       }
       toast.success("Signed in");
-      nav({ to: "/vendor/orders" });
+      // Hard redirect to avoid stale context
+      if (typeof window !== "undefined") {
+        window.location.href = "/vendor/orders";
+      } else {
+        nav({ to: "/vendor/orders" });
+      }
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6">

@@ -31,6 +31,14 @@ interface Review {
   customer_name: string; created_at: string;
 }
 
+function formatHour(t: string): string {
+  const [hh, mm] = t.split(":").map(Number);
+  const h12 = ((hh + 11) % 12) + 1;
+  const ampm = hh < 12 ? "AM" : "PM";
+  return `${h12}:${mm.toString().padStart(2, "0")} ${ampm}`;
+}
+
+
 const RATING_EMOJIS: Record<number, string> = { 1: "😡", 2: "☹️", 3: "😐", 4: "🙂", 5: "🥰" };
 
 function RestaurantPage() {
@@ -165,7 +173,7 @@ function RestaurantPage() {
                   : "bg-warning/10 text-warning-foreground border border-warning/20"
               }`}>
                 <span className={`h-2 w-2 rounded-full ${open ? "bg-emerald-500 animate-pulse" : "bg-warning"}`} />
-                {open ? `Open · Until ${restaurant.closes_at.slice(0, 5)}` : `Closed · Opens ${restaurant.opens_at.slice(0, 5)}`}
+              {open ? `Open · Until ${formatHour(restaurant.closes_at)}` : `Closed · Opens ${formatHour(restaurant.opens_at)}`}
               </div>
             </div>
 

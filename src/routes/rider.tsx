@@ -252,6 +252,7 @@ function RiderDashboard() {
                 placeholder="e.g. John Doe"
                 className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
+              <p className="mt-1 text-[11px] text-muted-foreground">Must match exactly what admin registered you as</p>
             </div>
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Phone Number</label>
@@ -263,10 +264,17 @@ function RiderDashboard() {
                 placeholder="e.g. 08012345678"
                 className="w-full rounded-2xl border border-input bg-surface px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
+              <p className="mt-1 text-[11px] text-muted-foreground">The phone number your admin registered for you</p>
             </div>
-            <button className="w-full rounded-2xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 whitespace-nowrap">
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-primary py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 whitespace-nowrap disabled:opacity-60"
+            >
               Enter Portal
             </button>
+            <p className="text-center text-xs text-muted-foreground">
+              Not registered? Contact your admin to be added as a rider.
+            </p>
           </form>
         </div>
       </div>

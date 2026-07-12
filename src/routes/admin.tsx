@@ -52,7 +52,12 @@ function AdminLogin() {
         return;
       }
       toast.success("Signed in");
-      nav({ to: "/admin/overview" });
+      // Hard redirect forces a full page load so beforeLoad re-evaluates the auth session
+      if (typeof window !== "undefined") {
+        window.location.href = "/admin/overview";
+      } else {
+        nav({ to: "/admin/overview" });
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Sign in failed");
     } finally {

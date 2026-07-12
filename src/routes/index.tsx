@@ -1,106 +1,132 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Logo } from "@/components/Logo";
-import { HeaderActions } from "@/components/HeaderActions";
-import { ChevronRight } from "lucide-react";
-
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
-  component: Landing,
+  component: SplashScreen,
 });
 
-const CATEGORIES = [
-  { name: "Swallow", emoji: "🍲" },
-  { name: "Fast Food", emoji: "🍔" },
-  { name: "Chicken", emoji: "🍗" },
-  { name: "Desserts", emoji: "🍰" },
-  { name: "Pizza", emoji: "🍕" },
-  { name: "Drinks", emoji: "🥤" },
-];
+function SplashScreen() {
+  const nav = useNavigate();
+  const [visible, setVisible] = useState(false);
 
-function Landing() {
+  useEffect(() => {
+    // Fade in immediately
+    const t1 = setTimeout(() => setVisible(true), 50);
+    // Navigate after 2 seconds
+    const t2 = setTimeout(() => {
+      nav({ to: "/home" });
+    }, 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [nav]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-white py-3.5 shadow-xs">
-        <div className="mx-auto max-w-7xl px-4 md:px-8 flex items-center justify-between">
-          <Link to="/" className="hover:opacity-90"><Logo /></Link>
-          <HeaderActions />
+    <div
+      className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden"
+      style={{
+        background: "linear-gradient(145deg, #c0392b 0%, #e74c3c 45%, #ff6b5b 100%)",
+        transition: "opacity 0.4s ease",
+        opacity: visible ? 1 : 0,
+      }}
+    >
+      {/* Radial glow behind dish */}
+      <div
+        className="absolute"
+        style={{
+          width: 420,
+          height: 420,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -55%)",
+        }}
+      />
+
+      {/* Dish image — animated float */}
+      <div
+        style={{
+          width: 240,
+          height: 240,
+          marginBottom: 8,
+          animation: "splashFloat 2.5s ease-in-out infinite",
+          filter: "drop-shadow(0 20px 32px rgba(0,0,0,0.32))",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        <img
+          src={heroDish}
+          alt="Delicious meal"
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
+      </div>
+
+      {/* Brand name */}
+      <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
+        <div
+          style={{
+            fontFamily: "'Outfit', 'Inter', sans-serif",
+            fontWeight: 900,
+            fontSize: 48,
+            color: "#fff",
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            textShadow: "0 4px 16px rgba(0,0,0,0.25)",
+          }}
+        >
+          Meal<span style={{ color: "#ffe0dc" }}>BAE</span>
         </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="flex-1 flex items-center bg-secondary/40 py-12 md:py-20 border-b border-border">
-        <div className="w-full mx-auto max-w-7xl px-4 md:px-8 grid gap-8 md:grid-cols-12 items-center">
-          <div className="md:col-span-7 flex flex-col justify-center text-left">
-            <h1 className="font-display text-4xl font-extrabold tracking-tight md:text-6xl text-foreground leading-[1.1]">
-              Your favourite meal, <span className="text-primary text-nowrap">Before Anything Else.</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-lg">
-              Order from the best local kitchens. Pay easily with bank transfers, track real-time delivery, and enjoy delicious meals.
-            </p>
-
-            {/* Bold two-tone CTA Button — consistent with website red palette */}
-            <Link
-              to="/home"
-              className="mt-8 group relative inline-flex w-full max-w-md items-stretch overflow-hidden rounded-full shadow-2xl shadow-primary/25 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-            >
-              <div className="relative flex flex-1 flex-col items-center justify-center bg-primary px-6 py-5 md:py-6 text-center">
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                <span className="relative text-2xl md:text-3xl font-black text-primary-foreground tracking-tight leading-none drop-shadow-sm">
-                  Order your Meal
-                </span>
-                <span className="relative mt-1.5 text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase text-[#fff0ed]">
-                  BEFORE ANYTHING ELSE
-                </span>
-              </div>
-              <div className="relative flex aspect-square items-center justify-center bg-[var(--hero-cta-cap)] md:w-20 w-16 shrink-0">
-                <ChevronRight className="h-8 w-8 md:h-10 md:w-10 text-primary-foreground transition-transform duration-300 group-hover:translate-x-1" strokeWidth={3} />
-              </div>
-            </Link>
-
-            {/* Circular Category Bubbles */}
-            <div className="mt-8">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Popular Cuisines</p>
-              <div className="flex flex-wrap gap-2.5">
-                {CATEGORIES.map((cat) => (
-                  <Link
-                    key={cat.name}
-                    to="/home"
-                    className="flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold hover:border-primary hover:text-primary transition-all shadow-xs cursor-pointer"
-                  >
-                    <span>{cat.emoji}</span>
-                    <span>{cat.name}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Hero Side Dish */}
-          <div className="md:col-span-5 relative flex items-center justify-center">
-            <div className="relative aspect-square w-full max-w-[420px]">
-              {/* Background solid red disk */}
-              <div className="absolute inset-0 m-4 rounded-full bg-primary/5" />
-              <img
-                src={heroDish}
-                alt="Delicious Jollof Rice with Chicken"
-                loading="eager"
-                fetchPriority="high"
-                className="relative z-10 h-full w-full object-contain drop-shadow-[0_15px_25px_rgba(0,0,0,0.15)] animate-pulse-slow"
-              />
-            </div>
-          </div>
+        <div
+          style={{
+            marginTop: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.75)",
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          Before Anything Else
         </div>
-      </section>
+      </div>
 
-      {/* Footer */}
-      <footer className="bg-secondary border-t border-border py-8 text-center text-xs text-muted-foreground">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <Logo className="opacity-75 grayscale hover:grayscale-0 transition" />
-          <div>MealBAE · Osogbo, Nigeria · Your meal, before anything else.</div>
-        </div>
-      </footer>
+      {/* Pulsing dots loader */}
+      <div
+        style={{
+          marginTop: 40,
+          display: "flex",
+          gap: 8,
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.7)",
+              animation: `splashDot 1s ease-in-out ${i * 0.2}s infinite`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Keyframe styles injected inline */}
+      <style>{`
+        @keyframes splashFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-12px); }
+        }
+        @keyframes splashDot {
+          0%, 100% { opacity: 0.4; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+      `}</style>
     </div>
   );
 }

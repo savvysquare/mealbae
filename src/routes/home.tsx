@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-auth";
 import { AppShell } from "@/components/AppShell";
-import { formatNaira, isRestaurantOpen } from "@/lib/format";
-import { Search, Clock, Store, Star, BadgeCheck, MapPin, ShoppingBag } from "lucide-react";
+import { isRestaurantOpen } from "@/lib/format";
+import { Search, Store, Star, BadgeCheck, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/home")({ component: Home });
@@ -54,10 +54,11 @@ function tagMeal(name: string): Set<string> {
   for (const [cat, kws] of Object.entries(CATEGORY_KEYWORDS)) {
     if (kws.some((k) => n.includes(k))) tags.add(cat);
   }
-  if (tags.size === 0) tags.add("Rice & Pasta"); // catch-all
+  if (tags.size === 0) tags.add("Rice & Pasta");
   return tags;
 }
 
+/** Format HH:MM 24h → h:MM AM/PM */
 function formatHour(t: string): string {
   const [hh, mm] = t.split(":").map(Number);
   const h12 = ((hh + 11) % 12) + 1;
@@ -70,6 +71,44 @@ function prepRange(name: string): string {
   const h = name.charCodeAt(0) % 4;
   const ranges = ["15–25 min", "20–30 min", "25–35 min", "30–40 min"];
   return ranges[h];
+}
+
+// Detect venue type from name/description → returns { icon, gradient, label }
+type VenueType = {
+  icon: string;
+  gradient: string;
+  label: string;
+};
+
+function getVenueType(name: string, desc: string | null): VenueType {
+  const n = (name + " " + (desc ?? "")).toLowerCase();
+  if (["bar ", "lounge", " bar", "club", "pub", "sports bar"].some((k) => n.includes(k))) {
+    return { icon: "🍺", gradient: "from-violet-500 to-purple-700", label: "Bar & Lounge" };
+  }
+  if (["suya", "mai suya", "suya spot"].some((k) => n.includes(k))) {
+    return { icon: "🔥", gradient: "from-orange-500 to-red-600", label: "Suya Spot" };
+  }
+  if (["hotel", "inn", "lodge", "resort", "hospitality"].some((k) => n.includes(k))) {
+    return { icon: "🏨", gradient: "from-blue-500 to-indigo-700", label: "Hotel" };
+  }
+  if (["mama", "buka", "canteen", "bukas", "mama put", "local", "chop house", "abula"].some((k) => n.includes(k))) {
+    return { icon: "🥘", gradient: "from-amber-500 to-yellow-600", label: "Buka / Local" };
+  }
+  if (["fast food", "burger", "pizza", "chicken republic", "kfc", "mcdo", "quick"].some((k) => n.includes(k))) {
+    return { icon: "🍔", gradient: "from-yellow-400 to-orange-500", label: "Fast Food" };
+  }
+  if (["bakery", "pastry", "cake", "confect"].some((k) => n.includes(k))) {
+    return { icon: "🎂", gradient: "from-pink-400 to-rose-500", label: "Bakery" };
+  }
+  if (["grill", "bbq", "chops", "roast"].some((k) => n.includes(k))) {
+    return { icon: "🍖", gradient: "from-red-500 to-orange-600", label: "Grill House" };
+  }
+  // default eatery
+  return { icon: "🍛", gradient: "from-emerald-500 to-teal-600", label: "Restaurant" };
+}
+
+function formatNaira(n: number) {
+  return `₦${n.toLocaleString("en-NG")}`;
 }
 
 function Home() {
@@ -90,7 +129,6 @@ function Home() {
     },
   });
 
-  // Rating stats
   const { data: ratingStats } = useQuery({
     queryKey: ["rating-stats"],
     staleTime: 2 * 60 * 1000,
@@ -211,22 +249,29 @@ function Home() {
       </div>
 
       {/* ── Category Scroll Strip ── */}
-      <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
-        <div className="flex gap-3 pb-2" style={{ width: "max-content" }}>
+      {/* pt-2 ensures active scale/shadow is not clipped */}
+      <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none pt-2 pb-1">
+        <div className="flex gap-2.5" style={{ width: "max-content" }}>
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.name;
             return (
               <button
                 key={cat.name}
                 onClick={() => setSelectedCategory(active ? null : cat.name)}
-                className={`flex flex-col items-center gap-1.5 rounded-2xl px-4 py-3 border transition-all cursor-pointer shrink-0 min-w-[76px] ${
+                className={`flex flex-col items-center gap-1.5 rounded-2xl px-3.5 py-2.5 border transition-all cursor-pointer shrink-0 min-w-[72px] ${
                   active
-                    ? "border-primary bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105"
+                    ? "border-primary/50 bg-primary/8 text-primary"
                     : "border-border/60 bg-white text-foreground hover:border-border hover:bg-secondary/40"
                 }`}
+                style={active ? { color: "var(--color-primary)" } : {}}
               >
                 <span className="text-2xl">{cat.emoji}</span>
-                <span className="text-[10px] font-extrabold text-center leading-tight tracking-tight">{cat.name}</span>
+                <span
+                  className={`text-[10px] font-extrabold text-center leading-tight tracking-tight ${active ? "text-primary" : ""}`}
+                  style={active ? { color: "var(--color-primary)" } : {}}
+                >
+                  {cat.name}
+                </span>
               </button>
             );
           })}
@@ -264,7 +309,7 @@ function Home() {
         <span className="text-xs text-muted-foreground font-medium">{list.length} restaurants</span>
       </div>
 
-      {/* ── Restaurant Cards (Chowdeck style) ── */}
+      {/* ── Restaurant Cards ── */}
       {list.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-white p-12 text-center text-sm text-muted-foreground">
           <Store className="mx-auto mb-3.5 h-8 w-8 text-muted-foreground/30" />
@@ -272,13 +317,14 @@ function Home() {
           <p className="text-xs">Try resetting filters or a different search.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((r) => {
             const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
             const stats = ratingStats?.[r.id];
             const rating = stats?.avg_rating || (4.5 + (r.name.charCodeAt(0) % 5) * 0.1);
             const reviewCount = stats?.review_count || 0;
             const prep = prepRange(r.name);
+            const venue = getVenueType(r.name, r.description);
 
             return (
               <Link
@@ -287,20 +333,26 @@ function Home() {
                 params={{ restaurantId: r.id }}
                 className={`group flex flex-col overflow-hidden rounded-2xl bg-white border border-border/80 transition-all duration-300 hover:shadow-md hover:border-border cursor-pointer ${!open ? "opacity-70" : ""}`}
               >
-                {/* Food Image */}
-                <div className="relative h-44 w-full overflow-hidden bg-secondary">
-                  {r.image_url ? (
-                    <img
-                      src={r.image_url}
-                      alt={r.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-4xl bg-gradient-to-br from-secondary to-border/50">
-                      🍽️
-                    </div>
-                  )}
-                  {/* Open/Closed Badge */}
+                {/* Icon Banner */}
+                <div className={`relative h-32 w-full flex flex-col items-center justify-center bg-gradient-to-br ${venue.gradient} overflow-hidden`}>
+                  {/* Pattern circles */}
+                  <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10" />
+                  <div className="absolute -bottom-8 -left-4 w-24 h-24 rounded-full bg-white/10" />
+
+                  {/* Main icon */}
+                  <span
+                    className="relative z-10 select-none"
+                    style={{ fontSize: 52, lineHeight: 1, filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.2))" }}
+                  >
+                    {venue.icon}
+                  </span>
+
+                  {/* Type badge */}
+                  <div className="relative z-10 mt-2 px-3 py-0.5 rounded-full bg-white/25 backdrop-blur-sm">
+                    <span className="text-[10px] font-extrabold text-white tracking-wider uppercase">{venue.label}</span>
+                  </div>
+
+                  {/* Open/Closed overlay */}
                   {!open && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <span className="bg-white/90 backdrop-blur text-xs font-extrabold text-foreground px-3 py-1 rounded-full shadow">
@@ -308,10 +360,11 @@ function Home() {
                       </span>
                     </div>
                   )}
+
                   {/* Verified Badge */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 shadow-sm">
-                    <BadgeCheck className="h-3.5 w-3.5 text-emerald-500 fill-emerald-500" />
-                    <span className="text-[10px] font-extrabold text-emerald-700">Verified</span>
+                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-0.5 shadow-sm">
+                    <BadgeCheck className="h-3 w-3 text-emerald-500 fill-emerald-500" />
+                    <span className="text-[9px] font-extrabold text-emerald-700">Verified</span>
                   </div>
                 </div>
 
@@ -337,21 +390,23 @@ function Home() {
                     </p>
                   )}
 
-                  {/* Delivery meta row */}
+                  {/* Opening hours + prep */}
                   <div className="mt-auto pt-3 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40 mt-3">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span className="font-semibold">{prep}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      <span className="truncate max-w-[130px]">
-                        {r.delivery_fee_naira === 0 ? (
-                          <span className="text-emerald-600 font-bold">Free delivery</span>
-                        ) : (
-                          <span className="font-bold text-foreground">{formatNaira(r.delivery_fee_naira)}</span>
-                        )}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-semibold text-foreground text-[11px]">
+                        {open ? "🟢 Open now" : "🔴 Closed"}
                       </span>
+                      <span className="text-[10px]">
+                        {formatHour(r.opens_at)} – {formatHour(r.closes_at)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-end gap-0.5">
+                      <span className="text-[11px] font-semibold text-foreground">{prep}</span>
+                      {r.delivery_fee_naira === 0 ? (
+                        <span className="text-[10px] text-emerald-600 font-bold">Free delivery</span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-foreground">{formatNaira(r.delivery_fee_naira)} delivery</span>
+                      )}
                     </div>
                   </div>
                 </div>

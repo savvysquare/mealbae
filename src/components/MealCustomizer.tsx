@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { formatNaira } from "@/lib/format";
 import { useCart } from "@/lib/cart";
-import { X, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
+import { X, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 
 interface Meal {
@@ -25,78 +25,76 @@ interface MealCustomizerProps {
 // ─── Option Definitions ──────────────────────────────────────────────────────
 
 const SOUPS = [
-  { id: "none", label: "None", price: 0 },
-  { id: "ewedu", label: "Ewedu", price: 0 },
-  { id: "egusi", label: "Egusi Soup", price: 300 },
-  { id: "efo_riro", label: "Efo Riro", price: 400 },
-  { id: "gbegiri", label: "Gbegiri", price: 0 },
-  { id: "ewedu_gbegiri", label: "Ewedu & Gbegiri", price: 0 },
-  { id: "okro", label: "Okro Soup", price: 200 },
-  { id: "banga", label: "Banga Soup", price: 300 },
-  { id: "ogbono", label: "Ogbono Soup", price: 300 },
-  { id: "oha", label: "Oha Soup", price: 300 },
+  { id: "none", label: "None", emoji: "🚫", price: 0 },
+  { id: "ewedu", label: "Ewedu", emoji: "🥬", price: 0 },
+  { id: "egusi", label: "Egusi Soup", emoji: "🍲", price: 300 },
+  { id: "efo_riro", label: "Efo Riro", emoji: "🫙", price: 400 },
+  { id: "gbegiri", label: "Gbegiri", emoji: "🟤", price: 0 },
+  { id: "ewedu_gbegiri", label: "Ewedu & Gbegiri", emoji: "🥬", price: 0 },
+  { id: "okro", label: "Okro Soup", emoji: "🫑", price: 200 },
+  { id: "banga", label: "Banga Soup", emoji: "🌴", price: 300 },
+  { id: "ogbono", label: "Ogbono Soup", emoji: "🪵", price: 300 },
+  { id: "oha", label: "Oha Soup", emoji: "🍃", price: 300 },
 ];
 
 const PROTEINS = [
-  { id: "none", label: "None", price: 0 },
-  { id: "assorted_meat", label: "Assorted Meat (Beef + Shaki + Ponmo)", price: 800 },
-  { id: "beef", label: "Beef (1 piece)", price: 500 },
-  { id: "ponmo", label: "Ponmo", price: 300 },
-  { id: "shaki", label: "Shaki (Tripe)", price: 400 },
-  { id: "grilled_chicken", label: "Grilled Chicken (1 piece)", price: 1500 },
-  { id: "peppered_chicken", label: "Peppered Chicken (1 piece)", price: 1500 },
-  { id: "fried_chicken", label: "Fried Chicken (1 piece)", price: 1400 },
-  { id: "turkey", label: "Peppered Turkey (1 piece)", price: 2200 },
-  { id: "titus_fish", label: "Titus Fish (Mackerel)", price: 1200 },
-  { id: "croaker_fish", label: "Croaker Fish", price: 1800 },
-  { id: "catfish", label: "Catfish (Eja Aro)", price: 2000 },
-  { id: "tilapia", label: "Tilapia Fish", price: 1500 },
-  { id: "smoked_fish", label: "Smoked Fish", price: 900 },
-  { id: "dried_fish", label: "Dried Fish (Eja Sawa)", price: 600 },
-  { id: "stockfish", label: "Stock Fish (Panla)", price: 700 },
-  { id: "boiled_egg", label: "Boiled Egg (1)", price: 300 },
-  { id: "fried_egg", label: "Fried Egg", price: 400 },
-  { id: "snail", label: "Snail (2 pieces)", price: 1200 },
-  { id: "shrimp", label: "Shrimp / Prawns", price: 1000 },
-  { id: "bush_meat", label: "Bush Meat (Dried)", price: 800 },
+  { id: "none", label: "None", emoji: "🚫", price: 0 },
+  { id: "assorted_meat", label: "Assorted Meat", emoji: "🥩", price: 800 },
+  { id: "beef", label: "Beef (1 pc)", emoji: "🥩", price: 500 },
+  { id: "ponmo", label: "Ponmo", emoji: "🟫", price: 300 },
+  { id: "shaki", label: "Shaki (Tripe)", emoji: "🫀", price: 400 },
+  { id: "grilled_chicken", label: "Grilled Chicken", emoji: "🍗", price: 1500 },
+  { id: "peppered_chicken", label: "Peppered Chicken", emoji: "🍗", price: 1500 },
+  { id: "fried_chicken", label: "Fried Chicken", emoji: "🍗", price: 1400 },
+  { id: "turkey", label: "Peppered Turkey", emoji: "🦃", price: 2200 },
+  { id: "titus_fish", label: "Titus Fish", emoji: "🐟", price: 1200 },
+  { id: "croaker_fish", label: "Croaker Fish", emoji: "🐠", price: 1800 },
+  { id: "catfish", label: "Catfish (Eja Aro)", emoji: "🐡", price: 2000 },
+  { id: "tilapia", label: "Tilapia", emoji: "🐟", price: 1500 },
+  { id: "smoked_fish", label: "Smoked Fish", emoji: "🎣", price: 900 },
+  { id: "dried_fish", label: "Dried Fish", emoji: "🐚", price: 600 },
+  { id: "stockfish", label: "Stock Fish (Panla)", emoji: "🪸", price: 700 },
+  { id: "boiled_egg", label: "Boiled Egg", emoji: "🥚", price: 300 },
+  { id: "fried_egg", label: "Fried Egg", emoji: "🍳", price: 400 },
+  { id: "snail", label: "Snail (2 pcs)", emoji: "🐌", price: 1200 },
+  { id: "shrimp", label: "Shrimp / Prawns", emoji: "🦐", price: 1000 },
+  { id: "bush_meat", label: "Bush Meat", emoji: "🦌", price: 800 },
 ];
 
 const DRINKS = [
-  { id: "none", label: "None", price: 0 },
-  { id: "water", label: "Eva Water 75cl", price: 300 },
-  { id: "coke_50cl", label: "Coca-Cola 50cl", price: 500 },
-  { id: "coke_35cl", label: "Coca-Cola 35cl", price: 400 },
-  { id: "fanta", label: "Fanta 50cl", price: 500 },
-  { id: "sprite", label: "Sprite 50cl", price: 500 },
-  { id: "pepsi", label: "Pepsi 50cl", price: 500 },
-  { id: "malt", label: "Malt (Malta Guinness / Dubic)", price: 700 },
-  { id: "zobo", label: "Zobo (Chilled 50cl)", price: 700 },
-  { id: "kunu", label: "Kunu Aya", price: 500 },
-  { id: "tigernut", label: "Tigernut Drink", price: 600 },
-  { id: "chapman", label: "Chapman", price: 1200 },
-  { id: "smoothie", label: "Fruit Smoothie", price: 1500 },
-  { id: "lacasera", label: "Lacasera 50cl", price: 450 },
-  { id: "capri_sonne", label: "Capri Sonne", price: 400 },
-  { id: "five_alive", label: "Five Alive 35cl", price: 400 },
-  { id: "hi_malt", label: "Hi-Malt", price: 600 },
-  { id: "peak_milk", label: "Peak Milk 165ml", price: 450 },
+  { id: "none", label: "None", emoji: "🚫", price: 0 },
+  { id: "water", label: "Eva Water 75cl", emoji: "💧", price: 300 },
+  { id: "coke_50cl", label: "Coca-Cola 50cl", emoji: "🥤", price: 500 },
+  { id: "coke_35cl", label: "Coca-Cola 35cl", emoji: "🥤", price: 400 },
+  { id: "fanta", label: "Fanta 50cl", emoji: "🟠", price: 500 },
+  { id: "sprite", label: "Sprite 50cl", emoji: "🟢", price: 500 },
+  { id: "pepsi", label: "Pepsi 50cl", emoji: "🔵", price: 500 },
+  { id: "malt", label: "Malt", emoji: "🍺", price: 700 },
+  { id: "zobo", label: "Zobo 50cl", emoji: "❤️", price: 700 },
+  { id: "kunu", label: "Kunu Aya", emoji: "🥛", price: 500 },
+  { id: "tigernut", label: "Tigernut Drink", emoji: "🌰", price: 600 },
+  { id: "chapman", label: "Chapman", emoji: "🍹", price: 1200 },
+  { id: "smoothie", label: "Fruit Smoothie", emoji: "🍓", price: 1500 },
+  { id: "lacasera", label: "Lacasera 50cl", emoji: "🫧", price: 450 },
+  { id: "capri_sonne", label: "Capri Sonne", emoji: "🍊", price: 400 },
+  { id: "five_alive", label: "Five Alive 35cl", emoji: "🍋", price: 400 },
+  { id: "hi_malt", label: "Hi-Malt", emoji: "🍺", price: 600 },
 ];
 
 const PACK_SIZES = [
-  { id: "small", label: "Small Pack", description: "Standard takeaway bag", price: 100 },
-  { id: "big", label: "Big Pack", description: "Large takeaway box", price: 250 },
+  { id: "small", label: "Small Pack", description: "Standard bag", emoji: "🛍️", price: 100 },
+  { id: "big", label: "Big Pack", description: "Large box", emoji: "📦", price: 250 },
 ];
 
 // Detect swallow-based meals (need soup options)
 function isSwallow(catName: string | undefined, mealName: string): boolean {
-  if (!catName && !mealName) return false;
-  const n = (catName + " " + mealName).toLowerCase();
+  const n = ((catName ?? "") + " " + mealName).toLowerCase();
   return ["amala", "eba", "semo", "pounded yam", "fufu", "iyan", "wheat", "swallow", "tuwo"].some((k) => n.includes(k));
 }
 
 // Determine portion unit label
 function portionUnit(catName: string | undefined, mealName: string): string {
-  const n = (catName + " " + mealName).toLowerCase();
+  const n = ((catName ?? "") + " " + mealName).toLowerCase();
   if (["amala", "eba", "semo", "pounded yam", "fufu", "iyan", "wheat", "swallow", "tuwo"].some((k) => n.includes(k)))
     return "Wrap";
   if (["rice", "jollof", "fried rice", "pasta", "spaghetti", "noodles"].some((k) => n.includes(k)))
@@ -116,9 +114,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
   const [selectedDrink, setSelectedDrink] = useState("none");
   const [drinkQty, setDrinkQty] = useState(1);
   const [selectedPack, setSelectedPack] = useState("small");
-  const [showSoups, setShowSoups] = useState(false);
-  const [showProteins, setShowProteins] = useState(false);
-  const [showDrinks, setShowDrinks] = useState(false);
+  const [activeSection, setActiveSection] = useState<"soup" | "protein" | "drink" | null>(null);
 
   const showSoupSection = isSwallow(category?.name, meal.name);
   const unit = portionUnit(category?.name, meal.name);
@@ -128,7 +124,11 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
   const drink = DRINKS.find((d) => d.id === selectedDrink)!;
   const pack = PACK_SIZES.find((p) => p.id === selectedPack)!;
 
-  const extrasPrice = soup.price + (selectedProtein !== "none" ? protein.price * proteinQty : 0) + (selectedDrink !== "none" ? drink.price * drinkQty : 0) + pack.price;
+  const extrasPrice =
+    soup.price +
+    (selectedProtein !== "none" ? protein.price * proteinQty : 0) +
+    (selectedDrink !== "none" ? drink.price * drinkQty : 0) +
+    pack.price;
   const linePrice = meal.price_naira + extrasPrice;
   const totalPrice = linePrice * qty;
 
@@ -147,12 +147,13 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
     add(restaurant.id, restaurant.name, {
       cartItemId,
       mealId: meal.id,
-      name: label,
+      name: meal.name,
       price: linePrice,
       quantity: qty,
       imageUrl: meal.image_url,
       customLabel: label,
     });
+    toast.success(`${meal.name} added to cart!`);
     onClose();
   }
 
@@ -168,12 +169,31 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="relative mt-auto w-full max-h-[92vh] bg-white rounded-t-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300">
+      <div className="relative mt-auto w-full max-h-[94vh] bg-white rounded-t-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom duration-300">
         {/* Meal Image Header */}
-        {meal.image_url && (
-          <div className="relative h-48 shrink-0 overflow-hidden rounded-t-3xl">
+        {meal.image_url ? (
+          <div className="relative h-52 shrink-0 overflow-hidden rounded-t-3xl">
             <img src={meal.image_url} alt={meal.name} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10" />
+            <div className="absolute bottom-4 left-5 right-14">
+              <h2 className="font-display text-xl font-extrabold text-white leading-tight drop-shadow">{meal.name}</h2>
+              {meal.description && (
+                <p className="text-xs text-white/80 mt-0.5 line-clamp-1">{meal.description}</p>
+              )}
+              <div className="mt-1 font-display text-lg font-black text-white/90">
+                from {formatNaira(meal.price_naira)}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="px-5 pt-6 pb-2 shrink-0">
+            <h2 className="font-display text-xl font-extrabold text-foreground leading-tight">{meal.name}</h2>
+            {meal.description && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{meal.description}</p>
+            )}
+            <div className="mt-2 font-display text-lg font-black text-primary">
+              from {formatNaira(meal.price_naira)}
+            </div>
           </div>
         )}
 
@@ -186,17 +206,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
         </button>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto flex-1 p-5 space-y-5">
-          {/* Meal Info */}
-          <div>
-            <h2 className="font-display text-xl font-extrabold text-foreground leading-tight">{meal.name}</h2>
-            {meal.description && (
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{meal.description}</p>
-            )}
-            <div className="mt-2 font-display text-lg font-black text-primary">
-              from {formatNaira(meal.price_naira)}
-            </div>
-          </div>
+        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-6">
 
           {/* ── Quantity (Portions / Wraps / Scoops) ── */}
           <Section title={`${unit} Count`} required>
@@ -224,65 +234,61 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
 
           {/* ── Soup Selection (swallow only) ── */}
           {showSoupSection && (
-            <Section title="Soup Option">
-              <button
-                onClick={() => setShowSoups(!showSoups)}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-secondary/30 hover:bg-secondary/60 cursor-pointer"
-              >
-                <span className="text-sm font-bold text-foreground">
-                  {soup.label} {soup.price > 0 && <span className="text-muted-foreground font-normal text-xs">+{formatNaira(soup.price)}</span>}
-                </span>
-                {showSoups ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-              </button>
-              {showSoups && (
-                <div className="mt-2 space-y-1.5 max-h-52 overflow-y-auto rounded-xl border border-border p-2 bg-white">
+            <Section title="Choose Soup">
+              <div className="-mx-1 overflow-x-auto scrollbar-none pb-1">
+                <div className="flex gap-2.5 px-1" style={{ width: "max-content" }}>
                   {SOUPS.map((s) => (
-                    <label key={s.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/40 cursor-pointer">
-                      <div className="flex items-center gap-2.5">
-                        <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${selectedSoup === s.id ? "border-primary bg-primary" : "border-border"}`}>
-                          {selectedSoup === s.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                        </div>
-                        <span className="text-sm font-medium text-foreground">{s.label}</span>
-                      </div>
-                      {s.price > 0 && <span className="text-xs text-muted-foreground">+{formatNaira(s.price)}</span>}
-                      <input type="radio" className="hidden" checked={selectedSoup === s.id} onChange={() => { setSelectedSoup(s.id); setShowSoups(false); }} />
-                    </label>
+                    <button
+                      key={s.id}
+                      onClick={() => setSelectedSoup(s.id)}
+                      className={`flex flex-col items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer shrink-0 min-w-[72px] ${
+                        selectedSoup === s.id
+                          ? "border-primary bg-primary/8 shadow-sm"
+                          : "border-border/70 bg-white hover:border-border"
+                      }`}
+                    >
+                      <span className="text-2xl">{s.emoji}</span>
+                      <span className={`text-[10px] font-bold text-center leading-tight ${selectedSoup === s.id ? "text-primary" : "text-foreground"}`}>
+                        {s.label}
+                      </span>
+                      {s.price > 0 && (
+                        <span className="text-[9px] text-muted-foreground">+{formatNaira(s.price)}</span>
+                      )}
+                    </button>
                   ))}
                 </div>
-              )}
+              </div>
             </Section>
           )}
 
           {/* ── Protein ── */}
-          <Section title="Protein Option">
-            <button
-              onClick={() => setShowProteins(!showProteins)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-secondary/30 hover:bg-secondary/60 cursor-pointer"
-            >
-              <span className="text-sm font-bold text-foreground">
-                {protein.label} {protein.price > 0 && <span className="text-muted-foreground font-normal text-xs">+{formatNaira(protein.price)}</span>}
-              </span>
-              {showProteins ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-            </button>
-            {showProteins && (
-              <div className="mt-2 space-y-1.5 max-h-56 overflow-y-auto rounded-xl border border-border p-2 bg-white">
+          <Section title="Add Protein">
+            <div className="-mx-1 overflow-x-auto scrollbar-none pb-1">
+              <div className="flex gap-2.5 px-1" style={{ width: "max-content" }}>
                 {PROTEINS.map((p) => (
-                  <label key={p.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/40 cursor-pointer">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${selectedProtein === p.id ? "border-primary bg-primary" : "border-border"}`}>
-                        {selectedProtein === p.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                      </div>
-                      <span className="text-sm font-medium text-foreground">{p.label}</span>
-                    </div>
-                    {p.price > 0 && <span className="text-xs text-muted-foreground">+{formatNaira(p.price)}</span>}
-                    <input type="radio" className="hidden" checked={selectedProtein === p.id} onChange={() => { setSelectedProtein(p.id); setShowProteins(false); }} />
-                  </label>
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedProtein(p.id)}
+                    className={`flex flex-col items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer shrink-0 min-w-[72px] ${
+                      selectedProtein === p.id
+                        ? "border-primary bg-primary/8 shadow-sm"
+                        : "border-border/70 bg-white hover:border-border"
+                    }`}
+                  >
+                    <span className="text-2xl">{p.emoji}</span>
+                    <span className={`text-[10px] font-bold text-center leading-tight ${selectedProtein === p.id ? "text-primary" : "text-foreground"}`}>
+                      {p.label}
+                    </span>
+                    {p.price > 0 && (
+                      <span className="text-[9px] text-muted-foreground">+{formatNaira(p.price)}</span>
+                    )}
+                  </button>
                 ))}
               </div>
-            )}
+            </div>
             {selectedProtein !== "none" && (
-              <div className="mt-2 flex items-center gap-3">
-                <span className="text-xs text-muted-foreground font-medium">Quantity:</span>
+              <div className="mt-3 flex items-center gap-3">
+                <span className="text-xs text-muted-foreground font-medium">How many?</span>
                 <button onClick={() => setProteinQty(Math.max(1, proteinQty - 1))} className="h-7 w-7 rounded-full border border-border flex items-center justify-center cursor-pointer hover:border-primary">
                   <Minus className="h-3 w-3" />
                 </button>
@@ -295,35 +301,33 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
           </Section>
 
           {/* ── Drink ── */}
-          <Section title="Drink Option">
-            <button
-              onClick={() => setShowDrinks(!showDrinks)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-secondary/30 hover:bg-secondary/60 cursor-pointer"
-            >
-              <span className="text-sm font-bold text-foreground">
-                {drink.label} {drink.price > 0 && <span className="text-muted-foreground font-normal text-xs">+{formatNaira(drink.price)}</span>}
-              </span>
-              {showDrinks ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-            </button>
-            {showDrinks && (
-              <div className="mt-2 space-y-1.5 max-h-56 overflow-y-auto rounded-xl border border-border p-2 bg-white">
+          <Section title="Add a Drink">
+            <div className="-mx-1 overflow-x-auto scrollbar-none pb-1">
+              <div className="flex gap-2.5 px-1" style={{ width: "max-content" }}>
                 {DRINKS.map((d) => (
-                  <label key={d.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary/40 cursor-pointer">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${selectedDrink === d.id ? "border-primary bg-primary" : "border-border"}`}>
-                        {selectedDrink === d.id && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                      </div>
-                      <span className="text-sm font-medium text-foreground">{d.label}</span>
-                    </div>
-                    {d.price > 0 && <span className="text-xs text-muted-foreground">+{formatNaira(d.price)}</span>}
-                    <input type="radio" className="hidden" checked={selectedDrink === d.id} onChange={() => { setSelectedDrink(d.id); setShowDrinks(false); }} />
-                  </label>
+                  <button
+                    key={d.id}
+                    onClick={() => setSelectedDrink(d.id)}
+                    className={`flex flex-col items-center gap-1 px-3 py-2.5 rounded-2xl border-2 transition-all cursor-pointer shrink-0 min-w-[72px] ${
+                      selectedDrink === d.id
+                        ? "border-primary bg-primary/8 shadow-sm"
+                        : "border-border/70 bg-white hover:border-border"
+                    }`}
+                  >
+                    <span className="text-2xl">{d.emoji}</span>
+                    <span className={`text-[10px] font-bold text-center leading-tight ${selectedDrink === d.id ? "text-primary" : "text-foreground"}`}>
+                      {d.label}
+                    </span>
+                    {d.price > 0 && (
+                      <span className="text-[9px] text-muted-foreground">+{formatNaira(d.price)}</span>
+                    )}
+                  </button>
                 ))}
               </div>
-            )}
+            </div>
             {selectedDrink !== "none" && (
-              <div className="mt-2 flex items-center gap-3">
-                <span className="text-xs text-muted-foreground font-medium">Quantity:</span>
+              <div className="mt-3 flex items-center gap-3">
+                <span className="text-xs text-muted-foreground font-medium">How many?</span>
                 <button onClick={() => setDrinkQty(Math.max(1, drinkQty - 1))} className="h-7 w-7 rounded-full border border-border flex items-center justify-center cursor-pointer hover:border-primary">
                   <Minus className="h-3 w-3" />
                 </button>
@@ -336,18 +340,19 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
           </Section>
 
           {/* ── Takeaway Pack ── */}
-          <Section title="Takeaway Pack Size" required>
+          <Section title="Takeaway Pack" required>
             <div className="grid grid-cols-2 gap-3">
               {PACK_SIZES.map((p) => (
                 <button
                   key={p.id}
                   onClick={() => setSelectedPack(p.id)}
-                  className={`flex flex-col p-3 rounded-xl border-2 transition-all cursor-pointer text-left ${
+                  className={`flex flex-col items-start p-3 rounded-2xl border-2 transition-all cursor-pointer ${
                     selectedPack === p.id
-                      ? "border-primary bg-primary/5"
+                      ? "border-primary bg-primary/8"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
+                  <span className="text-2xl mb-1">{p.emoji}</span>
                   <span className="text-sm font-extrabold text-foreground">{p.label}</span>
                   <span className="text-[11px] text-muted-foreground mt-0.5">{p.description}</span>
                   <span className="text-xs font-bold text-primary mt-1.5">+{formatNaira(p.price)}</span>
@@ -355,6 +360,49 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
               ))}
             </div>
           </Section>
+
+          {/* ── Price Breakdown Summary ── */}
+          {extrasPrice > 0 && (
+            <div className="rounded-2xl border border-border bg-secondary/30 p-4 space-y-1.5 text-sm">
+              <div className="font-bold text-foreground text-xs uppercase tracking-wider mb-2">Your Order</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{qty}× {meal.name}</span>
+                <span className="font-semibold">{formatNaira(meal.price_naira * qty)}</span>
+              </div>
+              {selectedSoup !== "none" && soup.price > 0 && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{soup.emoji} {soup.label}</span>
+                  <span>+{formatNaira(soup.price)}</span>
+                </div>
+              )}
+              {selectedSoup !== "none" && soup.price === 0 && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{soup.emoji} {soup.label}</span>
+                  <span className="text-emerald-600 font-semibold">Free</span>
+                </div>
+              )}
+              {selectedProtein !== "none" && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{protein.emoji} {proteinQty}× {protein.label}</span>
+                  <span>+{formatNaira(protein.price * proteinQty)}</span>
+                </div>
+              )}
+              {selectedDrink !== "none" && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{drink.emoji} {drinkQty}× {drink.label}</span>
+                  <span>+{formatNaira(drink.price * drinkQty)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">{pack.emoji} {pack.label}</span>
+                <span>+{formatNaira(pack.price)}</span>
+              </div>
+              <div className="border-t border-border/60 pt-1.5 flex justify-between font-bold">
+                <span>Order Total</span>
+                <span className="text-primary">{formatNaira(totalPrice)}</span>
+              </div>
+            </div>
+          )}
 
           {/* Spacer so bottom bar doesn't overlap last item */}
           <div className="h-4" />

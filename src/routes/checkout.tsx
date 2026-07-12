@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
@@ -9,13 +9,64 @@ import { formatNaira } from "@/lib/format";
 import { toast } from "sonner";
 import { useSession } from "@/hooks/use-auth";
 import { savePhone } from "@/lib/user-phone";
-import { Phone, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Phone, CheckCircle2, ArrowLeft, MapPin, Loader2, Sparkles } from "lucide-react";
 
 type PlaceOrderResult = { id: string; short_code: string };
 
 export const Route = createFileRoute("/checkout")({ component: Checkout });
 
 const CONFIRM_PHONE = "08141894696";
+
+/** Calculate delivery fee using Gemini AI based on address distance from restaurant */
+async function estimateDeliveryFee(
+  restaurantAddress: string,
+  customerAddress: string,
+  fallbackFee: number
+): Promise<{ fee: number; distanceKm: number | null; aiUsed: boolean }> {
+  try {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      return { fee: fallbackFee, distanceKm: null, aiUsed: false };
+    }
+
+    const prompt = `You are a delivery distance estimator for Osogbo, Osun State, Nigeria.
+
+Restaurant location: "${restaurantAddress}"
+Customer delivery address: "${customerAddress}"
+
+Both are in Osogbo, Nigeria. Estimate the approximate road distance in kilometers between these two locations.
+
+Respond ONLY with a valid JSON object in this exact format, no other text:
+{"distance_km": <number>, "reasoning": "<one sentence>"}
+
+If either address is too vague to estimate, use distance_km: 3 as a reasonable urban default.`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json", temperature: 0.1 },
+        }),
+      }
+    );
+
+    if (!res.ok) return { fee: fallbackFee, distanceKm: null, aiUsed: false };
+
+    const json = await res.json();
+    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const parsed = JSON.parse(text);
+    const distKm = Math.max(0.5, Number(parsed.distance_km) || 3);
+
+    // Fee formula: ₦500 base + ₦100/km, min ₦300, max ₦2500
+    const fee = Math.min(2500, Math.max(300, Math.round(500 + distKm * 100)));
+    return { fee, distanceKm: distKm, aiUsed: true };
+  } catch {
+    return { fee: fallbackFee, distanceKm: null, aiUsed: false };
+  }
+}
 
 function Checkout() {
   const { cart, subtotal, clear } = useCart();
@@ -28,30 +79,76 @@ function Checkout() {
   const [submitting, setSubmitting] = useState(false);
   const [stage, setStage] = useState<"form" | "payment">("form");
 
+  // AI delivery fee state
+  const [deliveryFee, setDeliveryFee] = useState<number | null>(null);
+  const [estimatingFee, setEstimatingFee] = useState(false);
+  const [distanceKm, setDistanceKm] = useState<number | null>(null);
+  const [feeAiUsed, setFeeAiUsed] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const { data: restaurant } = useQuery({
     queryKey: ["restaurant", cart.restaurantId],
     enabled: !!cart.restaurantId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("restaurants").select("id,name,delivery_fee_naira").eq("id", cart.restaurantId!).single();
+      const { data, error } = await supabase
+        .from("restaurants")
+        .select("id,name,address,delivery_fee_naira")
+        .eq("id", cart.restaurantId!)
+        .single();
       if (error) throw error;
       return data;
     },
   });
 
-  const deliveryFee = restaurant?.delivery_fee_naira ?? 0;
-  const total = subtotal + deliveryFee;
+  // Recalculate fee when address changes (debounced 800ms)
+  useEffect(() => {
+    if (!restaurant) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const trimmed = address.trim();
+    if (trimmed.length < 6) {
+      // Too short — use fallback
+      setDeliveryFee(restaurant.delivery_fee_naira);
+      setDistanceKm(null);
+      setFeeAiUsed(false);
+      return;
+    }
+
+    debounceRef.current = setTimeout(async () => {
+      setEstimatingFee(true);
+      const result = await estimateDeliveryFee(
+        restaurant.address || "Osogbo, Osun State",
+        trimmed + ", Osogbo, Osun State",
+        restaurant.delivery_fee_naira
+      );
+      setDeliveryFee(result.fee);
+      setDistanceKm(result.distanceKm);
+      setFeeAiUsed(result.aiUsed);
+      setEstimatingFee(false);
+    }, 800);
+  }, [address, restaurant]);
+
+  // Set initial fee from restaurant
+  useEffect(() => {
+    if (restaurant && deliveryFee === null) {
+      setDeliveryFee(restaurant.delivery_fee_naira);
+    }
+  }, [restaurant, deliveryFee]);
+
+  const effectiveDeliveryFee = deliveryFee ?? restaurant?.delivery_fee_naira ?? 0;
+  const total = subtotal + effectiveDeliveryFee;
 
   function proceedToPayment() {
-    if (!address.trim() || !phone.trim()) { toast.error("Address and phone are required"); return; }
+    if (!address.trim() || !phone.trim()) {
+      toast.error("Address and phone are required");
+      return;
+    }
+    if (estimatingFee) {
+      toast.error("Please wait while we calculate the delivery fee");
+      return;
+    }
     setStage("payment");
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function normalizePhone(p: string) {
-    const trimmed = p.replace(/\s+/g, "");
-    if (trimmed.startsWith("+")) return trimmed;
-    if (trimmed.startsWith("0")) return "+234" + trimmed.slice(1);
-    return "+234" + trimmed;
   }
 
   async function confirmPayment() {
@@ -65,10 +162,7 @@ function Checkout() {
         quantity: i.quantity,
       }));
 
-      const { data, error } = await (supabase.rpc as unknown as (
-        fn: string,
-        args: Record<string, unknown>
-      ) => Promise<{ data: PlaceOrderResult | null; error: { message: string } | null }>)(
+      const { data: rpcData, error } = await (supabase.rpc as any)(
         "place_order_guest",
         {
           _restaurant_id: cart.restaurantId,
@@ -77,14 +171,23 @@ function Checkout() {
           _customer_name: name || null,
           _notes: notes || null,
           _subtotal_naira: subtotal,
-          _delivery_fee_naira: deliveryFee,
+          _delivery_fee_naira: effectiveDeliveryFee,
           _total_naira: total,
           _items: items,
         }
       );
 
-      if (error || !data) {
+      if (error) {
         toast.error(error?.message ?? "Could not place order. Please try again.");
+        setSubmitting(false);
+        return;
+      }
+
+      // RETURNS TABLE gives back an array; take first row
+      const data: PlaceOrderResult | null = Array.isArray(rpcData) ? rpcData[0] ?? null : rpcData;
+
+      if (!data) {
+        toast.error("Could not place order. Please try again.");
         setSubmitting(false);
         return;
       }
@@ -92,7 +195,6 @@ function Checkout() {
       clear();
       savePhone(phone);
       toast.success("Order placed! Track your delivery below.");
-      // Redirect to the public tracking page using phone for verification
       nav({ to: "/track/$id", params: { id: data.id }, search: { phone } });
     } catch (e: any) {
       toast.error(e.message || "Something went wrong.");
@@ -103,7 +205,9 @@ function Checkout() {
   if (!cart.restaurantId || cart.items.length === 0) {
     return (
       <AppShell title="Checkout">
-        <p className="text-muted-foreground">Your cart is empty. <Link to="/home" className="text-primary underline">Browse</Link></p>
+        <p className="text-muted-foreground">
+          Your cart is empty. <Link to="/home" className="text-primary underline">Browse</Link>
+        </p>
       </AppShell>
     );
   }
@@ -125,7 +229,8 @@ function Checkout() {
               <h2 className="font-display text-xl font-black tracking-tight">Send payment</h2>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Transfer the exact total below to this account. Your order is placed once you tap <span className="font-semibold text-foreground">I have paid</span>.
+              Transfer the exact total below to this account. Your order is placed once you tap{" "}
+              <span className="font-semibold text-foreground">I have paid</span>.
             </p>
 
             <div className="mt-4 rounded-2xl bg-secondary/60 p-4">
@@ -137,7 +242,12 @@ function Checkout() {
                 {formatNaira(total)}
               </p>
               <div className="mt-1 text-xs text-muted-foreground">
-                {formatNaira(subtotal)} subtotal · {formatNaira(deliveryFee)} delivery
+                {formatNaira(subtotal)} subtotal · {formatNaira(effectiveDeliveryFee)} delivery
+                {feeAiUsed && distanceKm && (
+                  <span className="ml-2 text-emerald-600 font-semibold">
+                    (~{distanceKm.toFixed(1)} km)
+                  </span>
+                )}
               </div>
             </div>
 
@@ -188,12 +298,60 @@ function Checkout() {
         <section className="card-soft p-5">
           <h2 className="font-display text-lg font-bold">Delivery details</h2>
           <div className="mt-3 space-y-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone number" className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-            <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Delivery address (street, landmark, area in Osogbo)" rows={3} className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional): extra pepper, no onions…" rows={2} className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone number"
+              className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className="relative">
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Delivery address (street, landmark, area in Osogbo)"
+                rows={3}
+                className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              {/* AI fee indicator */}
+              {address.trim().length >= 6 && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-xs">
+                  {estimatingFee ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                      <span className="text-muted-foreground">Calculating delivery fee…</span>
+                    </>
+                  ) : feeAiUsed && distanceKm ? (
+                    <>
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      <span className="text-primary font-semibold">
+                        AI estimate: ~{distanceKm.toFixed(1)} km · {formatNaira(effectiveDeliveryFee)} delivery
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      Delivery fee: {formatNaira(effectiveDeliveryFee)}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Notes (optional): extra pepper, no onions…"
+              rows={2}
+              className="w-full rounded-xl border border-input bg-surface px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
           </div>
         </section>
+
         <section className="card-soft p-5">
           <h2 className="font-display text-lg font-bold">Order summary</h2>
           <ul className="mt-3 space-y-2 text-sm">
@@ -210,12 +368,47 @@ function Checkout() {
             ))}
           </ul>
           <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatNaira(subtotal)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Delivery fee</span><span>{formatNaira(deliveryFee)}</span></div>
-            <div className="flex justify-between text-base font-semibold"><span>Total</span><span>{formatNaira(total)}</span></div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Subtotal</span>
+              <span>{formatNaira(subtotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground flex items-center gap-1">
+                Delivery fee
+                {feeAiUsed && <Sparkles className="h-3 w-3 text-primary" />}
+              </span>
+              <span className="flex items-center gap-1">
+                {estimatingFee ? (
+                  <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                ) : (
+                  formatNaira(effectiveDeliveryFee)
+                )}
+              </span>
+            </div>
+            {distanceKm && feeAiUsed && (
+              <div className="flex justify-between text-[10px] text-emerald-600">
+                <span>Estimated distance</span>
+                <span>~{distanceKm.toFixed(1)} km</span>
+              </div>
+            )}
+            <div className="flex justify-between text-base font-semibold">
+              <span>Total</span>
+              <span>{formatNaira(total)}</span>
+            </div>
           </div>
-          <button onClick={proceedToPayment} className="mt-5 w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground cursor-pointer">
-            Place order
+          <button
+            onClick={proceedToPayment}
+            disabled={estimatingFee}
+            className="mt-5 w-full rounded-2xl bg-primary px-4 py-3 font-medium text-primary-foreground cursor-pointer disabled:opacity-60 flex items-center justify-center gap-2"
+          >
+            {estimatingFee ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Calculating fee…
+              </>
+            ) : (
+              "Place order"
+            )}
           </button>
           <p className="mt-2 text-center text-xs text-muted-foreground">Next step: bank transfer, then tap "I have paid".</p>
         </section>
