@@ -25,12 +25,12 @@ function AdminRiders() {
   const { data: riders, isLoading } = useQuery({
     queryKey: ["admin-riders"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("riders")
         .select("*")
         .order("name");
       if (error) throw error;
-      return data as Rider[];
+      return (data ?? []) as Rider[];
     },
     refetchInterval: 15000,
   });
@@ -42,7 +42,7 @@ function AdminRiders() {
       const { data, error } = await supabase
         .from("orders")
         .select("rider_phone")
-        .in("status", ["preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"])
+        .in("status", ["preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"] as any[])
         .not("rider_phone", "is", null);
       if (error) throw error;
       return new Set((data ?? []).map((o: any) => o.rider_phone));
@@ -53,10 +53,10 @@ function AdminRiders() {
   const saveMutation = useMutation({
     mutationFn: async (values: { name: string; phone: string; is_active: boolean }) => {
       if (editing) {
-        const { error } = await supabase.from("riders").update(values).eq("id", editing.id);
+        const { error } = await (supabase as any).from("riders").update(values).eq("id", editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("riders").insert(values);
+        const { error } = await (supabase as any).from("riders").insert(values);
         if (error) throw error;
       }
     },
@@ -70,7 +70,7 @@ function AdminRiders() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("riders").delete().eq("id", id);
+      const { error } = await (supabase as any).from("riders").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -93,7 +93,7 @@ function AdminRiders() {
   }
 
   async function toggleActive(rider: Rider) {
-    const { error } = await supabase.from("riders").update({ is_active: !rider.is_active }).eq("id", rider.id);
+    const { error } = await (supabase as any).from("riders").update({ is_active: !rider.is_active }).eq("id", rider.id);
     if (error) toast.error(error.message);
     else toast.success(rider.is_active ? "Rider deactivated" : "Rider activated");
     qc.invalidateQueries({ queryKey: ["admin-riders"] });

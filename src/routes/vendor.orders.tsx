@@ -25,7 +25,7 @@ function VendorOrders() {
       const { data, error } = await supabase.from("orders")
         .select("*, order_items(*)")
         .eq("restaurant_id", restaurantId)
-        .in("status", ACTIVE_STATUSES)
+        .in("status", ACTIVE_STATUSES as unknown as any[])
         .order("created_at", { ascending: true });
       if (error) throw error;
       return data;
@@ -50,7 +50,7 @@ function VendorOrders() {
 
   async function rejectWithReason(id: string) {
     const reason = rejectionReason.trim() || "No reason provided";
-    const { error } = await supabase.from("orders").update({ status: "rejected" as any, rejection_reason: reason }).eq("id", id);
+    const { error } = await supabase.from("orders").update({ status: "rejected" as any, rejection_reason: reason } as any).eq("id", id);
     if (error) toast.error(error.message); else toast.success("Order rejected");
     qc.invalidateQueries({ queryKey: ["vendor-orders", restaurantId] });
     setRejectingId(null);

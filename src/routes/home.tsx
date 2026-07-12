@@ -24,33 +24,28 @@ interface RestaurantRow {
 
 const CATEGORIES = [
   { name: "Swallow", emoji: "🍲" },
+  { name: "Rice", emoji: "🍚" },
   { name: "Fast Food", emoji: "🍔" },
-  { name: "Chicken", emoji: "🍗" },
-  { name: "Desserts", emoji: "🍰" },
-  { name: "Pizza", emoji: "🍕" },
+  { name: "Snacks", emoji: "🍿" },
   { name: "Drinks", emoji: "🥤" },
+  { name: "Breakfast", emoji: "🍳" },
 ];
 
-// Keyword → category tagging. Order matters: specific first.
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   Swallow: ["amala", "eba", "semo", "semovita", "pounded yam", "poundo", "fufu", "wheat", "tuwo", "iyan", "starch", "garri"],
-  Pizza: ["pizza"],
-  Desserts: ["cake", "ice cream", "doughnut", "donut", "cupcake", "pudding", "chocolate", "dessert", "pastry", "muffin"],
-  Drinks: ["coke", "coca", "fanta", "sprite", "pepsi", "juice", "malt", "smoothie", "zobo", "chapman", "water", "tea", "coffee", "yoghurt", "yogurt", "cocktail", "wine", "beer", "drink"],
-  Chicken: ["chicken", "wings", "drumstick"],
+  Rice: ["jollof", "fried rice", "white rice", "rice", "basmati", "coconut rice"],
+  Snacks: ["puff", "meat pie", "sausage roll", "doughnut", "chin chin", "samosa", "spring roll", "shawarma", "burger", "snack", "cake", "pastry", "muffin", "cupcake"],
+  Drinks: ["coke", "coca", "fanta", "sprite", "pepsi", "juice", "malt", "smoothie", "zobo", "chapman", "water", "tea", "coffee", "yoghurt", "yogurt", "kunu", "drink"],
+  Breakfast: ["bread", "yam and egg", "yam & egg", "moimoi", "moi moi", "akara", "pap", "ogi", "custard", "cornflakes", "beans and bread", "boli", "plantain", "pancake"],
 };
 
-// meal → tags
 function tagMeal(name: string): Set<string> {
   const n = name.toLowerCase();
   const tags = new Set<string>();
   for (const [cat, kws] of Object.entries(CATEGORY_KEYWORDS)) {
     if (kws.some((k) => n.includes(k))) tags.add(cat);
   }
-  // Fast Food is the catch-all for savory meals not already swallow/pizza/dessert/drink.
-  if (!tags.has("Swallow") && !tags.has("Pizza") && !tags.has("Desserts") && !tags.has("Drinks")) {
-    tags.add("Fast Food");
-  }
+  if (tags.size === 0) tags.add("Fast Food");
   return tags;
 }
 
@@ -175,19 +170,19 @@ function Home() {
         </div>
       </div>
 
-      {/* Category Icons Carousel — py padding so the active border/scale isn't clipped */}
-      <div className="mb-8 border-b border-border pb-6 -mx-4 px-4 overflow-x-auto scrollbar-none">
-        <div className="flex gap-4 py-2">
+      {/* Category chips — no clipped border */}
+      <div className="mb-8 border-b border-border pb-6 -mx-4 px-4">
+        <div className="flex gap-3 overflow-x-auto overflow-y-visible scrollbar-none py-3 px-1 -mx-1">
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.name;
             return (
               <button
                 key={cat.name}
                 onClick={() => setSelectedCategory(active ? null : cat.name)}
-                className={`flex flex-col items-center gap-2 shrink-0 rounded-2xl p-3 w-20 border transition-all cursor-pointer ${
+                className={`flex flex-col items-center gap-1.5 shrink-0 rounded-2xl p-3 w-20 border-2 transition-all cursor-pointer ${
                   active
-                    ? "border-primary bg-primary/5 text-primary scale-105 font-bold shadow-sm"
-                    : "border-border/60 bg-white text-foreground hover:border-border hover:bg-secondary/40"
+                    ? "border-primary bg-primary/5 text-primary font-bold shadow-sm"
+                    : "border-transparent bg-white text-foreground hover:border-border hover:bg-secondary/40"
                 }`}
               >
                 <span className="text-2xl">{cat.emoji}</span>
