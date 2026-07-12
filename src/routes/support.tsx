@@ -1,9 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { MessageCircle, Phone, HelpCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, Phone, HelpCircle, ArrowRight, Clock, Mail } from "lucide-react";
 
-export const Route = createFileRoute("/support")({ component: SupportPage });
+export const Route = createFileRoute("/support")({
+  component: SupportPage,
+  head: () => ({
+    meta: [
+      { title: "Support — MealBae" },
+      { name: "description", content: "Reach the MealBae team any time — call, WhatsApp, or email us." },
+      { property: "og:title", content: "Support — MealBae" },
+      { property: "og:description", content: "Reach the MealBae team any time — call, WhatsApp, or email us." },
+    ],
+  }),
+});
 
 const FAQS = [
   {
@@ -28,14 +39,18 @@ const FAQS = [
   },
 ];
 
+const SUPPORT_PHONE = "08141894696";
+const SUPPORT_WA = "2348141894696";
+const SUPPORT_EMAIL = "hello@mealbae.com";
+
 function SupportPage() {
   return (
-    <AppShell title="Support">
+    <AppShell title="Support" right={<HeaderActions />}>
       <div className="mx-auto max-w-xl pb-24">
         {/* Support Options Header */}
         <div className="mb-6 flex flex-col gap-2">
-          <h1 className="font-display text-2xl font-extrabold text-foreground flex items-center gap-2">
-            <MessageCircle className="h-6 w-6 text-primary" /> Support Center
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
+            <MessageCircle className="h-7 w-7 text-primary" /> Support Center
           </h1>
           <p className="text-sm text-muted-foreground">
             We are here to help you. Reach out to our support agents or read the FAQs below.
@@ -45,7 +60,7 @@ function SupportPage() {
         {/* Contact Methods Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-8">
           <a
-            href="https://wa.me/2348141894696"
+            href={`https://wa.me/${SUPPORT_WA}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-col justify-between p-5 rounded-2xl bg-emerald-50 border border-emerald-100 hover:scale-[1.01] transition-transform duration-300 text-left"
@@ -67,7 +82,7 @@ function SupportPage() {
           </a>
 
           <a
-            href="tel:+2348141894696"
+            href={`tel:${SUPPORT_PHONE}`}
             className="flex flex-col justify-between p-5 rounded-2xl bg-amber-50 border border-amber-100 hover:scale-[1.01] transition-transform duration-300 text-left"
           >
             <div>
@@ -88,7 +103,7 @@ function SupportPage() {
         </div>
 
         {/* FAQs Accordion */}
-        <div className="bg-white border border-border/80 rounded-2xl p-5 shadow-xs">
+        <div className="bg-white border border-border/80 rounded-2xl p-5 shadow-xs mb-6">
           <h2 className="font-display text-lg font-extrabold text-foreground mb-4 flex items-center gap-2">
             <HelpCircle className="h-5 w-5 text-primary" /> Frequently Asked Questions
           </h2>
@@ -105,6 +120,13 @@ function SupportPage() {
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-secondary/50 p-4">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" /> Working hours
+          </div>
+          <div className="mt-2 text-sm text-foreground">Every day · 8:00 AM – 10:00 PM</div>
         </div>
       </div>
     </AppShell>

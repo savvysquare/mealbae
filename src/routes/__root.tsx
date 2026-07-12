@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/lib/cart";
 import { FloatingCartButton } from "@/components/FloatingCartButton";
+import { BottomTabBar } from "@/components/BottomTabBar";
 
 function NotFoundComponent() {
   return (
@@ -123,6 +124,7 @@ function RootComponent() {
       <CartProvider>
         <Outlet />
         <FloatingCartButton />
+        <BottomTabBar />
         <Toaster richColors position="top-center" />
       </CartProvider>
     </QueryClientProvider>

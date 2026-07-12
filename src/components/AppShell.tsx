@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Logo } from "./Logo";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Home, Search, ListOrdered, MessageCircle, User } from "lucide-react";
+import { LogOut, Home, Search, ListOrdered, MessageCircle } from "lucide-react";
 import { useCart } from "@/lib/cart";
 
 export function AppShell({
@@ -48,7 +48,7 @@ export function AppShell({
       </header>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 w-full mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10 pb-28">
+      <main className="flex-1 w-full mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10 pb-28 md:pb-14">
         {children}
       </main>
 

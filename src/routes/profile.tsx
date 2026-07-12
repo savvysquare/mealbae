@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { AppShell, signOutAll } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { useSession } from "@/hooks/use-auth";
+import { getSavedPhone, savePhone, clearSavedPhone } from "@/lib/user-phone";
 import {
-  User,
+  User as UserIcon,
   MapPin,
   Star,
   Truck,
@@ -11,22 +14,66 @@ import {
   LogOut,
   Phone,
   Mail,
-  Lock,
+  Trash2,
+  Check,
   ShoppingBag,
 } from "lucide-react";
+import { toast } from "sonner";
 
-export const Route = createFileRoute("/profile")({ component: ProfilePage });
+const ADDR_KEY = "mealbae.address.v1";
+const NAME_KEY = "mealbae.name.v1";
+
+export const Route = createFileRoute("/profile")({
+  component: ProfilePage,
+  head: () => ({
+    meta: [
+      { title: "Profile — MealBae" },
+      { name: "description", content: "Manage your saved delivery details and profile on MealBae." },
+      { property: "og:title", content: "Profile — MealBae" },
+      { property: "og:description", content: "Manage your saved delivery details and profile on MealBae." },
+    ],
+  }),
+});
 
 function ProfilePage() {
   const { user } = useSession();
-  const name = user?.user_metadata?.full_name || "Guest User";
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+
   const email = user?.email || "";
-  const initials = name
+  const profileName = user?.user_metadata?.full_name || name || "Guest User";
+  const initials = profileName
     .split(" ")
     .slice(0, 2)
     .map((n: string) => n[0])
     .join("")
     .toUpperCase();
+
+  useEffect(() => {
+    setName(typeof window !== "undefined" ? window.localStorage.getItem(NAME_KEY) ?? "" : "");
+    setPhone(getSavedPhone());
+    setAddress(typeof window !== "undefined" ? window.localStorage.getItem(ADDR_KEY) ?? "" : "");
+  }, []);
+
+  function saveAll() {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(NAME_KEY, name.trim());
+    window.localStorage.setItem(ADDR_KEY, address.trim());
+    if (phone.trim()) savePhone(phone.trim());
+    toast.success("Saved");
+  }
+
+  function clearAll() {
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem(NAME_KEY);
+    window.localStorage.removeItem(ADDR_KEY);
+    clearSavedPhone();
+    setName("");
+    setPhone("");
+    setAddress("");
+    toast.success("Cleared");
+  }
 
   const menuItems = [
     { icon: ShoppingBag, label: "Order History", to: "/orders", desc: "View all past orders" },
@@ -40,8 +87,8 @@ function ProfilePage() {
   ];
 
   return (
-    <AppShell title="Profile">
-      <div className="mx-auto max-w-lg pb-24">
+    <AppShell title="Profile" right={<HeaderActions />}>
+      <div className="mx-auto max-w-xl pb-24">
         {/* ── Avatar Section ── */}
         <div className="mb-8 flex flex-col items-center text-center gap-3">
           <div className="relative h-20 w-20 rounded-full flex items-center justify-center text-3xl font-black shadow-lg ring-4 ring-white"
@@ -54,7 +101,7 @@ function ProfilePage() {
             )}
           </div>
           <div>
-            <h1 className="font-display text-2xl font-extrabold text-foreground">{name}</h1>
+            <h1 className="font-display text-2xl font-extrabold text-foreground">{profileName}</h1>
             {email && <p className="text-sm text-muted-foreground mt-0.5">{email}</p>}
           </div>
           {!user && (
@@ -75,31 +122,62 @@ function ProfilePage() {
           )}
         </div>
 
-        {/* ── Account Info ── */}
-        {user && (
-          <div className="mb-6 bg-white border border-border/80 rounded-2xl overflow-hidden shadow-xs">
-            <div className="p-4 border-b border-border/60 flex items-center gap-3">
-              <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Email</div>
-                <div className="text-sm font-bold text-foreground truncate">{email}</div>
-              </div>
-            </div>
-            {user.phone && (
-              <div className="p-4 flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Phone</div>
-                  <div className="text-sm font-bold text-foreground">{user.phone}</div>
-                </div>
-              </div>
-            )}
+        {/* ── Account Info/Forms (LocalStorage fields for easy checkout) ── */}
+        <div className="mb-6 bg-white border border-border/80 rounded-2xl p-5 shadow-xs">
+          <h2 className="text-sm font-extrabold text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+            <UserIcon className="h-4.5 w-4.5 text-primary" /> Delivery Details
+          </h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            We save these details on this device so your checkouts are lightning fast.
+          </p>
+
+          <div className="space-y-4">
+            <Field icon={<UserIcon className="h-3.5 w-3.5" />} label="Name">
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your name"
+                className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              />
+            </Field>
+
+            <Field icon={<Phone className="h-3.5 w-3.5" />} label="Phone">
+              <input
+                type="tel"
+                inputMode="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="0803 123 4567"
+                className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              />
+            </Field>
+
+            <Field icon={<MapPin className="h-3.5 w-3.5" />} label="Default delivery address">
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={3}
+                placeholder="Street name, house number, landmark in Osogbo"
+                className="w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+              />
+            </Field>
           </div>
-        )}
+
+          <div className="mt-5 grid grid-cols-[1fr_auto] gap-3">
+            <button
+              onClick={saveAll}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-sm hover:brightness-105 transition cursor-pointer"
+            >
+              <Check className="h-4 w-4" /> Save Details
+            </button>
+            <button
+              onClick={clearAll}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-3 text-sm font-bold text-muted-foreground hover:text-destructive hover:border-destructive transition cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
 
         {/* ── Menu Items ── */}
         <div className="mb-6 bg-white border border-border/80 rounded-2xl overflow-hidden shadow-xs">
@@ -184,5 +262,16 @@ function ProfilePage() {
         </p>
       </div>
     </AppShell>
+  );
+}
+
+function Field({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+  return (
+    <label className="block text-left">
+      <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground mb-1.5">
+        {icon} {label}
+      </span>
+      {children}
+    </label>
   );
 }

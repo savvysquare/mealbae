@@ -3,7 +3,7 @@ import { ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatNaira } from "@/lib/format";
 
-const HIDE_ON = ["/cart", "/checkout", "/auth"];
+const HIDE_ON = ["/cart", "/checkout", "/auth", "/orders", "/home", "/search", "/support", "/profile", "/track"];
 
 export function FloatingCartButton() {
   const { count, subtotal } = useCart();

@@ -3,10 +3,21 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { HeaderActions } from "@/components/HeaderActions";
 import { formatNaira, isRestaurantOpen } from "@/lib/format";
-import { Search as SearchIcon, Store, Star, Clock, X, Pizza, Cake, Coffee } from "lucide-react";
+import { Search as SearchIcon, Store, Star, Clock, X } from "lucide-react";
 
-export const Route = createFileRoute("/search")({ component: SearchPage });
+export const Route = createFileRoute("/search")({
+  component: SearchPage,
+  head: () => ({
+    meta: [
+      { title: "Search — MealBae" },
+      { name: "description", content: "Search restaurants and meals across Osogbo on MealBae." },
+      { property: "og:title", content: "Search — MealBae" },
+      { property: "og:description", content: "Search restaurants and meals across Osogbo on MealBae." },
+    ],
+  }),
+});
 
 const SEARCH_CATEGORIES = [
   { name: "Rice & Pasta", emoji: "🍚", color: "bg-amber-50 text-amber-700 border-amber-100" },
@@ -72,59 +83,56 @@ function SearchPage() {
     },
   });
 
-  const ratingStatsMap = useQuery({
-    queryKey: ["rating-stats-search"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("restaurant_rating_stats").select("*");
-      if (error) return {};
-      const map: Record<string, { avg_rating: number; review_count: number }> = {};
-      for (const r of data ?? []) {
-        map[r.restaurant_id] = { avg_rating: Number(r.avg_rating), review_count: Number(r.review_count) };
-      }
-      return map;
-    },
-  });
-
+  // Filter restaurants/meals in memory
   const results = useMemo(() => {
-    if (!restaurants || !meals) return { restaurants: [], meals: [] };
+    if (!restaurants) return { restaurants: [], meals: [] };
 
     const term = q.trim().toLowerCase();
-    
-    // Filter by Category
+
+    // 1. Filter by category click
     if (selectedCat) {
-      const filteredRestaurants = restaurants.filter((r) => {
-        const rMeals = meals.filter((m) => m.restaurant_id === r.id);
-        return rMeals.some((m) => tagMeal(m.name).has(selectedCat));
-      });
+      const matchedMeals = meals?.filter((m) => {
+        const tags = tagMeal(m.name);
+        return tags.has(selectedCat) && m.is_available;
+      }) ?? [];
 
-      const filteredMeals = meals.filter((m) => tagMeal(m.name).has(selectedCat));
+      const rIds = new Set(matchedMeals.map((m) => m.restaurant_id));
+      const matchedRestaurants = restaurants.filter((r) => rIds.has(r.id));
 
-      return { restaurants: filteredRestaurants, meals: filteredMeals };
+      return {
+        restaurants: matchedRestaurants,
+        meals: matchedMeals.slice(0, 30),
+      };
     }
 
-    // Filter by Query
-    if (term.length < 2) return { restaurants: [], meals: [] };
+    // 2. Filter by search term
+    if (term.length > 1) {
+      const matchedRestaurants = restaurants.filter(
+        (r) =>
+          r.name.toLowerCase().includes(term) ||
+          (r.description ?? "").toLowerCase().includes(term)
+      );
 
-    const matchedRestaurants = restaurants.filter(
-      (r) =>
-        r.name.toLowerCase().includes(term) ||
-        (r.description ?? "").toLowerCase().includes(term)
-    );
+      const matchedMeals = meals?.filter(
+        (m) =>
+          m.name.toLowerCase().includes(term) ||
+          (m.description ?? "").toLowerCase().includes(term)
+      ) ?? [];
 
-    const matchedMeals = meals.filter(
-      (m) =>
-        m.name.toLowerCase().includes(term) ||
-        (m.description ?? "").toLowerCase().includes(term)
-    );
+      return {
+        restaurants: matchedRestaurants,
+        meals: matchedMeals.slice(0, 30),
+      };
+    }
 
-    return { restaurants: matchedRestaurants, meals: matchedMeals };
+    return { restaurants: [], meals: [] };
   }, [q, selectedCat, restaurants, meals]);
 
-  const hasSearch = q.trim().length >= 2 || selectedCat !== null;
+  const hasSearch = q.trim().length > 1 || selectedCat !== null;
 
   return (
-    <AppShell title="Search">
-      <div className="mx-auto max-w-2xl pb-24">
+    <AppShell title="Search" right={<HeaderActions />}>
+      <div className="mx-auto max-w-xl pb-24">
         {/* Search Input */}
         <div className="relative mb-6">
           <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-muted-foreground" />
@@ -134,26 +142,38 @@ function SearchPage() {
               setQ(e.target.value);
               if (selectedCat) setSelectedCat(null);
             }}
-            placeholder="Search meals, restaurants, drinks..."
-            className="w-full rounded-full border border-border bg-white pl-11 pr-10 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/25 placeholder:text-muted-foreground/70 font-medium"
+            placeholder="Search for meals or restaurants..."
+            className="w-full rounded-2xl border border-border bg-white pl-11 pr-10 py-3.5 text-sm font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
           />
-          {hasSearch && (
+          {q && (
             <button
-              onClick={() => {
-                setQ("");
-                setSelectedCat(null);
-              }}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-muted-foreground hover:bg-secondary cursor-pointer"
+              onClick={() => setQ("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-secondary hover:bg-border text-muted-foreground cursor-pointer"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
 
-        {/* Categories grid (default view) */}
+        {/* Category Header/Clear */}
+        {selectedCat && (
+          <div className="flex items-center justify-between mb-4 bg-primary/5 border border-primary/20 rounded-xl p-3">
+            <span className="text-sm font-bold text-foreground">
+              Showing category: <span className="text-primary font-black">{selectedCat}</span>
+            </span>
+            <button
+              onClick={() => setSelectedCat(null)}
+              className="text-xs font-black text-primary hover:underline cursor-pointer"
+            >
+              Clear filter
+            </button>
+          </div>
+        )}
+
+        {/* Categories Grid (idle state) */}
         {!hasSearch && (
           <div>
-            <h2 className="font-display text-lg font-extrabold text-foreground mb-4">
+            <h2 className="font-display text-base font-extrabold text-foreground mb-4">
               Browse Categories
             </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -161,12 +181,10 @@ function SearchPage() {
                 <button
                   key={cat.name}
                   onClick={() => setSelectedCat(cat.name)}
-                  className={`flex items-center gap-3 rounded-2xl p-4 border transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer text-left ${cat.color}`}
+                  className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all hover:scale-[1.02] cursor-pointer ${cat.color}`}
                 >
-                  <span className="text-2xl">{cat.emoji}</span>
-                  <span className="text-sm font-extrabold tracking-tight leading-tight">
-                    {cat.name}
-                  </span>
+                  <span className="text-2xl shrink-0">{cat.emoji}</span>
+                  <span className="text-xs font-extrabold leading-tight">{cat.name}</span>
                 </button>
               ))}
             </div>
@@ -176,62 +194,39 @@ function SearchPage() {
         {/* Search Results */}
         {hasSearch && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-base font-extrabold text-foreground">
-                {selectedCat ? `Category: ${selectedCat}` : `Search results for "${q}"`}
-              </h2>
-              <button
-                onClick={() => {
-                  setQ("");
-                  setSelectedCat(null);
-                }}
-                className="text-xs font-bold text-primary hover:underline cursor-pointer"
-              >
-                Clear Search
-              </button>
-            </div>
-
-            {/* Restaurants Match */}
+            {/* Restaurants Section */}
             {results.restaurants.length > 0 && (
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                  Restaurants ({results.restaurants.length})
+                <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-3">
+                  Restaurants
                 </h3>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
                   {results.restaurants.map((r) => {
                     const open = isRestaurantOpen(r.opens_at, r.closes_at, r.is_open_override);
-                    const stats = ratingStatsMap.data?.[r.id];
-                    const rRating = stats?.avg_rating || (4.5 + (r.name.charCodeAt(0) % 5) * 0.1);
-                    const rReviews = stats?.review_count || 0;
-
                     return (
                       <Link
                         key={r.id}
                         to="/r/$restaurantId"
                         params={{ restaurantId: r.id }}
-                        className={`flex gap-3 p-3 bg-white border border-border/80 rounded-xl hover:shadow-xs transition duration-300 ${!open ? "opacity-75" : ""}`}
+                        className="flex items-center justify-between p-4 bg-white border border-border/80 rounded-2xl hover:border-primary transition cursor-pointer"
                       >
-                        <div className="h-16 w-16 rounded-lg bg-secondary shrink-0 overflow-hidden relative">
-                          {r.image_url ? (
-                            <img src={r.image_url} alt={r.name} className="h-full w-full object-cover" />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center text-xs font-bold text-muted-foreground bg-secondary">
-                              {r.name.slice(0, 2)}
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-sm text-foreground flex items-center gap-2">
+                            {r.name}
+                            {!open && (
+                              <span className="text-[9px] font-extrabold bg-secondary text-muted-foreground px-1.5 py-0.5 rounded-md">
+                                Closed
+                              </span>
+                            )}
+                          </div>
+                          {r.description && (
+                            <div className="text-xs text-muted-foreground truncate mt-0.5 max-w-[280px]">
+                              {r.description}
                             </div>
                           )}
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="font-bold text-sm text-foreground truncate">{r.name}</h4>
-                          <p className="text-xs text-muted-foreground truncate mt-0.5">{r.address}</p>
-                          <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-0.5 text-foreground font-semibold">
-                              <Star className="h-3 w-3 fill-primary text-primary" /> {rRating.toFixed(1)} ({rReviews})
-                            </span>
-                            <span>•</span>
-                            <span className={open ? "text-emerald-600 font-medium" : "text-warning-foreground font-medium"}>
-                              {open ? "Open" : "Closed"}
-                            </span>
-                          </div>
+                        <div className="text-xs font-bold text-primary shrink-0 pl-3">
+                          View menu
                         </div>
                       </Link>
                     );
@@ -240,34 +235,32 @@ function SearchPage() {
               </div>
             )}
 
-            {/* Meals Match */}
+            {/* Meals Section */}
             {results.meals.length > 0 && (
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-                  Meals ({results.meals.length})
+                <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-3">
+                  Meals
                 </h3>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {results.meals.map((m) => (
                     <Link
                       key={m.id}
                       to="/r/$restaurantId"
                       params={{ restaurantId: m.restaurant_id }}
-                      className="flex items-center justify-between p-4 bg-white border border-border/80 rounded-xl hover:border-primary/50 transition duration-300"
+                      className="flex flex-col justify-between p-4 bg-white border border-border/80 rounded-2xl hover:border-primary transition cursor-pointer"
                     >
-                      <div className="pr-4 min-w-0">
-                        <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
-                          {m.name}
+                      <div>
+                        <div className="font-bold text-sm text-foreground leading-tight">{m.name}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">
+                          from {(m as any).restaurants?.name ?? "Restaurant"}
                         </div>
                         {m.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-1.5 leading-relaxed">
                             {m.description}
                           </p>
                         )}
-                        <div className="text-xs text-primary font-medium mt-1">
-                          from {m.restaurants?.name || "Restaurant"}
-                        </div>
                       </div>
-                      <div className="text-sm font-extrabold text-foreground shrink-0">
+                      <div className="font-display text-sm font-extrabold text-primary mt-3">
                         {formatNaira(m.price_naira)}
                       </div>
                     </Link>
@@ -276,11 +269,14 @@ function SearchPage() {
               </div>
             )}
 
+            {/* No Results State */}
             {results.restaurants.length === 0 && results.meals.length === 0 && (
-              <div className="text-center py-12 rounded-2xl border border-dashed border-border bg-white text-muted-foreground text-sm">
-                <Store className="mx-auto h-8 w-8 mb-3 text-muted-foreground/30" />
-                <p className="font-semibold text-foreground">No matches found</p>
-                <p className="text-xs mt-0.5">Try searching with different terms or check categories.</p>
+              <div className="text-center py-12 bg-white border border-dashed border-border rounded-2xl p-8">
+                <Store className="mx-auto h-8 w-8 text-muted-foreground/30 mb-3" />
+                <div className="font-bold text-sm text-foreground">No matches found</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Try checking spelling or exploring other categories.
+                </p>
               </div>
             )}
           </div>

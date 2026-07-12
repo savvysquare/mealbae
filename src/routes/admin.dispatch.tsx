@@ -18,7 +18,7 @@ function Dispatch() {
       const { data, error } = await supabase
         .from("orders")
         .select("*, restaurants(name, address, phone)")
-        .in("status", ["preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"])
+        .in("status", ["preparing", "ready_for_pickup", "rider_arrived_at_restaurant", "out_for_delivery", "rider_arrived_at_delivery"] as any[])
         .order("created_at");
       if (error) throw error;
       return data;
@@ -30,7 +30,7 @@ function Dispatch() {
   const { data: allRiders } = useQuery({
     queryKey: ["riders-list"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("riders").select("*").eq("is_active", true).order("name");
+      const { data, error } = await (supabase as any).from("riders").select("*").eq("is_active", true).order("name");
       if (error) throw error;
       return data as { id: string; name: string; phone: string }[];
     },
