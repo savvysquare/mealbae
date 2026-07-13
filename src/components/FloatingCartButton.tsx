@@ -7,7 +7,7 @@ const HIDE_ON = ["/cart", "/checkout", "/auth", "/orders", "/home", "/search", "
 
 export function FloatingCartButton() {
   const { count, subtotal } = useCart();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState({ select: (s: { location: { pathname: string } }) => s.location.pathname });
 
   if (count === 0) return null;
   if (HIDE_ON.some((p) => pathname.startsWith(p))) return null;

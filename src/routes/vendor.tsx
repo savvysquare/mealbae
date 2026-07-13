@@ -20,7 +20,7 @@ async function getVendorContext() {
 
 export const Route = createFileRoute("/vendor")({
   ssr: false,
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async ({ location }: { location: { pathname: string } }) => {
     const ctx = await getVendorContext();
     if (!ctx.isVendor && !["/vendor", "/vendor/"].includes(location.pathname)) {
       throw redirect({ to: "/vendor" });

@@ -92,6 +92,11 @@ function isSwallow(catName: string | undefined, mealName: string): boolean {
   return ["amala", "eba", "semo", "pounded yam", "fufu", "iyan", "wheat", "swallow", "tuwo"].some((k) => n.includes(k));
 }
 
+// Strip soup/protein combo from meal name for display only
+function stripSoupFromName(name: string): string {
+  return name.split(/\s*[&+]\s*/)[0].replace(/\s+with\s+.*/i, "").trim();
+}
+
 // Determine portion unit label
 function portionUnit(catName: string | undefined, mealName: string): string {
   const n = ((catName ?? "") + " " + mealName).toLowerCase();
@@ -133,7 +138,8 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
   const totalPrice = linePrice * qty;
 
   function buildLabel() {
-    const parts: string[] = [`${meal.name} (${qty} ${unit}${qty > 1 ? "s" : ""})`];
+    const displayName = stripSoupFromName(meal.name);
+    const parts: string[] = [`${displayName} (${qty} ${unit}${qty > 1 ? "s" : ""})`];
     if (selectedSoup !== "none") parts.push(soup.label);
     if (selectedProtein !== "none") parts.push(`${proteinQty}× ${protein.label}`);
     if (selectedDrink !== "none") parts.push(`${drinkQty}× ${drink.label}`);
@@ -143,17 +149,18 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
 
   function handleAdd() {
     const label = buildLabel();
+    const displayName = stripSoupFromName(meal.name);
     const cartItemId = `${meal.id}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
     add(restaurant.id, restaurant.name, {
       cartItemId,
       mealId: meal.id,
-      name: meal.name,
+      name: displayName,
       price: linePrice,
       quantity: qty,
       imageUrl: meal.image_url,
       customLabel: label,
     });
-    toast.success(`${meal.name} added to cart!`);
+    toast.success(`${displayName} added to cart!`);
     onClose();
   }
 
@@ -176,7 +183,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
             <img src={meal.image_url} alt={meal.name} className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10" />
             <div className="absolute bottom-4 left-5 right-14">
-              <h2 className="font-display text-xl font-extrabold text-white leading-tight drop-shadow">{meal.name}</h2>
+              <h2 className="font-display text-xl font-extrabold text-white leading-tight drop-shadow">{stripSoupFromName(meal.name)}</h2>
               {meal.description && (
                 <p className="text-xs text-white/80 mt-0.5 line-clamp-1">{meal.description}</p>
               )}
@@ -187,7 +194,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
           </div>
         ) : (
           <div className="px-5 pt-6 pb-2 shrink-0">
-            <h2 className="font-display text-xl font-extrabold text-foreground leading-tight">{meal.name}</h2>
+            <h2 className="font-display text-xl font-extrabold text-foreground leading-tight">{stripSoupFromName(meal.name)}</h2>
             {meal.description && (
               <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{meal.description}</p>
             )}
@@ -366,7 +373,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
             <div className="rounded-2xl border border-border bg-secondary/30 p-4 space-y-1.5 text-sm">
               <div className="font-bold text-foreground text-xs uppercase tracking-wider mb-2">Your Order</div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">{qty}× {meal.name}</span>
+                <span className="text-muted-foreground">{qty}× {stripSoupFromName(meal.name)}</span>
                 <span className="font-semibold">{formatNaira(meal.price_naira * qty)}</span>
               </div>
               {selectedSoup !== "none" && soup.price > 0 && (

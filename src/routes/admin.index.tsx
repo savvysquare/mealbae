@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/")({
   ssr: false,
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context }: { context: Record<string, unknown> }) => {
     if ((context as { isAdmin?: boolean }).isAdmin) {
       throw redirect({ to: "/admin/overview" });
     }

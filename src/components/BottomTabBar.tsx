@@ -21,7 +21,7 @@ const TABS: {
 const HIDE_PREFIXES = ["/admin", "/vendor", "/rider", "/checkout"];
 
 export function BottomTabBar() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState({ select: (s: { location: { pathname: string } }) => s.location.pathname });
   const { count } = useCart();
 
   if (pathname === "/") return null;

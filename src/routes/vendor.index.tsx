@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/vendor/")({
   ssr: false,
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context }: { context: Record<string, unknown> }) => {
     if ((context as { isVendor?: boolean }).isVendor) {
       throw redirect({ to: "/vendor/orders" });
     }

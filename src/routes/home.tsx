@@ -58,9 +58,14 @@ function tagMeal(name: string): Set<string> {
   return tags;
 }
 
-/** Format HH:MM 24h → h:MM AM/PM */
-function formatHour(t: string): string {
-  const [hh, mm] = t.split(":").map(Number);
+/** Format HH:MM 24h → h:MM AM/PM (safe against undefined/null) */
+function formatHour(t: string | null | undefined): string {
+  if (!t) return "";
+  const parts = t.split(":");
+  if (parts.length < 2) return t;
+  const hh = Number(parts[0]);
+  const mm = Number(parts[1]);
+  if (isNaN(hh) || isNaN(mm)) return t;
   const h12 = ((hh + 11) % 12) + 1;
   const ampm = hh < 12 ? "AM" : "PM";
   return `${h12}:${mm.toString().padStart(2, "0")} ${ampm}`;
@@ -133,7 +138,7 @@ function Home() {
     queryKey: ["rating-stats"],
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
-      const { data, error } = await supabase.from("restaurant_rating_stats").select("*");
+      const { data, error } = await (supabase as any).from("restaurant_rating_stats").select("*");
       if (error) return {} as Record<string, { avg_rating: number; review_count: number }>;
       const map: Record<string, { avg_rating: number; review_count: number }> = {};
       for (const r of data ?? []) {
@@ -249,8 +254,10 @@ function Home() {
       </div>
 
       {/* ── Category Scroll Strip ── */}
-      {/* pt-2 ensures active scale/shadow is not clipped */}
-      <div className="mb-6 -mx-4 px-4 overflow-x-auto scrollbar-none pt-2 pb-1">
+      {/* Full-bleed: extend to both viewport edges regardless of parent padding */}
+      <div
+        className="mb-6 overflow-x-auto scrollbar-none pt-2 pb-1 -mx-4 px-4 md:-mx-8 md:px-8"
+      >
         <div className="flex gap-2.5" style={{ width: "max-content" }}>
           {CATEGORIES.map((cat) => {
             const active = selectedCategory === cat.name;

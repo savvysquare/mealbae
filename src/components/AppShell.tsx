@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { Logo } from "./Logo";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,13 +20,20 @@ export function AppShell({
   const routerState = useRouterState();
   const pathname = routerState.location.pathname;
 
-  const tabs = [
+  type TabItem = {
+    to: string;
+    label: string;
+    Icon: React.ComponentType<{ className?: string; strokeWidth?: number }> | null;
+    id: string;
+    isProfile?: boolean;
+  };
+  const tabs: TabItem[] = [
     { to: "/home", label: "Home", Icon: Home, id: "tab-home" },
     { to: "/search", label: "Search", Icon: Search, id: "tab-search" },
     { to: "/orders", label: "Orders", Icon: ListOrdered, id: "tab-orders" },
     { to: "/support", label: "Support", Icon: MessageCircle, id: "tab-support" },
     { to: "/profile", label: "Profile", Icon: null, id: "tab-profile", isProfile: true },
-  ] as const;
+  ];
 
   return (
     <div className="min-h-screen bg-[#f8f8f8] text-foreground flex flex-col">
@@ -79,12 +86,12 @@ export function AppShell({
                     >
                       <span className="text-sm">{isActive ? "🥰" : "😊"}</span>
                     </div>
-                  ) : (
+                  ) : tab.Icon ? (
                     <tab.Icon
                       className={`h-[22px] w-[22px] transition-transform ${isActive ? "scale-110" : ""}`}
                       strokeWidth={isActive ? 2.5 : 1.8}
                     />
-                  )}
+                  ) : null}
                   <span className={isActive ? "font-extrabold" : ""}>{tab.label}</span>
                   {isActive && (
                     <span className="absolute top-0 left-1/2 -translate-x-1/2 h-[3px] w-8 rounded-full bg-primary" />
