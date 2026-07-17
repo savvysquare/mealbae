@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { formatNaira } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { X, Plus, Minus } from "lucide-react";
@@ -24,76 +24,76 @@ interface MealCustomizerProps {
 
 // ─── Option Definitions ──────────────────────────────────────────────────────
 
-type Option = { id: string; label: string; emoji: string; price: number };
+type Option = { id: string; label: string; emoji: string; price: number; imageUrl?: string };
 
 const SOUPS: Option[] = [
-  { id: "none", label: "None", emoji: "🚫", price: 0 },
-  { id: "ewedu", label: "Ewedu", emoji: "🥬", price: 0 },
-  { id: "egusi", label: "Egusi Soup", emoji: "🍲", price: 300 },
-  { id: "efo_riro", label: "Efo Riro", emoji: "🫙", price: 400 },
-  { id: "gbegiri", label: "Gbegiri", emoji: "🟤", price: 0 },
-  { id: "ewedu_gbegiri", label: "Ewedu & Gbegiri", emoji: "🥬", price: 0 },
-  { id: "okro", label: "Okro Soup", emoji: "🫑", price: 200 },
-  { id: "banga", label: "Banga Soup", emoji: "🌴", price: 300 },
-  { id: "ogbono", label: "Ogbono Soup", emoji: "🪵", price: 300 },
-  { id: "oha", label: "Oha Soup", emoji: "🍃", price: 300 },
+  { id: "none",          label: "None",          emoji: "🚫", price: 0,   imageUrl: "/meal-options/soups/none.png" },
+  { id: "ewedu",         label: "Ewedu",         emoji: "🥬", price: 0,   imageUrl: "/meal-options/soups/ewedu.png" },
+  { id: "egusi",         label: "Egusi Soup",    emoji: "🍲", price: 300, imageUrl: "/meal-options/soups/egusi.png" },
+  { id: "efo_riro",      label: "Efo Riro",      emoji: "🫙", price: 400, imageUrl: "/meal-options/soups/efo-riro.png" },
+  { id: "gbegiri",       label: "Gbegiri",       emoji: "🟤", price: 0,   imageUrl: "/meal-options/soups/gbegiri.png" },
+  { id: "ewedu_gbegiri", label: "Ewedu & Gbegiri",emoji: "🥬", price: 0, imageUrl: "/meal-options/soups/ewedu-gbegiri.png" },
+  { id: "okro",          label: "Okro Soup",     emoji: "🫑", price: 200, imageUrl: "/meal-options/soups/okro.png" },
+  { id: "banga",         label: "Banga Soup",    emoji: "🌴", price: 300, imageUrl: "/meal-options/soups/banga.png" },
+  { id: "ogbono",        label: "Ogbono Soup",   emoji: "🪵", price: 300, imageUrl: "/meal-options/soups/ogbono.png" },
+  { id: "oha",           label: "Oha Soup",      emoji: "🍃", price: 300, imageUrl: "/meal-options/soups/oha.png" },
 ];
 
 const PROTEINS: Option[] = [
-  { id: "assorted_meat", label: "Assorted Meat", emoji: "🥩", price: 800 },
-  { id: "beef", label: "Beef", emoji: "🥩", price: 500 },
-  { id: "ponmo", label: "Ponmo", emoji: "🟫", price: 300 },
-  { id: "shaki", label: "Shaki (Tripe)", emoji: "🫀", price: 400 },
-  { id: "grilled_chicken", label: "Grilled Chicken", emoji: "🍗", price: 1500 },
-  { id: "peppered_chicken", label: "Peppered Chicken", emoji: "🍗", price: 1500 },
-  { id: "fried_chicken", label: "Fried Chicken", emoji: "🍗", price: 1400 },
-  { id: "turkey", label: "Peppered Turkey", emoji: "🦃", price: 2200 },
-  { id: "titus_fish", label: "Titus Fish", emoji: "🐟", price: 1200 },
-  { id: "croaker_fish", label: "Croaker Fish", emoji: "🐠", price: 1800 },
-  { id: "catfish", label: "Catfish (Eja Aro)", emoji: "🐡", price: 2000 },
-  { id: "tilapia", label: "Tilapia", emoji: "🐟", price: 1500 },
-  { id: "smoked_fish", label: "Smoked Fish", emoji: "🎣", price: 900 },
-  { id: "dried_fish", label: "Dried Fish", emoji: "🐚", price: 600 },
-  { id: "stockfish", label: "Stock Fish (Panla)", emoji: "🪸", price: 700 },
-  { id: "boiled_egg", label: "Boiled Egg", emoji: "🥚", price: 300 },
-  { id: "fried_egg", label: "Fried Egg", emoji: "🍳", price: 400 },
-  { id: "snail", label: "Snail", emoji: "🐌", price: 1200 },
-  { id: "shrimp", label: "Shrimp / Prawns", emoji: "🦐", price: 1000 },
-  { id: "bush_meat", label: "Bush Meat", emoji: "🦌", price: 800 },
+  { id: "assorted_meat",    label: "Assorted Meat",      emoji: "🥩", price: 800,  imageUrl: "/meal-options/proteins/assorted-meat.png" },
+  { id: "beef",             label: "Beef",               emoji: "🥩", price: 500,  imageUrl: "/meal-options/proteins/beef.png" },
+  { id: "ponmo",            label: "Ponmo",              emoji: "🟫", price: 300,  imageUrl: "/meal-options/proteins/ponmo.png" },
+  { id: "shaki",            label: "Shaki (Tripe)",      emoji: "🫀", price: 400,  imageUrl: "/meal-options/proteins/shaki.png" },
+  { id: "grilled_chicken",  label: "Grilled Chicken",   emoji: "🍗", price: 1500, imageUrl: "/meal-options/proteins/grilled-chicken.png" },
+  { id: "peppered_chicken", label: "Peppered Chicken",  emoji: "🍗", price: 1500, imageUrl: "/meal-options/proteins/peppered-chicken.png" },
+  { id: "fried_chicken",    label: "Fried Chicken",     emoji: "🍗", price: 1400, imageUrl: "/meal-options/proteins/fried-chicken.png" },
+  { id: "turkey",           label: "Peppered Turkey",   emoji: "🦃", price: 2200, imageUrl: "/meal-options/proteins/turkey.png" },
+  { id: "titus_fish",       label: "Titus Fish",        emoji: "🐟", price: 1200, imageUrl: "/meal-options/proteins/titus-fish.png" },
+  { id: "croaker_fish",     label: "Croaker Fish",      emoji: "🐠", price: 1800, imageUrl: "/meal-options/proteins/croaker-fish.png" },
+  { id: "catfish",          label: "Catfish (Eja Aro)", emoji: "🐡", price: 2000, imageUrl: "/meal-options/proteins/catfish.png" },
+  { id: "tilapia",          label: "Tilapia",           emoji: "🐟", price: 1500, imageUrl: "/meal-options/proteins/tilapia.png" },
+  { id: "smoked_fish",      label: "Smoked Fish",       emoji: "🎣", price: 900,  imageUrl: "/meal-options/proteins/smoked-fish.png" },
+  { id: "dried_fish",       label: "Dried Fish",        emoji: "🐚", price: 600,  imageUrl: "/meal-options/proteins/dried-fish.png" },
+  { id: "stockfish",        label: "Stock Fish (Panla)",emoji: "🪸", price: 700,  imageUrl: "/meal-options/proteins/stockfish.png" },
+  { id: "boiled_egg",       label: "Boiled Egg",        emoji: "🥚", price: 300,  imageUrl: "/meal-options/proteins/boiled-egg.png" },
+  { id: "fried_egg",        label: "Fried Egg",         emoji: "🍳", price: 400,  imageUrl: "/meal-options/proteins/fried-egg.png" },
+  { id: "snail",            label: "Snail",             emoji: "🐌", price: 1200, imageUrl: "/meal-options/proteins/snail.png" },
+  { id: "shrimp",           label: "Shrimp / Prawns",   emoji: "🦐", price: 1000, imageUrl: "/meal-options/proteins/shrimp.png" },
+  { id: "bush_meat",        label: "Bush Meat",         emoji: "🦌", price: 800,  imageUrl: "/meal-options/proteins/bush-meat.png" },
 ];
 
 const DRINKS: Option[] = [
-  { id: "water", label: "Eva Water 75cl", emoji: "💧", price: 300 },
-  { id: "coke_50cl", label: "Coca-Cola 50cl", emoji: "🥤", price: 500 },
-  { id: "coke_35cl", label: "Coca-Cola 35cl", emoji: "🥤", price: 400 },
-  { id: "fanta", label: "Fanta 50cl", emoji: "🟠", price: 500 },
-  { id: "sprite", label: "Sprite 50cl", emoji: "🟢", price: 500 },
-  { id: "pepsi", label: "Pepsi 50cl", emoji: "🔵", price: 500 },
-  { id: "malt", label: "Malt", emoji: "🍺", price: 700 },
-  { id: "zobo", label: "Zobo 50cl", emoji: "❤️", price: 700 },
-  { id: "kunu", label: "Kunu Aya", emoji: "🥛", price: 500 },
-  { id: "tigernut", label: "Tigernut Drink", emoji: "🌰", price: 600 },
-  { id: "chapman", label: "Chapman", emoji: "🍹", price: 1200 },
-  { id: "smoothie", label: "Fruit Smoothie", emoji: "🍓", price: 1500 },
-  { id: "lacasera", label: "Lacasera 50cl", emoji: "🫧", price: 450 },
-  { id: "capri_sonne", label: "Capri Sonne", emoji: "🍊", price: 400 },
-  { id: "five_alive", label: "Five Alive 35cl", emoji: "🍋", price: 400 },
-  { id: "hi_malt", label: "Hi-Malt", emoji: "🍺", price: 600 },
+  { id: "water",       label: "Eva Water 75cl",   emoji: "💧", price: 300,  imageUrl: "/meal-options/drinks/water.png" },
+  { id: "coke_50cl",   label: "Coca-Cola 50cl",   emoji: "🥤", price: 500,  imageUrl: "/meal-options/drinks/coke.png" },
+  { id: "coke_35cl",   label: "Coca-Cola 35cl",   emoji: "🥤", price: 400,  imageUrl: "/meal-options/drinks/coke-small.png" },
+  { id: "fanta",       label: "Fanta 50cl",        emoji: "🟠", price: 500,  imageUrl: "/meal-options/drinks/fanta.png" },
+  { id: "sprite",      label: "Sprite 50cl",       emoji: "🟢", price: 500,  imageUrl: "/meal-options/drinks/sprite.png" },
+  { id: "pepsi",       label: "Pepsi 50cl",        emoji: "🔵", price: 500,  imageUrl: "/meal-options/drinks/pepsi.png" },
+  { id: "malt",        label: "Malt",              emoji: "🍺", price: 700,  imageUrl: "/meal-options/drinks/malt.png" },
+  { id: "zobo",        label: "Zobo 50cl",         emoji: "❤️", price: 700,  imageUrl: "/meal-options/drinks/zobo.png" },
+  { id: "kunu",        label: "Kunu Aya",          emoji: "🥛", price: 500,  imageUrl: "/meal-options/drinks/kunu.png" },
+  { id: "tigernut",    label: "Tigernut Drink",    emoji: "🌰", price: 600,  imageUrl: "/meal-options/drinks/tigernut.png" },
+  { id: "chapman",     label: "Chapman",           emoji: "🍹", price: 1200, imageUrl: "/meal-options/drinks/chapman.png" },
+  { id: "smoothie",    label: "Fruit Smoothie",    emoji: "🍓", price: 1500, imageUrl: "/meal-options/drinks/smoothie.png" },
+  { id: "lacasera",    label: "Lacasera 50cl",     emoji: "🫧", price: 450,  imageUrl: "/meal-options/drinks/lacasera.png" },
+  { id: "capri_sonne", label: "Capri Sonne",       emoji: "🍊", price: 400,  imageUrl: "/meal-options/drinks/capri-sonne.png" },
+  { id: "five_alive",  label: "Five Alive 35cl",   emoji: "🍋", price: 400,  imageUrl: "/meal-options/drinks/five-alive.png" },
+  { id: "hi_malt",     label: "Hi-Malt",           emoji: "🍺", price: 600,  imageUrl: "/meal-options/drinks/hi-malt.png" },
 ];
 
 const EXTRAS: Option[] = [
-  { id: "fried_plantain", label: "Fried Plantain (Dodo)", emoji: "🍌", price: 500 },
-  { id: "boli", label: "Boli (Roasted Plantain)", emoji: "🍌", price: 400 },
-  { id: "plantain_chips", label: "Plantain Chips", emoji: "🍟", price: 300 },
-  { id: "moin_moin", label: "Moin Moin", emoji: "🟡", price: 500 },
-  { id: "coleslaw", label: "Coleslaw", emoji: "🥗", price: 400 },
-  { id: "salad", label: "Green Salad", emoji: "🥗", price: 500 },
-  { id: "extra_stew", label: "Extra Stew", emoji: "🍅", price: 300 },
-  { id: "extra_egg", label: "Extra Egg", emoji: "🥚", price: 200 },
-  { id: "extra_ponmo", label: "Extra Ponmo", emoji: "🟫", price: 300 },
-  { id: "chin_chin", label: "Chin Chin", emoji: "🍪", price: 300 },
-  { id: "puff_puff", label: "Puff Puff (4pc)", emoji: "🍩", price: 400 },
-  { id: "yam_side", label: "Boiled Yam", emoji: "🍠", price: 500 },
+  { id: "fried_plantain", label: "Fried Plantain (Dodo)",    emoji: "🍌", price: 500, imageUrl: "/meal-options/extras/dodo.png" },
+  { id: "boli",           label: "Boli (Roasted Plantain)",  emoji: "🍌", price: 400, imageUrl: "/meal-options/extras/boli.png" },
+  { id: "plantain_chips", label: "Plantain Chips",           emoji: "🍟", price: 300, imageUrl: "/meal-options/extras/plantain-chips.png" },
+  { id: "moin_moin",      label: "Moin Moin",                emoji: "🟡", price: 500, imageUrl: "/meal-options/extras/moin-moin.png" },
+  { id: "coleslaw",       label: "Coleslaw",                 emoji: "🥗", price: 400, imageUrl: "/meal-options/extras/coleslaw.png" },
+  { id: "salad",          label: "Green Salad",              emoji: "🥗", price: 500, imageUrl: "/meal-options/extras/salad.png" },
+  { id: "extra_stew",     label: "Extra Stew",               emoji: "🍅", price: 300, imageUrl: "/meal-options/extras/stew.png" },
+  { id: "extra_egg",      label: "Extra Egg",                emoji: "🥚", price: 200, imageUrl: "/meal-options/proteins/boiled-egg.png" },
+  { id: "extra_ponmo",    label: "Extra Ponmo",              emoji: "🟫", price: 300, imageUrl: "/meal-options/proteins/ponmo.png" },
+  { id: "chin_chin",      label: "Chin Chin",                emoji: "🍪", price: 300, imageUrl: "/meal-options/extras/chin-chin.png" },
+  { id: "puff_puff",      label: "Puff Puff (4pc)",          emoji: "🍩", price: 400, imageUrl: "/meal-options/extras/puff-puff.png" },
+  { id: "yam_side",       label: "Boiled Yam",               emoji: "🍠", price: 500, imageUrl: "/meal-options/extras/yam.png" },
 ];
 
 const PACK_SIZES: (Option & { description: string })[] = [
@@ -280,7 +280,7 @@ export function MealCustomizer({ meal, restaurant, category, onClose }: MealCust
                           : "border-border/70 bg-white hover:border-border"
                       }`}
                     >
-                      <span className="text-2xl">{s.emoji}</span>
+                      <OptionImage option={s} size={40} />
                       <span className={`text-[10px] font-bold text-center leading-tight ${selectedSoup === s.id ? "text-primary" : "text-foreground"}`}>
                         {s.label}
                       </span>
@@ -433,6 +433,25 @@ function Section({ title, subtitle, required, children }: { title: string; subti
   );
 }
 
+// ─── Option image (with emoji fallback) ─────────────────────────────────────
+function OptionImage({ option, size = 40 }: { option: Option; size?: number }) {
+  const [failed, setFailed] = React.useState(false);
+  if (!option.imageUrl || failed) {
+    return <span style={{ fontSize: size * 0.6, lineHeight: 1 }}>{option.emoji}</span>;
+  }
+  return (
+    <img
+      src={option.imageUrl}
+      alt={option.label}
+      width={size}
+      height={size}
+      onError={() => setFailed(true)}
+      className="rounded-xl object-cover"
+      style={{ width: size, height: size }}
+    />
+  );
+}
+
 // ─── Multi-pick stepper grid ────────────────────────────────────────────────
 function OptionStepperGrid({
   defs,
@@ -456,7 +475,7 @@ function OptionStepperGrid({
                 active ? "border-primary bg-primary/8 shadow-sm" : "border-border/70 bg-white"
               }`}
             >
-              <span className="text-2xl">{o.emoji}</span>
+              <OptionImage option={o} size={44} />
               <span className={`text-[10px] font-bold text-center leading-tight ${active ? "text-primary" : "text-foreground"}`}>
                 {o.label}
               </span>

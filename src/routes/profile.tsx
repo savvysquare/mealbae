@@ -4,6 +4,7 @@ import { AppShell, signOutAll } from "@/components/AppShell";
 import { HeaderActions } from "@/components/HeaderActions";
 import { useSession } from "@/hooks/use-auth";
 import { getSavedPhone, savePhone, clearSavedPhone } from "@/lib/user-phone";
+import { AuthModal } from "@/components/AuthModal";
 import {
   User as UserIcon,
   MapPin,
@@ -40,6 +41,7 @@ function ProfilePage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [authModal, setAuthModal] = useState<"signin" | "signup" | null>(null);
 
   const email = user?.email || "";
   const profileName = user?.user_metadata?.full_name || name || "Guest User";
@@ -86,7 +88,7 @@ function ProfilePage() {
     { icon: Truck, label: "Become a Rider", desc: "Deliver with MealBae and earn daily" },
   ];
 
-  return (
+  return (<>
     <AppShell title="Profile" right={<HeaderActions />}>
       <div className="mx-auto max-w-xl pb-24">
         {/* ── Avatar Section ── */}
@@ -106,18 +108,20 @@ function ProfilePage() {
           </div>
           {!user && (
             <div className="flex gap-3 mt-2">
-              <Link
-                to="/"
-                className="rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground hover:brightness-105 shadow-md shadow-primary/20 transition"
+              <button
+                id="profile-signin-btn"
+                onClick={() => setAuthModal("signin")}
+                className="rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground hover:brightness-105 shadow-md shadow-primary/20 transition cursor-pointer"
               >
                 Sign In
-              </Link>
-              <Link
-                to="/"
-                className="rounded-full border border-border px-5 py-2 text-xs font-bold text-foreground hover:bg-secondary transition"
+              </button>
+              <button
+                id="profile-register-btn"
+                onClick={() => setAuthModal("signup")}
+                className="rounded-full border border-border px-5 py-2 text-xs font-bold text-foreground hover:bg-secondary transition cursor-pointer"
               >
                 Register
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -262,7 +266,15 @@ function ProfilePage() {
         </p>
       </div>
     </AppShell>
-  );
+
+    {/* Auth Modal */}
+    {authModal && (
+      <AuthModal
+        defaultTab={authModal}
+        onClose={() => setAuthModal(null)}
+      />
+    )}
+  </>);
 }
 
 function Field({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
