@@ -129,7 +129,14 @@ function VendorOrders() {
             <div className="space-y-3">
               {active.map((o: any) => {
                 const isExpanded = expandedId === o.id;
-                const next = o.status === "accepted_by_restaurant" ? "preparing" : o.status === "preparing" ? "ready_for_pickup" : null;
+                // Keep "Mark ready for pickup" visible even after the rider
+                // has arrived — vendor still needs to signal the food is ready.
+                const next =
+                  o.status === "accepted_by_restaurant"
+                    ? "preparing"
+                    : o.status === "preparing" || o.status === "rider_arrived_at_restaurant"
+                    ? "ready_for_pickup"
+                    : null;
                 const nextLabel = next === "preparing" ? "Mark preparing" : next === "ready_for_pickup" ? "Mark ready for pickup" : null;
 
                 return (
