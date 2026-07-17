@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { LazyImage } from "@/components/LazyImage";
 import { MealCustomizer } from "@/components/MealCustomizer";
 import { useCart } from "@/lib/cart";
+import { cleanMealDescription } from "@/lib/meal-text";
 import {
   ShoppingBag, Clock, Star, ChevronLeft, BadgeCheck,
   Plus, MessageSquare
@@ -292,11 +293,14 @@ function RestaurantPage() {
                                     <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors leading-tight">
                                       {displayName}
                                     </div>
-                                    {m.description && (
-                                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                                        {m.description}
-                                      </p>
-                                    )}
+                                    {(() => {
+                                      const cleaned = cleanMealDescription(m.description);
+                                      return cleaned ? (
+                                        <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                                          {cleaned}
+                                        </p>
+                                      ) : null;
+                                    })()}
                                   </div>
                                   <div className="mt-3 font-display text-sm font-extrabold text-foreground">
                                     from {formatNaira(m.price_naira)}
