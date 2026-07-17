@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { LazyImage } from "@/components/LazyImage";
 import { MealCustomizer } from "@/components/MealCustomizer";
 import { useCart } from "@/lib/cart";
+import { cleanMealDescription } from "@/lib/meal-text";
 import {
   ShoppingBag, Clock, Star, ChevronLeft, BadgeCheck,
   Plus, MessageSquare
