@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import heroDish from "@/assets/hero-dish.png";
 
 export const Route = createFileRoute("/")({
   component: SplashScreen,
@@ -17,116 +16,39 @@ function SplashScreen() {
     const t2 = setTimeout(() => {
       nav({ to: "/home" });
     }, 2200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [nav]);
+
+  const foodPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ff3008' fill-opacity='0.025' stroke='%23ff3008' stroke-opacity='0.025' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3C!-- Cloche --%3E%3Cpath d='M20 30h16M22 30a6 6 0 0 1 12 0' fill='none'/%3E%3Ccircle cx='28' cy='23' r='1'/%3E%3C!-- Drink --%3E%3Cpath d='M65 24h12l-2 10H67z' fill='none'/%3E%3Cpath d='M71 24V18h2' fill='none'/%3E%3C!-- Fork & Spoon --%3E%3Cpath d='M24 68v10M22 68h4M22 71h4M32 68v10M30 68v3a2 2 0 0 0 4 0v-3' fill='none'/%3E%3C!-- Pizza --%3E%3Cpath d='M68 68l10 8H68z' fill='none'/%3E%3C/g%3E%3C/svg%3E")`;
 
   return (
     <div
       className="fixed inset-0 z-[999] flex flex-col items-center justify-center overflow-hidden"
       style={{
-        background: "linear-gradient(145deg, #c0392b 0%, #e74c3c 45%, #ff6b5b 100%)",
+        backgroundColor: "#ffffff",
+        backgroundImage: foodPattern,
+        backgroundRepeat: "repeat",
         transition: "opacity 0.4s ease",
         opacity: visible ? 1 : 0,
       }}
     >
-      {/* Radial glow behind dish */}
+      {/* Centered Splash Image */}
       <div
-        className="absolute"
+        className="w-full max-w-[280px] sm:max-w-[340px] px-6 transition-all duration-700"
         style={{
-          width: 420,
-          height: 420,
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -55%)",
-        }}
-      />
-
-      {/* Dish image — animated float */}
-      <div
-        style={{
-          width: 240,
-          height: 240,
-          marginBottom: 8,
-          animation: "splashFloat 2.5s ease-in-out infinite",
-          filter: "drop-shadow(0 20px 32px rgba(0,0,0,0.32))",
-          position: "relative",
-          zIndex: 2,
+          transform: visible ? "scale(1)" : "scale(0.95)",
+          opacity: visible ? 1 : 0,
         }}
       >
         <img
-          src={heroDish}
-          alt="Delicious meal"
-          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          src="/splash.png"
+          alt="MealBAE"
+          className="w-full h-auto object-contain drop-shadow-[0_4px_20px_rgba(255,48,8,0.06)]"
         />
       </div>
-
-      {/* Brand name */}
-      <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
-        <div
-          style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontWeight: 900,
-            fontSize: 48,
-            color: "#fff",
-            letterSpacing: "-0.03em",
-            lineHeight: 1,
-            textShadow: "0 4px 16px rgba(0,0,0,0.25)",
-          }}
-        >
-          Meal<span style={{ color: "#ffe0dc" }}>BAE</span>
-        </div>
-        <div
-          style={{
-            marginTop: 8,
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: "rgba(255,255,255,0.75)",
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          Before Anything Else
-        </div>
-      </div>
-
-      {/* Pulsing dots loader */}
-      <div
-        style={{
-          marginTop: 40,
-          display: "flex",
-          gap: 8,
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.7)",
-              animation: `splashDot 1s ease-in-out ${i * 0.2}s infinite`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Keyframe styles injected inline */}
-      <style>{`
-        @keyframes splashFloat {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-        }
-        @keyframes splashDot {
-          0%, 100% { opacity: 0.4; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-      `}</style>
     </div>
   );
 }
