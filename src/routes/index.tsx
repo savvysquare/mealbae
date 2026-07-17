@@ -62,24 +62,36 @@ function SplashScreen() {
         />
       </div>
 
-      {/* Brand name */}
+      {/* Brand lockup — logo icon + wordmark */}
       <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
-        <div
-          style={{
-            fontFamily: "'Outfit', 'Inter', sans-serif",
-            fontWeight: 900,
-            fontSize: 48,
-            color: "#fff",
-            letterSpacing: "-0.03em",
-            lineHeight: 1,
-            textShadow: "0 4px 16px rgba(0,0,0,0.25)",
-          }}
-        >
-          Meal<span style={{ color: "#ffe0dc" }}>BAE</span>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
+          <img
+            src="/logo-icon.png"
+            alt=""
+            aria-hidden="true"
+            style={{
+              height: 56,
+              width: "auto",
+              filter: "drop-shadow(0 6px 16px rgba(0,0,0,0.35))",
+            }}
+          />
+          <div
+            style={{
+              fontFamily: "'Outfit', 'Inter', sans-serif",
+              fontWeight: 900,
+              fontSize: 48,
+              color: "#fff",
+              letterSpacing: "-0.03em",
+              lineHeight: 1,
+              textShadow: "0 4px 16px rgba(0,0,0,0.25)",
+            }}
+          >
+            Meal<span style={{ color: "#ffe0dc" }}>BAE</span>
+          </div>
         </div>
         <div
           style={{
-            marginTop: 8,
+            marginTop: 12,
             fontSize: 13,
             fontWeight: 700,
             letterSpacing: "0.22em",
