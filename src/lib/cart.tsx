@@ -2,27 +2,31 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { toast } from "sonner";
 
 export interface CartItem {
-  cartItemId: string;  // unique per customization combo: mealId + options hash
+  cartItemId: string;
   mealId: string;
-  name: string;        // includes customization label e.g. "Amala (2 wraps) + Egusi + 2× Grilled Chicken"
-  price: number;       // total for this line (base + extras) × qty
+  restaurantId: string;
+  restaurantName: string;
+  name: string;
+  price: number;
   quantity: number;
   imageUrl?: string | null;
-  // customization snapshot for display
   customLabel?: string;
 }
+
+// Legacy shape kept as a computed view so existing screens keep working
 export interface CartState {
   restaurantId: string | null;
   restaurantName: string | null;
   items: CartItem[];
 }
 
-const KEY = "mealbae.cart.v2";
-const initial: CartState = { restaurantId: null, restaurantName: null, items: [] };
+const KEY = "mealbae.cart.v3";
+const LEGACY_KEY = "mealbae.cart.v2";
 
 interface Ctx {
   cart: CartState;
-  add: (restaurantId: string, restaurantName: string, item: CartItem) => void;
+  itemsByRestaurant: { restaurantId: string; restaurantName: string; items: CartItem[]; subtotal: number }[];
+  add: (restaurantId: string, restaurantName: string, item: Omit<CartItem, "restaurantId" | "restaurantName">) => void;
   setQty: (cartItemId: string, qty: number) => void;
   remove: (cartItemId: string) => void;
   clear: () => void;
@@ -33,69 +37,91 @@ interface Ctx {
 const CartContext = createContext<Ctx | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartState>(initial);
+  const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(KEY) : null;
-      if (raw) setCart(JSON.parse(raw));
+      if (typeof window === "undefined") return;
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        setItems(JSON.parse(raw));
+      } else {
+        // migrate old single-restaurant cart
+        const legacy = localStorage.getItem(LEGACY_KEY);
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          if (parsed?.items?.length && parsed.restaurantId) {
+            setItems(
+              parsed.items.map((i: Omit<CartItem, "restaurantId" | "restaurantName">) => ({
+                ...i,
+                restaurantId: parsed.restaurantId,
+                restaurantName: parsed.restaurantName ?? "",
+              })),
+            );
+          }
+        }
+      }
     } catch { /* noop */ }
     setReady(true);
   }, []);
 
   useEffect(() => {
     if (!ready) return;
-    try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch { /* noop */ }
-  }, [cart, ready]);
+    try { localStorage.setItem(KEY, JSON.stringify(items)); } catch { /* noop */ }
+  }, [items, ready]);
 
   const add: Ctx["add"] = (restaurantId, restaurantName, item) => {
-    setCart((prev) => {
-      if (prev.restaurantId && prev.restaurantId !== restaurantId) {
-        const proceed =
-          typeof window !== "undefined" &&
-          window.confirm(
-            `Clear your cart from ${prev.restaurantName} and start a new order from ${restaurantName}?`
-          );
-        if (!proceed) return prev;
-        toast.success(`${item.name} added to cart`);
-        return { restaurantId, restaurantName, items: [item] };
-      }
-      // Each customization is a separate cart line — no merging by mealId
-      // Only merge if cartItemId matches exactly (e.g. re-adding same exact combo)
-      const existing = prev.items.find((i) => i.cartItemId === item.cartItemId);
-      const items = existing
-        ? prev.items.map((i) =>
-            i.cartItemId === item.cartItemId ? { ...i, quantity: i.quantity + item.quantity } : i
-          )
-        : [...prev.items, item];
+    setItems((prev) => {
+      const existing = prev.find((i) => i.cartItemId === item.cartItemId);
+      const next = existing
+        ? prev.map((i) => (i.cartItemId === item.cartItemId ? { ...i, quantity: i.quantity + item.quantity } : i))
+        : [...prev, { ...item, restaurantId, restaurantName }];
       toast.success(`${item.name.split(" ")[0]} added!`);
-      return { restaurantId, restaurantName, items };
+      return next;
     });
   };
 
   const setQty: Ctx["setQty"] = (cartItemId, qty) => {
-    setCart((prev) => ({
-      ...prev,
-      items: prev.items.map((i) =>
-        i.cartItemId === cartItemId ? { ...i, quantity: Math.max(1, qty) } : i
-      ),
-    }));
+    setItems((prev) => prev.map((i) => (i.cartItemId === cartItemId ? { ...i, quantity: Math.max(1, qty) } : i)));
   };
 
   const remove: Ctx["remove"] = (cartItemId) => {
-    setCart((prev) => {
-      const items = prev.items.filter((i) => i.cartItemId !== cartItemId);
-      return items.length === 0 ? initial : { ...prev, items };
-    });
+    setItems((prev) => prev.filter((i) => i.cartItemId !== cartItemId));
   };
 
-  const clear = () => setCart(initial);
-  const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-  const count = cart.items.reduce((sum, i) => sum + i.quantity, 0);
+  const clear = () => setItems([]);
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+
+  // Group by restaurant
+  const grouped = new Map<string, { restaurantId: string; restaurantName: string; items: CartItem[]; subtotal: number }>();
+  for (const it of items) {
+    const g = grouped.get(it.restaurantId);
+    if (g) {
+      g.items.push(it);
+      g.subtotal += it.price * it.quantity;
+    } else {
+      grouped.set(it.restaurantId, {
+        restaurantId: it.restaurantId,
+        restaurantName: it.restaurantName,
+        items: [it],
+        subtotal: it.price * it.quantity,
+      });
+    }
+  }
+  const itemsByRestaurant = Array.from(grouped.values());
+
+  // Legacy view — first restaurant, for pages not yet updated
+  const first = itemsByRestaurant[0];
+  const cart: CartState = {
+    restaurantId: first?.restaurantId ?? null,
+    restaurantName: first?.restaurantName ?? null,
+    items,
+  };
 
   return (
-    <CartContext.Provider value={{ cart, add, setQty, remove, clear, subtotal, count }}>
+    <CartContext.Provider value={{ cart, itemsByRestaurant, add, setQty, remove, clear, subtotal, count }}>
       {children}
     </CartContext.Provider>
   );

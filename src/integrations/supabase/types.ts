@@ -124,6 +124,57 @@ export type Database = {
           },
         ]
       }
+      order_groups: {
+        Row: {
+          code: string
+          created_at: string
+          customer_id: string | null
+          customer_name: string | null
+          delivery_address: string
+          delivery_fee_naira: number
+          delivery_phone: string
+          id: string
+          notes: string | null
+          payment_status: string
+          payment_submitted_at: string | null
+          subtotal_naira: number
+          total_naira: number
+          updated_at: string
+        }
+        Insert: {
+          code?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          delivery_address: string
+          delivery_fee_naira?: number
+          delivery_phone: string
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          payment_submitted_at?: string | null
+          subtotal_naira: number
+          total_naira: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          delivery_address?: string
+          delivery_fee_naira?: number
+          delivery_phone?: string
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          payment_submitted_at?: string | null
+          subtotal_naira?: number
+          total_naira?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -211,6 +262,7 @@ export type Database = {
           delivery_phone: string
           id: string
           notes: string | null
+          order_group_id: string | null
           payment_confirmed_at: string | null
           payment_submitted_at: string | null
           restaurant_id: string
@@ -231,6 +283,7 @@ export type Database = {
           delivery_phone: string
           id?: string
           notes?: string | null
+          order_group_id?: string | null
           payment_confirmed_at?: string | null
           payment_submitted_at?: string | null
           restaurant_id: string
@@ -251,6 +304,7 @@ export type Database = {
           delivery_phone?: string
           id?: string
           notes?: string | null
+          order_group_id?: string | null
           payment_confirmed_at?: string | null
           payment_submitted_at?: string | null
           restaurant_id?: string
@@ -263,6 +317,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_order_group_id_fkey"
+            columns: ["order_group_id"]
+            isOneToOne: false
+            referencedRelation: "order_groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_restaurant_id_fkey"
             columns: ["restaurant_id"]
@@ -372,6 +433,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_group_tracking: {
+        Args: { _code: string; _phone: string }
+        Returns: Json
+      }
       get_order_tracking: {
         Args: { _order_id: string; _phone: string }
         Returns: Json
@@ -383,9 +448,29 @@ export type Database = {
         }
         Returns: boolean
       }
+      mark_group_paid_by_phone: {
+        Args: { _code: string; _phone: string }
+        Returns: boolean
+      }
       mark_order_paid_by_phone: {
         Args: { _order_id: string; _phone: string }
         Returns: boolean
+      }
+      place_order_group_guest: {
+        Args: {
+          _customer_name: string
+          _delivery_address: string
+          _delivery_fee_naira: number
+          _delivery_phone: string
+          _notes: string
+          _restaurants: Json
+          _subtotal_naira: number
+          _total_naira: number
+        }
+        Returns: {
+          group_code: string
+          group_id: string
+        }[]
       }
       staff_restaurant_id: { Args: { _user_id: string }; Returns: string }
       track_orders_by_phone: {
