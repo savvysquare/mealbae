@@ -32,7 +32,7 @@ const SOUPS: Option[] = [
   { id: "egusi",         label: "Egusi Soup",    emoji: "🍲", price: 300, imageUrl: "/meal-options/soups/egusi.png" },
   { id: "efo_riro",      label: "Efo Riro",      emoji: "🫙", price: 400, imageUrl: "/meal-options/soups/efo-riro.png" },
   { id: "gbegiri",       label: "Gbegiri",       emoji: "🟤", price: 0,   imageUrl: "/meal-options/soups/gbegiri.png" },
-  { id: "ewedu_gbegiri", label: "Ewedu & Gbegiri",emoji: "🥬", price: 0, imageUrl: "/meal-options/soups/ewedu-gbegiri.png" },
+  { id: "ewedu_gbegiri", label: "Ewedu and Gbegiri",emoji: "🥬", price: 0, imageUrl: "/meal-options/soups/ewedu-gbegiri.png" },
   { id: "okro",          label: "Okro Soup",     emoji: "🫑", price: 200, imageUrl: "/meal-options/soups/okro.png" },
   { id: "banga",         label: "Banga Soup",    emoji: "🌴", price: 300, imageUrl: "/meal-options/soups/banga.png" },
   { id: "ogbono",        label: "Ogbono Soup",   emoji: "🪵", price: 300, imageUrl: "/meal-options/soups/ogbono.png" },

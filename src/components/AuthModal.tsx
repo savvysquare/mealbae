@@ -1,11 +1,26 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Mail, Lock, User, Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
+import { X, Phone, Lock, User, Eye, EyeOff, Loader2, LogIn, UserPlus } from "lucide-react";
 
 interface AuthModalProps {
   onClose: () => void;
   defaultTab?: "signin" | "signup";
+}
+
+function formatPhoneNumber(num: string): string {
+  const cleaned = num.replace(/\D/g, ""); // remove all non-digits
+  if (num.startsWith("+")) {
+    return "+" + cleaned;
+  }
+  // If local Nigerian number starting with 0, replace 0 with +234
+  if (cleaned.startsWith("0") && cleaned.length === 11) {
+    return "+234" + cleaned.slice(1);
+  }
+  if (cleaned.startsWith("234")) {
+    return "+" + cleaned;
+  }
+  return "+" + cleaned;
 }
 
 export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
@@ -15,12 +30,12 @@ export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
   const [showConfirm, setShowConfirm] = useState(false);
 
   // Sign-in fields
-  const [siEmail, setSiEmail] = useState("");
+  const [siPhone, setSiPhone] = useState("");
   const [siPwd, setSiPwd] = useState("");
 
   // Sign-up fields
   const [suName, setSuName] = useState("");
-  const [suEmail, setSuEmail] = useState("");
+  const [suPhone, setSuPhone] = useState("");
   const [suPwd, setSuPwd] = useState("");
   const [suConfirm, setSuConfirm] = useState("");
 
@@ -39,19 +54,20 @@ export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
-    if (!siEmail.trim() || !siPwd) {
-      toast.error("Please enter your email and password");
+    if (!siPhone.trim() || !siPwd) {
+      toast.error("Please enter your phone number and password");
       return;
     }
+    const formattedPhone = formatPhoneNumber(siPhone);
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
-      email: siEmail.trim().toLowerCase(),
+      phone: formattedPhone,
       password: siPwd,
     });
     setLoading(false);
     if (error) {
       if (error.message.toLowerCase().includes("invalid")) {
-        toast.error("Incorrect email or password. Please try again.");
+        toast.error("Incorrect phone number or password. Please try again.");
       } else {
         toast.error(error.message);
       }
@@ -64,35 +80,37 @@ export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     if (!suName.trim()) { toast.error("Please enter your full name"); return; }
-    if (!suEmail.trim()) { toast.error("Please enter your email"); return; }
+    if (!suPhone.trim()) { toast.error("Please enter your phone number"); return; }
     if (suPwd.length < 6) { toast.error("Password must be at least 6 characters"); return; }
     if (suPwd !== suConfirm) { toast.error("Passwords do not match"); return; }
 
+    const formattedPhone = formatPhoneNumber(suPhone);
     setLoading(true);
     const { error } = await supabase.auth.signUp({
-      email: suEmail.trim().toLowerCase(),
+      phone: formattedPhone,
       password: suPwd,
       options: {
-        data: { full_name: suName.trim() },
+        data: {
+          full_name: suName.trim(),
+          phone: formattedPhone,
+        },
       },
     });
     setLoading(false);
 
     if (error) {
-      if (error.message.toLowerCase().includes("already registered")) {
-        toast.error("An account with this email already exists. Try signing in.");
+      if (error.message.toLowerCase().includes("already registered") || error.message.toLowerCase().includes("exists")) {
+        toast.error("An account with this phone number already exists. Try signing in.");
         setTab("signin");
-        setSiEmail(suEmail);
+        setSiPhone(suPhone);
       } else {
         toast.error(error.message);
       }
       return;
     }
 
-    toast.success("Account created! Check your email to confirm your address, then sign in.", { duration: 6000 });
-    // Switch to sign-in tab so user can log in after confirming
-    setTab("signin");
-    setSiEmail(suEmail);
+    toast.success("Account created successfully! Welcome to MealBAE 🎉", { duration: 6000 });
+    onClose();
   }
 
   return (
@@ -157,18 +175,18 @@ export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
           {tab === "signin" ? (
             <form onSubmit={handleSignIn} className="space-y-4">
               <AuthField
-                icon={<Mail className="h-4 w-4" />}
-                label="Email address"
-                id="auth-signin-email"
+                icon={<Phone className="h-4 w-4" />}
+                label="Phone number"
+                id="auth-signin-phone"
               >
                 <input
-                  id="auth-signin-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={siEmail}
-                  onChange={(e) => setSiEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  id="auth-signin-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={siPhone}
+                  onChange={(e) => setSiPhone(e.target.value)}
+                  placeholder="e.g. 08031234567"
                   className="w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
                   required
                 />
@@ -239,15 +257,15 @@ export function AuthModal({ onClose, defaultTab = "signin" }: AuthModalProps) {
                 />
               </AuthField>
 
-              <AuthField icon={<Mail className="h-4 w-4" />} label="Email address" id="auth-su-email">
+              <AuthField icon={<Phone className="h-4 w-4" />} label="Phone number" id="auth-su-phone">
                 <input
-                  id="auth-su-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={suEmail}
-                  onChange={(e) => setSuEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  id="auth-su-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  value={suPhone}
+                  onChange={(e) => setSuPhone(e.target.value)}
+                  placeholder="e.g. 08031234567"
                   className="w-full rounded-xl border border-border bg-white px-3.5 py-3 text-sm font-medium outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition"
                   required
                 />

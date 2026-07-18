@@ -23,7 +23,7 @@ interface RestaurantRow {
 }
 
 const CATEGORIES = [
-  { name: "Rice & Pasta", emoji: "🍚" },
+  { name: "Rice and Pasta", emoji: "🍚" },
   { name: "Swallow", emoji: "🍲" },
   { name: "Grills", emoji: "🍖" },
   { name: "Small Chops", emoji: "🍢" },
@@ -36,7 +36,7 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
-  "Rice & Pasta": ["rice", "jollof", "fried rice", "pasta", "spaghetti", "macaroni", "noodles", "ofada", "basmati"],
+  "Rice and Pasta": ["rice", "jollof", "fried rice", "pasta", "spaghetti", "macaroni", "noodles", "ofada", "basmati"],
   Swallow: ["amala", "eba", "semo", "pounded yam", "poundo", "fufu", "iyan", "wheat", "tuwo", "garri", "swallow"],
   Grills: ["suya", "grilled", "bbq", "asun", "catfish", "ram suya", "chicken suya", "beef suya", "grill"],
   "Small Chops": ["puff puff", "samosa", "spring roll", "small chops", "gizzard", "peppered gizzard"],
@@ -54,7 +54,7 @@ function tagMeal(name: string): Set<string> {
   for (const [cat, kws] of Object.entries(CATEGORY_KEYWORDS)) {
     if (kws.some((k) => n.includes(k))) tags.add(cat);
   }
-  if (tags.size === 0) tags.add("Rice & Pasta");
+  if (tags.size === 0) tags.add("Rice and Pasta");
   return tags;
 }
 
@@ -86,9 +86,28 @@ type VenueType = {
 };
 
 function getVenueType(name: string, desc: string | null): VenueType {
+  const normName = name.toLowerCase();
+  
+  // Custom exact overrides requested by user
+  if (
+    normName.includes("better life") ||
+    normName.includes("osogbo kitchen") ||
+    normName.includes("westciti") ||
+    normName.includes("chicken republic") ||
+    normName.includes("embassy food") ||
+    normName.includes("stomach care") ||
+    normName.includes("timeless")
+  ) {
+    return { icon: "🍛", gradient: "from-emerald-500 to-teal-600", label: "Restaurant" };
+  }
+
+  if (normName.includes("iya sikirat") || normName.includes("iya sikira")) {
+    return { icon: "🥘", gradient: "from-amber-500 to-yellow-600", label: "Buka / Local" };
+  }
+
   const n = (name + " " + (desc ?? "")).toLowerCase();
   if (["bar ", "lounge", " bar", "club", "pub", "sports bar"].some((k) => n.includes(k))) {
-    return { icon: "🍺", gradient: "from-violet-500 to-purple-700", label: "Bar & Lounge" };
+    return { icon: "🍺", gradient: "from-violet-500 to-purple-700", label: "Bar and Lounge" };
   }
   if (["suya", "mai suya", "suya spot"].some((k) => n.includes(k))) {
     return { icon: "🔥", gradient: "from-orange-500 to-red-600", label: "Suya Spot" };

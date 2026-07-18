@@ -50,9 +50,27 @@ const RATING_EMOJIS: Record<number, string> = { 1: "😡", 2: "☹️", 3: "😐
 // Detect venue type from name/description — same as home.tsx
 type VenueType = { icon: string; gradient: string; label: string };
 function getVenueType(name: string, desc: string | null): VenueType {
+  const normName = name.toLowerCase();
+  
+  if (
+    normName.includes("better life") ||
+    normName.includes("osogbo kitchen") ||
+    normName.includes("westciti") ||
+    normName.includes("chicken republic") ||
+    normName.includes("embassy food") ||
+    normName.includes("stomach care") ||
+    normName.includes("timeless")
+  ) {
+    return { icon: "🍛", gradient: "from-emerald-500 to-teal-600", label: "Restaurant" };
+  }
+
+  if (normName.includes("iya sikirat") || normName.includes("iya sikira")) {
+    return { icon: "🥘", gradient: "from-amber-500 to-yellow-600", label: "Buka / Local" };
+  }
+
   const n = (name + " " + (desc ?? "")).toLowerCase();
   if (["bar ", "lounge", " bar", "club", "pub", "sports bar"].some((k) => n.includes(k)))
-    return { icon: "🍺", gradient: "from-violet-500 to-purple-700", label: "Bar & Lounge" };
+    return { icon: "🍺", gradient: "from-violet-500 to-purple-700", label: "Bar and Lounge" };
   if (["suya", "mai suya", "suya spot"].some((k) => n.includes(k)))
     return { icon: "🔥", gradient: "from-orange-500 to-red-600", label: "Suya Spot" };
   if (["hotel", "inn", "lodge", "resort"].some((k) => n.includes(k)))

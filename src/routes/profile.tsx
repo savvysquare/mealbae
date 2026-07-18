@@ -43,7 +43,7 @@ function ProfilePage() {
   const [address, setAddress] = useState("");
   const [authModal, setAuthModal] = useState<"signin" | "signup" | null>(null);
 
-  const email = user?.email || "";
+  const email = user?.email || user?.phone || "";
   const profileName = user?.user_metadata?.full_name || name || "Guest User";
   const initials = profileName
     .split(" ")
