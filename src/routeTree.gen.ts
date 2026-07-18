@@ -38,6 +38,7 @@ import { Route as AdminPaymentsRouteImport } from './routes/admin.payments'
 import { Route as AdminOverviewRouteImport } from './routes/admin.overview'
 import { Route as AdminMealsRouteImport } from './routes/admin.meals'
 import { Route as AdminDispatchRouteImport } from './routes/admin.dispatch'
+import { Route as TrackGCodeRouteImport } from './routes/track.g.$code'
 import { Route as AuthenticatedOrdersIdRouteImport } from './routes/_authenticated/orders.$id'
 
 const VendorRoute = VendorRouteImport.update({
@@ -184,6 +185,11 @@ const AdminDispatchRoute = AdminDispatchRouteImport.update({
   path: '/dispatch',
   getParentRoute: () => AdminRoute,
 } as any)
+const TrackGCodeRoute = TrackGCodeRouteImport.update({
+  id: '/g/$code',
+  path: '/g/$code',
+  getParentRoute: () => TrackRoute,
+} as any)
 const AuthenticatedOrdersIdRoute = AuthenticatedOrdersIdRouteImport.update({
   id: '/orders/$id',
   path: '/orders/$id',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/track/': typeof TrackIndexRoute
   '/vendor/': typeof VendorIndexRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/track/g/$code': typeof TrackGCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/track': typeof TrackIndexRoute
   '/vendor': typeof VendorIndexRoute
   '/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/track/g/$code': typeof TrackGCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/track/': typeof TrackIndexRoute
   '/vendor/': typeof VendorIndexRoute
   '/_authenticated/orders/$id': typeof AuthenticatedOrdersIdRoute
+  '/track/g/$code': typeof TrackGCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -313,6 +322,7 @@ export interface FileRouteTypes {
     | '/track/'
     | '/vendor/'
     | '/orders/$id'
+    | '/track/g/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -340,6 +350,7 @@ export interface FileRouteTypes {
     | '/track'
     | '/vendor'
     | '/orders/$id'
+    | '/track/g/$code'
   id:
     | '__root__'
     | '/'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/track/'
     | '/vendor/'
     | '/_authenticated/orders/$id'
+    | '/track/g/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -596,6 +608,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDispatchRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/track/g/$code': {
+      id: '/track/g/$code'
+      path: '/g/$code'
+      fullPath: '/track/g/$code'
+      preLoaderRoute: typeof TrackGCodeRouteImport
+      parentRoute: typeof TrackRoute
+    }
     '/_authenticated/orders/$id': {
       id: '/_authenticated/orders/$id'
       path: '/orders/$id'
@@ -655,11 +674,13 @@ const OrdersRouteWithChildren =
 interface TrackRouteChildren {
   TrackIdRoute: typeof TrackIdRoute
   TrackIndexRoute: typeof TrackIndexRoute
+  TrackGCodeRoute: typeof TrackGCodeRoute
 }
 
 const TrackRouteChildren: TrackRouteChildren = {
   TrackIdRoute: TrackIdRoute,
   TrackIndexRoute: TrackIndexRoute,
+  TrackGCodeRoute: TrackGCodeRoute,
 }
 
 const TrackRouteWithChildren = TrackRoute._addFileChildren(TrackRouteChildren)
